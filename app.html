@@ -464,31 +464,25 @@
                 <a href="#inicio" class="nav-link active" data-module="inicio">Inicio</a>
             </li>
             <li class="nav-item">
-                <a href="#causas" class="nav-link" data-module="causas">Registro de Causas</a>
+                <a href="causas.html" class="nav-link">Registro de Causas</a>
             </li>
             <li class="nav-item">
-                <a href="#partes" class="nav-link" data-module="partes">Partes</a>
+                <a href="partes.html" class="nav-link">Partes</a>
             </li>
             <li class="nav-item">
-                <a href="#calendario" class="nav-link" data-module="calendario">Calendario</a>
+                <a href="calendario.html" class="nav-link">Calendario</a>
             </li>
             <li class="nav-item">
                 <a href="#proteccion" class="nav-link" data-module="proteccion">Protección de Personas</a>
             </li>
             <li class="nav-item">
-                <a href="#dictamenes" class="nav-link" data-module="dictamenes">Dictámenes y Escritos</a>
+                <a href="dictamenes.html" class="nav-link">Dictámenes y Escritos</a>
             </li>
             <li class="nav-item">
-                <a href="#biblioteca" class="nav-link" data-module="biblioteca">Biblioteca de Documentos</a>
+                <a href="documentos.html" class="nav-link">Biblioteca de Documentos</a>
             </li>
             <li class="nav-item">
-                <a href="#notificaciones" class="nav-link" data-module="notificaciones">Notificaciones</a>
-            </li>
-            <li class="nav-item">
-                <a href="#agenda" class="nav-link" data-module="agenda">Agenda</a>
-            </li>
-            <li class="nav-item">
-                <a href="#estadistica" class="nav-link" data-module="estadistica">Estadística</a>
+                <a href="notificaciones.html" class="nav-link">Notificaciones</a>
             </li>
         </ul>
         
@@ -529,107 +523,27 @@
     </main>
 
     <!-- Módulos de contenido adicionales -->
-    <div class="module-content" id="causas">
-        <div class="module-placeholder">
-            <div class="module-icon">⚖️</div>
-            <h3>Registro de Causas</h3>
-            <p>Módulo para gestionar y registrar todas las causas judiciales del sistema.</p>
-        </div>
-    </div>
-
-    <div class="module-content" id="partes">
-        <div class="module-placeholder">
-            <div class="module-icon">👥</div>
-            <h3>Partes Intervinientes</h3>
-            <p>Gestión de las partes involucradas en los procesos judiciales.</p>
-        </div>
-    </div>
-
-    <div class="module-content" id="calendario">
-        <div class="module-placeholder">
-            <div class="module-icon">📅</div>
-            <h3>Calendario Judicial</h3>
-            <p>Programación y seguimiento de audiencias, vistas y plazos procesales.</p>
-        </div>
-    </div>
-
     <div class="module-content" id="proteccion">
         <div class="module-placeholder">
             <div class="module-icon">🛡️</div>
             <h3>Protección de Personas</h3>
-            <p>Sistema de medidas cautelares y protección para personas en situación de vulnerabilidad.</p>
+            <p>Seleccione el tipo de protección:</p>
+            <div style="margin-top: 20px; display: flex; gap: 15px;">
+                <a href="proteccioNNyA.html" style="text-decoration: none;">
+                    <button style="background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: var(--radius); cursor: pointer;">
+                        NNyA (Niños, Niñas y Adolescentes)
+                    </button>
+                </a>
+                <a href="proteccion-adultos.html" style="text-decoration: none;">
+                    <button style="background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: var(--radius); cursor: pointer;">
+                        Adultos
+                    </button>
+                </a>
+            </div>
         </div>
     </div>
 
-    <div class="module-content" id="dictamenes">
-        <div class="module-placeholder">
-            <div class="module-icon">📝</div>
-            <h3>Dictámenes y Escritos</h3>
-            <p>Gestión de documentos, dictámenes y escritos presentados en los expedientes.</p>
-        </div>
-    </div>
-
-    <div class="module-content" id="biblioteca">
-        <div class="module-placeholder">
-            <div class="module-icon">📚</div>
-            <h3>Biblioteca de Documentos</h3>
-            <p>Repositorio centralizado de documentos, plantillas y recursos legales.</p>
-        </div>
-    </div>
-
-    <div class="module-content" id="notificaciones">
-        <div class="module-placeholder">
-            <div class="module-icon">🔔</div>
-            <h3>Notificaciones</h3>
-            <p>Sistema de notificaciones y comunicaciones internas del sistema.</p>
-        </div>
-    </div>
-
-    <div class="module-content" id="agenda">
-        <div class="module-placeholder">
-            <div class="module-icon">🗓️</div>
-            <h3>Agenda</h3>
-            <p>Gestión de actividades, reuniones y compromisos del personal judicial.</p>
-        </div>
-    </div>
-
-    <div class="module-content" id="estadistica">
-        <div class="module-placeholder">
-            <div class="module-icon">📊</div>
-            <h3>Estadísticas</h3>
-            <p>Análisis y reportes estadísticos de la actividad judicial.</p>
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-
-        // Configuración de Firebase - USANDO SOLO UNA APP
-        const firebaseConfig = {
-            apiKey: "AIzaSyBDXZYAxWsvMiMGCrPRp3EBVuU0dzuWF4M",
-            authDomain: "sistemadefensoria6.firebaseapp.com",
-            projectId: "sistemadefensoria6",
-            storageBucket: "sistemadefensoria6.firebasestorage.app",
-            messagingSenderId: "1024631392849",
-            appId: "1:1024631392849:web:1dc13292e690e2ed100670"
-        };
-
-        // Inicializar Firebase - SOLO UNA APP
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // Verificar autenticación
-        onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                window.location.href = 'index.html';
-            } else {
-                loadFirebaseData();
-            }
-        });
-
+    <script>
         // Datos para los módulos estadísticos
         let moduleData = [];
         let casesData = {
@@ -637,177 +551,78 @@
             datasets: []
         };
 
-        // Cargar datos desde Firebase
-        async function loadFirebaseData() {
-            try {
-                await loadModuleData();
-                await loadChartData();
-                
-                renderModules();
-                createChart();
-            } catch (error) {
-                console.error("Error cargando datos de Firebase:", error);
-                loadFallbackData();
-                renderModules();
-                createChart();
-            }
-        }
-
-        // Cargar datos para los módulos desde Firebase
-        async function loadModuleData() {
-            try {
-                // Obtener conteos de las colecciones desde Firestore
-                const causasSnapshot = await getDocs(collection(db, "causas"));
-                const proteccionSnapshot = await getDocs(collection(db, "proteccion"));
-                const partesSnapshot = await getDocs(collection(db, "partes"));
-                const notificacionesSnapshot = await getDocs(collection(db, "notificaciones"));
-                
-                moduleData = [
-                    { 
-                        title: "Causas Activas", 
-                        count: causasSnapshot.size, 
-                        change: 0, 
-                        positive: true 
-                    },
-                    { 
-                        title: "Casos Protección", 
-                        count: proteccionSnapshot.size, 
-                        change: 0, 
-                        positive: true 
-                    },
-                    { 
-                        title: "Partes Registradas", 
-                        count: partesSnapshot.size, 
-                        change: 0, 
-                        positive: true 
-                    },
-                    { 
-                        title: "Notificaciones", 
-                        count: notificacionesSnapshot.size, 
-                        change: 0, 
-                        positive: true 
-                    }
-                ];
-            } catch (error) {
-                console.error("Error cargando datos de módulos:", error);
-                throw error;
-            }
-        }
-
-        // Cargar datos para el gráfico desde Firebase
-        async function loadChartData() {
-            try {
-                const causasQuery = query(collection(db, "causas"), orderBy("fecha", "asc"));
-                const causasSnapshot = await getDocs(causasQuery);
-                
-                const dataByMonthAndType = {};
-                const tiposCausa = ["Civiles", "Penales", "Laborales", "Familiares"];
-                
-                // Inicializar estructura de datos
-                tiposCausa.forEach(tipo => {
-                    dataByMonthAndType[tipo] = {};
-                });
-                
-                // Procesar cada causa
-                causasSnapshot.forEach(doc => {
-                    const causa = doc.data();
-                    let fecha;
-                    
-                    // Manejar diferentes formatos de fecha
-                    if (causa.fecha && causa.fecha.toDate) {
-                        fecha = causa.fecha.toDate();
-                    } else if (causa.fecha) {
-                        fecha = new Date(causa.fecha);
-                    } else {
-                        fecha = new Date();
-                    }
-                    
-                    const mesAnio = `${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
-                    const tipo = causa.tipo || "Civiles";
-                    
-                    if (!dataByMonthAndType[tipo][mesAnio]) {
-                        dataByMonthAndType[tipo][mesAnio] = 0;
-                    }
-                    dataByMonthAndType[tipo][mesAnio]++;
-                });
-                
-                // Obtener todos los meses únicos
-                const mesesUnicos = new Set();
-                tiposCausa.forEach(tipo => {
-                    Object.keys(dataByMonthAndType[tipo]).forEach(mes => {
-                        mesesUnicos.add(mes);
-                    });
-                });
-                
-                // Ordenar meses cronológicamente
-                const mesesOrdenados = Array.from(mesesUnicos).sort((a, b) => {
-                    const [mesA, anioA] = a.split('/').map(Number);
-                    const [mesB, anioB] = b.split('/').map(Number);
-                    return anioA - anioB || mesA - mesB;
-                });
-                
-                // Crear estructura de datos para el gráfico
-                casesData.labels = mesesOrdenados.map(mes => {
-                    const [mesNum, anio] = mes.split('/');
-                    const nombresMeses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", 
-                                         "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-                    return `${nombresMeses[parseInt(mesNum)-1]} ${anio}`;
-                });
-                
-                // Colores para cada tipo de causa
-                const colores = {
-                    "Civiles": "#4A90E2",
-                    "Penales": "#E74C3C",
-                    "Laborales": "#27AE60",
-                    "Familiares": "#F39C12"
-                };
-                
-                // Crear datasets para cada tipo de causa
-                casesData.datasets = tiposCausa.map(tipo => {
-                    const datos = mesesOrdenados.map(mes => {
-                        return dataByMonthAndType[tipo][mes] || 0;
-                    });
-                    
-                    return {
-                        label: `Causas ${tipo}`,
-                        data: datos,
-                        borderColor: colores[tipo],
-                        backgroundColor: `${colores[tipo]}20`,
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: colores[tipo],
-                        pointBorderColor: "#FFFFFF",
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    };
-                });
-            } catch (error) {
-                console.error("Error cargando datos del gráfico:", error);
-                throw error;
-            }
-        }
-
-        // Datos de respaldo en caso de error
-        function loadFallbackData() {
+        // Cargar datos estáticos
+        function loadStaticData() {
+            // Datos de ejemplo para los módulos
             moduleData = [
-                { title: "Causas Activas", count: 0, change: 0, positive: true },
-                { title: "Casos Protección", count: 0, change: 0, positive: true },
-                { title: "Partes Registradas", count: 0, change: 0, positive: true },
-                { title: "Notificaciones", count: 0, change: 0, positive: true }
+                { 
+                    title: "Causas Activas", 
+                    count: 142, 
+                    change: 12, 
+                    positive: true 
+                },
+                { 
+                    title: "Casos Protección", 
+                    count: 67, 
+                    change: 5, 
+                    positive: true 
+                },
+                { 
+                    title: "Partes Registradas", 
+                    count: 389, 
+                    change: 8, 
+                    positive: true 
+                },
+                { 
+                    title: "Notificaciones", 
+                    count: 23, 
+                    change: -3, 
+                    positive: false 
+                }
             ];
             
             // Datos de ejemplo para el gráfico
             casesData = {
-                labels: ["Ene 2023", "Feb 2023", "Mar 2023", "Abr 2023", "May 2023"],
+                labels: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
                 datasets: [
                     {
                         label: "Causas Civiles",
-                        data: [0, 0, 0, 0, 0],
+                        data: [12, 15, 18, 14, 16, 20, 22, 19, 25, 28, 30, 32],
                         borderColor: "#4A90E2",
                         backgroundColor: "rgba(74, 144, 226, 0.1)",
                         tension: 0.4,
-                        fill: true
+                        fill: true,
+                        pointBackgroundColor: "#4A90E2",
+                        pointBorderColor: "#FFFFFF",
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: "Causas Penales",
+                        data: [8, 10, 12, 9, 11, 15, 14, 16, 18, 20, 22, 25],
+                        borderColor: "#E74C3C",
+                        backgroundColor: "rgba(231, 76, 60, 0.1)",
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: "#E74C3C",
+                        pointBorderColor: "#FFFFFF",
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: "Causas Familiares",
+                        data: [5, 7, 6, 8, 10, 12, 11, 13, 15, 14, 16, 18],
+                        borderColor: "#27AE60",
+                        backgroundColor: "rgba(39, 174, 96, 0.1)",
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: "#27AE60",
+                        pointBorderColor: "#FFFFFF",
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
                     }
                 ]
             };
@@ -843,36 +658,9 @@
             loadingElement.style.display = 'none';
             document.getElementById('casesChart').style.display = 'block';
             
-            // Calcular el total de causas para cada mes
-            const totalData = casesData.labels.map((_, index) => {
-                return casesData.datasets.reduce((sum, dataset) => sum + dataset.data[index], 0);
-            });
-            
-            const chartData = {
-                labels: casesData.labels,
-                datasets: [
-                    ...casesData.datasets,
-                    {
-                        label: "Total de Causas",
-                        data: totalData,
-                        borderColor: "#2C3E50",
-                        backgroundColor: "transparent",
-                        tension: 0.4,
-                        fill: false,
-                        pointBackgroundColor: "#2C3E50",
-                        pointBorderColor: "#FFFFFF",
-                        pointBorderWidth: 3,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                        borderWidth: 3,
-                        borderDash: [5, 5]
-                    }
-                ]
-            };
-            
             const chart = new Chart(ctx, {
                 type: 'line',
-                data: chartData,
+                data: casesData,
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -953,7 +741,7 @@
         });
 
         // Funcionalidad de navegación entre módulos
-        document.querySelectorAll('.nav-link').forEach(link => {
+        document.querySelectorAll('.nav-link[data-module]').forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
                 
@@ -978,20 +766,14 @@
                 // Mostrar el módulo seleccionado
                 const moduleId = this.getAttribute('data-module');
                 document.getElementById(moduleId).classList.add('active');
-                
-                // Actualizar el título del módulo actual
-                document.getElementById('currentModule').textContent = this.textContent;
             });
         });
 
         // Funcionalidad del botón de salir
         document.getElementById('logoutBtn').addEventListener('click', function() {
             if(confirm('¿Está seguro que desea salir del sistema?')) {
-                signOut(auth).then(() => {
-                    window.location.href = 'index.html';
-                }).catch((error) => {
-                    console.error("Error al cerrar sesión:", error);
-                });
+                // Redirigir a página de login
+                window.location.href = 'index.html';
             }
         });
 
@@ -1024,7 +806,9 @@
         // Inicializar la interfaz
         document.addEventListener('DOMContentLoaded', function() {
             updateDate();
-            // Los datos se cargan después de la autenticación
+            loadStaticData();
+            renderModules();
+            createChart();
         });
     </script>
 </body>
