@@ -1,0 +1,2005 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Protección de Personas Adultas</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary-blue: #007bff;
+            --primary-light-blue: #e7f4ff;
+            --primary-dark-blue: #0056b3;
+            --secondary-gray: #f8f9fa;
+            --secondary-light-gray: #e9ecef;
+            --secondary-dark-gray: #6c757d;
+            --status-success: #28a745;
+            --status-warning: #ffc107;
+            --status-danger: #dc3545;
+            --status-info: #17a2b8;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-link: #007bff;
+            --text-light: #ffffff;
+            --background-default: #ffffff;
+            --background-card: #ffffff;
+            --background-header: #ffffff;
+            --background-table-header: #f8f9fa;
+            --border-default: #dee2e6;
+            --font-family: 'Arial', 'Helvetica', sans-serif;
+            --display-size: 24px;
+            --h1-size: 20px;
+            --h2-size: 18px;
+            --body-large-size: 16px;
+            --body-regular-size: 14px;
+            --caption-size: 12px;
+            --font-weight-regular: 400;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            --spacing-unit: 8px;
+            --spacing-xs: 4px;
+            --spacing-s: 8px;
+            --spacing-m: 16px;
+            --spacing-l: 24px;
+            --spacing-xl: 32px;
+            --spacing-gutter: 20px;
+            --border-radius-small: 2px;
+            --border-radius-default: 4px;
+            --border-radius-pill: 20px;
+            --shadow-none: none;
+            --shadow-subtle: 0 1px 3px rgba(0,0,0,0.1);
+            --radius: 12px;
+            --shadow: 0 4px 15px rgba(0,0,0,.08);
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-default);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--background-header);
+            border-bottom: 1px solid var(--border-default);
+            padding: var(--spacing-s) var(--spacing-m);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: var(--h1-size);
+            font-weight: var(--font-weight-bold);
+            color: var(--primary-blue);
+        }
+
+        /* Menú de navegación en el header */
+        .nav-menu {
+            display: flex;
+            gap: var(--spacing-s);
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            background-color: var(--background-card);
+            border: 1px solid var(--border-default);
+            border-radius: var(--border-radius-default);
+            padding: var(--spacing-s) var(--spacing-m);
+            text-align: center;
+            box-shadow: var(--shadow-subtle);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-size: var(--body-regular-size);
+            font-weight: var(--font-weight-semibold);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            background-color: var(--primary-blue);
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        /* Contenedor principal */
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: var(--spacing-m) var(--spacing-gutter);
+        }
+
+        /* Dashboard con KPIs */
+        .dashboard-section {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .dashboard-title {
+            font-size: var(--h2-size);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--spacing-m);
+        }
+
+        .dashboard-cards {
+            display: flex;
+            gap: var(--spacing-m);
+            overflow-x: auto;
+            padding-bottom: var(--spacing-s);
+        }
+
+        .dashboard-card {
+            background-color: var(--background-card);
+            padding: var(--spacing-m) var(--spacing-l);
+            border-radius: var(--border-radius-default);
+            border: 1px solid var(--border-default);
+            text-align: center;
+            box-shadow: var(--shadow-subtle);
+            transition: transform 0.2s, box-shadow 0.2s;
+            min-width: 180px;
+            flex: 1;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .dashboard-card.total {
+            background-color: var(--primary-blue);
+            color: var(--text-light);
+        }
+
+        .dashboard-card.proteccion {
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .dashboard-card.capacidad {
+            border-left: 4px solid var(--status-success);
+        }
+
+        .dashboard-card.restriccion {
+            border-left: 4px solid var(--status-warning);
+        }
+
+        .dashboard-card.internacion {
+            border-left: 4px solid var(--status-danger);
+        }
+
+        .dashboard-number {
+            font-size: var(--display-size);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .dashboard-card.total .dashboard-number {
+            color: var(--text-light);
+        }
+
+        .dashboard-label {
+            font-size: var(--caption-size);
+            font-weight: var(--font-weight-regular);
+            text-transform: uppercase;
+        }
+
+        .dashboard-card.total .dashboard-label {
+            color: var(--text-light);
+        }
+
+        /* Filtros y tabla de casos */
+        .filters-section {
+            background-color: var(--background-card);
+            padding: var(--spacing-m);
+            border-radius: var(--border-radius-default);
+            border: 1px solid var(--border-default);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .filters-title {
+            font-size: var(--h2-size);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--spacing-m);
+        }
+
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-m);
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filter-label {
+            display: block;
+            font-size: var(--body-regular-size);
+            margin-bottom: var(--spacing-xs);
+            font-weight: var(--font-weight-semibold);
+        }
+
+        .input, .dropdown {
+            border: 1px solid var(--border-default);
+            border-radius: var(--border-radius-default);
+            padding: var(--spacing-s);
+            background-color: var(--background-default);
+            color: var(--text-primary);
+            font-size: var(--body-regular-size);
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        .input:focus, .dropdown:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-s);
+            margin-top: var(--spacing-m);
+            flex-wrap: wrap;
+        }
+
+        .button {
+            background-color: var(--primary-blue);
+            color: var(--text-light);
+            border: none;
+            border-radius: var(--border-radius-default);
+            padding: var(--spacing-s) var(--spacing-m);
+            font-size: var(--body-regular-size);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .button:hover {
+            opacity: 0.9;
+        }
+
+        .button-success {
+            background-color: #1e7e34;
+        }
+
+        .button-secondary {
+            background-color: var(--secondary-dark-gray);
+        }
+
+        .button-danger {
+            background-color: var(--status-danger);
+        }
+
+        .button-info {
+            background-color: var(--status-info);
+        }
+
+        /* Tabla de casos */
+        .table-section {
+            background-color: var(--background-card);
+            border-radius: var(--border-radius-default);
+            border: 1px solid var(--border-default);
+            overflow: hidden;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .table-title {
+            font-size: var(--h2-size);
+            font-weight: var(--font-weight-semibold);
+            padding: var(--spacing-m);
+            background-color: var(--background-table-header);
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        .data-table th {
+            background-color: var(--background-table-header);
+            font-weight: var(--font-weight-semibold);
+            border-bottom: 2px solid var(--border-default);
+            padding: var(--spacing-m);
+            color: var(--text-primary);
+            font-size: var(--caption-size);
+            text-transform: uppercase;
+        }
+
+        .data-table td {
+            border-bottom: 1px solid var(--border-default);
+            padding: var(--spacing-m);
+            color: var(--text-primary);
+            font-size: var(--body-regular-size);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background-color: var(--secondary-gray);
+        }
+
+        /* Estilos para estado */
+        .estado-pill {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        .estado-abierto { background-color: var(--status-success); }
+        .estado-proceso { background-color: var(--status-warning); }
+        .estado-cerrado { background-color: var(--status-danger); }
+
+        /* Paginación */
+        #paginacion-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-m);
+            margin-top: var(--spacing-m);
+            background: var(--background-card);
+            border-radius: var(--border-radius-default);
+            box-shadow: var(--shadow-subtle);
+        }
+        #paginacion-container .page-info {
+            font-size: var(--body-regular-size);
+            color: var(--text-secondary);
+            font-weight: var(--font-weight-semibold);
+        }
+        #paginacion-container .nav-buttons {
+            display: flex;
+            gap: var(--spacing-s);
+        }
+
+        /* MODALES */
+        .modal-header {
+            position: sticky;
+            top: 0;
+            background: var(--primary-blue);
+            color: #fff;
+            padding: 12px 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 16px 16px 0 0;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+        .modal-body {
+            padding: 16px 16px 0;
+            overflow-y: auto;
+        }
+        .controls-form {
+            position: sticky;
+            bottom: 0;
+            background: #fff;
+            padding: 12px 16px;
+            border-top: 1px solid #eee;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-end;
+            z-index: 5;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        @media(max-width:900px) { 
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .form-group label {
+            font-weight: 600;
+            color: var(--primary-blue);
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            background: #fafafa;
+            transition: .2s;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            background: #fff;
+        }
+
+        /* Estilos para el modal de ver detalles */
+        .detalle-registro {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .detalle-registro h4 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 8px;
+        }
+        .detalle-item {
+            margin-bottom: 10px;
+            display: flex;
+        }
+        .detalle-label {
+            font-weight: 600;
+            min-width: 180px;
+            color: #495057;
+        }
+        .detalle-value {
+            flex: 1;
+            color: #212529;
+        }
+
+        /* Alerta flotante */
+        .floating-alert {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--status-danger);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            max-width: 400px;
+            text-align: center;
+            font-size: 1rem;
+        }
+        .floating-alert.success {
+            background-color: var(--status-success);
+        }
+
+        .floating-alert.show {
+            opacity: 1;
+            visibility: visible;
+            top: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                max-width: 100%;
+                padding: var(--spacing-s);
+            }
+            
+            .dashboard-cards {
+                gap: var(--spacing-s);
+            }
+            
+            .dashboard-card {
+                min-width: 160px;
+                padding: var(--spacing-s) var(--spacing-m);
+            }
+            
+            .filter-row {
+                gap: var(--spacing-s);
+            }
+            
+            .filter-group {
+                min-width: 140px;
+            }
+            
+            .nav-menu {
+                gap: var(--spacing-xs);
+            }
+            
+            .nav-button {
+                padding: var(--spacing-xs) var(--spacing-s);
+                font-size: var(--caption-size);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: var(--spacing-s);
+                text-align: center;
+            }
+            
+            .dashboard-cards {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                overflow-x: visible;
+            }
+            
+            .dashboard-card {
+                min-width: auto;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+            }
+            
+            .filter-group {
+                min-width: auto;
+            }
+            
+            #paginacion-container {
+                flex-direction: column;
+                gap: var(--spacing-m);
+                text-align: center;
+            }
+            
+            .table-title {
+                padding: var(--spacing-s);
+            }
+            
+            .data-table th, 
+            .data-table td {
+                padding: var(--spacing-s);
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .controls-form {
+                flex-direction: column;
+            }
+            
+            .nav-menu {
+                justify-content: center;
+                width: 100%;
+            }
+            
+            .detalle-item {
+                flex-direction: column;
+            }
+            .detalle-label {
+                min-width: auto;
+                margin-bottom: 5px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding: var(--spacing-xs);
+            }
+            
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-card {
+                padding: var(--spacing-m);
+            }
+            
+            .dashboard-number {
+                font-size: var(--h1-size);
+            }
+            
+            .filters-section,
+            .table-section {
+                padding: var(--spacing-s);
+            }
+            
+            .filters-title,
+            .table-title {
+                font-size: var(--body-large-size);
+            }
+            
+            .nav-button {
+                padding: var(--spacing-xs);
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Alerta flotante -->
+    <div class="floating-alert" id="floating-alert"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Sistema de Protección de Personas Adultas</div>
+            <div class="nav-menu">
+                <a class="nav-button" data-bs-toggle="modal" data-bs-target="#proteccionModal">Protección Adulto Mayor</a>
+                <a class="nav-button" data-bs-toggle="modal" data-bs-target="#capacidadModal">Determinación de Capacidad</a>
+                <a class="nav-button" data-bs-toggle="modal" data-bs-target="#restriccionModal">Restricción de Capacidad</a>
+                <a class="nav-button" data-bs-toggle="modal" data-bs-target="#internacionModal">Internación Involuntaria</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="container">
+        <!-- Dashboard con KPIs -->
+        <section class="dashboard-section">
+            <h2 class="dashboard-title">Resumen de Casos</h2>
+            <div class="dashboard-cards" id="dashboardCards">
+                <div class="loading">Cargando datos...</div>
+            </div>
+        </section>
+
+        <!-- Filtros y tabla de casos -->
+        <section id="registrosSection">
+            <!-- Filtros -->
+            <section class="filters-section">
+                <h2 class="filters-title">Filtros de Búsqueda</h2>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label" for="buscador">Búsqueda</label>
+                        <input type="text" id="buscador" class="input" placeholder="Buscar...">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label" for="filtroTipo">Tipo de Caso</label>
+                        <select id="filtroTipo" class="dropdown">
+                            <option value="">Tipo (todos)</option>
+                            <option value="Protección Adulto Mayor">Protección Adulto Mayor</option>
+                            <option value="Determinación de Capacidad">Determinación de Capacidad</option>
+                            <option value="Restricción de Capacidad">Restricción de Capacidad</option>
+                            <option value="Internación Involuntaria">Internación Involuntaria</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label" for="filtroEstado">Estado</label>
+                        <select id="filtroEstado" class="dropdown">
+                            <option value="">Estado (todos)</option>
+                            <option value="Abierto">Abierto</option>
+                            <option value="En Proceso">En Proceso</option>
+                            <option value="Cerrado">Cerrado</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Botones de acción -->
+                <div class="action-buttons">
+                    <button id="btnActualizar" class="button">
+                        Actualizar
+                    </button>
+                    <button id="btnPrintListado" class="button button-success">
+                        Imprimir Listado
+                    </button>
+                </div>
+            </section>
+
+            <!-- Tabla de datos -->
+            <section class="table-section">
+                <h2 class="table-title">Casos Registrados</h2>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>DNI</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyCasos">
+                            <tr>
+                                <td colspan="6">Cargando casos...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Paginación -->
+            <div id="paginacion-container"></div>
+        </section>
+    </main>
+
+    <!-- MODALES -->
+
+    <!-- Modal Protección -->
+    <div class="modal fade" id="proteccionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Protección de Adultos Mayores</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <h6>Referencia Legal</h6>
+                        <p class="mb-0">Ley Provincial XVI - N° 114 (Antes Ley 4532) - Protección Integral de las Personas Adultas Mayores. Ley Nacional 27.360 - Aprobación de la Convención Interamericana sobre la Protección de los Derechos Humanos de las Personas Mayores.</p>
+                    </div>
+
+                    <form id="proteccionForm" class="form-grid">
+                        <input type="hidden" id="proteccionId">
+                        <div class="form-group">
+                            <label class="form-label">Nombre del Adulto Mayor *</label>
+                            <input type="text" class="form-control" id="proteccionNombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">DNI *</label>
+                            <input type="text" class="form-control" id="proteccionDNI" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Edad *</label>
+                            <input type="number" class="form-control" id="proteccionEdad" required min="1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="proteccionTelefono">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" class="form-control" id="proteccionDireccion">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Expediente de referencia</label>
+                            <select class="form-select" id="proteccionExpediente">
+                                <option value="">Seleccionar expediente...</option>
+                            </select>
+                            <span id="proteccionExpedienteInfo" class="text-muted" style="font-size: 0.8rem;"></span>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">Situación de Vulnerabilidad *</label>
+                            <textarea class="form-control" rows="3" id="proteccionSituacion" required></textarea>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">Organismos Intervinientes *</label>
+                            <select class="form-select organismo-select" id="proteccionOrganismo" required>
+                                <option value="">Seleccionar organismo...</option>
+                            </select>
+                            <div class="add-organismo mt-2" id="proteccionAddOrganismo" style="display: none;">
+                                <input type="text" class="form-control" id="proteccionNuevoOrganismo" placeholder="Nombre del nuevo organismo">
+                                <input type="text" class="form-control mt-2" id="proteccionNuevoContacto" placeholder="Contacto (email/teléfono)">
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="proteccionNuevoOrganismoCheck">
+                                <label class="form-check-label" for="proteccionNuevoOrganismoCheck">
+                                    Agregar nuevo organismo
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">Intervención de la Defensoría *</label>
+                            <select class="form-select" id="proteccionIntervencion" required>
+                                <option value="">Seleccionar tipo de intervención...</option>
+                                <option value="Patrocinante Actora">Patrocinante Actora</option>
+                                <option value="Patrocinante Demandada">Patrocinante Demandada</option>
+                                <option value="Patrocinante presunto incapaz">Patrocinante presunto incapaz</option>
+                                <option value="Ministerio Público del incapaz">Ministerio Público del incapaz</option>
+                                <option value="Asistencia Letrada del Incapaz">Asistencia Letrada del Incapaz</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="controls-form">
+                    <button type="button" class="button button-secondary" data-bs-dismiss="modal" onclick="resetForm('proteccion')">Cancelar</button>
+                    <button type="button" class="button button-success" onclick="printModal('proteccion')">Imprimir</button>
+                    <button type="button" class="button" id="saveProteccion">
+                        <span id="proteccionSpinner" class="spinner-border spinner-border-sm" role="status" style="display: none;"></span>
+                        <span id="proteccionButtonText">Guardar Registro</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Capacidad -->
+    <div class="modal fade" id="capacidadModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Determinación de Capacidad</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <h6>Referencia Legal</h6>
+                        <p class="mb-0">Código Civil and Comercial de la Nación, Arts. 31 a 42. Ley Nacional 26.657 - Derecho a la Protección de la Salud Mental. Ley Provincial XVI - N° 26 (Antes Ley 4241) - Adhesión a the Ley Nacional de Salud Mental.</p>
+                    </div>
+
+                    <form id="capacidadForm" class="form-grid">
+                        <input type="hidden" id="capacidadId">
+                        <div class="form-group">
+                            <label class="form-label">Nombre de la Persona *</label>
+                            <input type="text" class="form-control" id="capacidadNombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">DNI *</label>
+                            <input type="text" class="form-control" id="capacidadDNI" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Edad *</label>
+                            <input type="number" class="form-control" id="capacidadEdad" required min="1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="capacidadTelefono">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Expediente de referencia</label>
+                            <select class="form-select" id="capacidadExpediente">
+                                <option value="">Seleccionar expediente...</option>
+                            </select>
+                            <span id="capacidadExpedienteInfo" class="text-muted" style="font-size: 0.8rem;"></span>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">Motivo de Evaluación *</label>
+                            <textarea class="form-control" rows="3" id="capacidadMotivo" required></textarea>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">Organismos Intervinientes *</label>
+                            <select class="form-select organismo-select" id="capacidadOrganismo" required>
+                                <option value="">Seleccionar organismo...</option>
+                            </select>
+                            <div class="add-organismo mt-2" id="capacidadAddOrganismo" style="display: none;">
+                                <input type="text" class="form-control" id="capacidadNuevoOrganismo" placeholder="Nombre del nuevo organismo">
+                                <input type="text" class="form-control mt-2" id="capacidadNuevoContacto" placeholder="Contacto (email/teléfono)">
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="capacidadNuevoOrganismoCheck">
+                                <label class="form-check-label" for="capacidadNuevoOrganismoCheck">
+                                    Agregar nuevo organismo
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">Intervención de la Defensoría *</label>
+                            <select class="form-select" id="capacidadIntervencion" required>
+                                <option value="">Seleccionar tipo de intervención...</option>
+                                <option value="Patrocinante Actora">Patrocinante Actora</option>
+                                <option value="Patrocinante Demandada">Patrocinante Demandada</option>
+                                <option value="Patrocinante presunto incapaz">Patrocinante presunto incapaz</option>
+                                <option value="Ministerio Público del incapaz">Ministerio Público del incapaz</option>
+                                <option value="Asistencia Letrada del Incapaz">Asistencia Letrada del Incapaz</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="controls-form">
+                    <button type="button" class="button button-secondary" data-bs-dismiss="modal" onclick="resetForm('capacidad')">Cancelar</button>
+                    <button type="button" class="button button-success" onclick="printModal('capacidad')">Imprimir</button>
+                    <button type="button" class="button" id="saveCapacidad">
+                        <span id="capacidadSpinner" class="spinner-border spinner-border-sm" role="status" style="display: none;"></span>
+                        <span id="capacidadButtonText">Guardar Registro</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Restricción -->
+    <div class="modal fade" id="restriccionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Restricción de Capacidad</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <h6>Referencia Legal</h6>
+                        <p class="mb-0">Código Civil and Comercial de la Nación, Arts. 32, 43 a 61. Proceso de restricción de capacidad e incapacidad con intervención del Ministerio Público. Se debe priorizar sistemas de apoyo que preserven la autonomía de la persona.</p>
+                    </div>
+
+                    <form id="restriccionForm" class="form-grid">
+                        <input type="hidden" id="restriccionId">
+                        <div class="form-group">
+                            <label class="form-label">Nombre de la Persona *</label>
+                            <input type="text" class="form-control" id="restriccionNombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">DNI *</label>
+                            <input type="text" class="form-control" id="restriccionDNI" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Edad *</label>
+                            <input type="number" class="form-control" id="restriccionEdad" required min="1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="restriccionTelefono">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Expediente de referencia</label>
+                            <select class="form-select" id="restriccionExpediente">
+                                <option value="">Seleccionar expediente...</option>
+                            </select>
+                            <span id="restriccionExpedienteInfo" class="text-muted" style="font-size: 0.8rem;"></span>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">Fundamentos de la Restricción *</label>
+                            <textarea class="form-control" rows="3" id="restriccionFundamentos" required></textarea>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">Organismos Intervinientes *</label>
+                            <select class="form-select organismo-select" id="restriccionOrganismo" required>
+                                <option value="">Seleccionar organismo...</option>
+                            </select>
+                            <div class="add-organismo mt-2" id="restriccionAddOrganismo" style="display: none;">
+                                <input type="text" class="form-control" id="restriccionNuevoOrganismo" placeholder="Nombre del nuevo organismo">
+                                <input type="text" class="form-control mt-2" id="restriccionNuevoContacto" placeholder="Contacto (email/teléfono)">
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="restriccionNuevoOrganismoCheck">
+                                <label class="form-check-label" for="restriccionNuevoOrganismoCheck">
+                                    Agregar nuevo organismo
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">Intervención de la Defensoría *</label>
+                            <select class="form-select" id="restriccionIntervencion" required>
+                                <option value="">Seleccionar tipo de intervención...</option>
+                                <option value="Patrocinante Actora">Patrocinante Actora</option>
+                                <option value="Patrocinante Demandada">Patrocinante Demandada</option>
+                                <option value="Patrocinante presunto incapaz">Patrocinante presunto incapaz</option>
+                                <option value="Ministerio Público del incapaz">Ministerio Público del incapaz</option>
+                                <option value="Asistencia Letrada del Incapaz">Asistencia Letrada del Incapaz</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="controls-form">
+                    <button type="button" class="button button-secondary" data-bs-dismiss="modal" onclick="resetForm('restriccion')">Cancelar</button>
+                    <button type="button" class="button button-success" onclick="printModal('restriccion')">Imprimir</button>
+                    <button type="button" class="button" id="saveRestriccion">
+                        <span id="restriccionSpinner" class="spinner-border spinner-border-sm" role="status" style="display: none;"></span>
+                        <span id="restriccionButtonText">Guardar Registro</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Internación -->
+    <div class="modal fade" id="internacionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Internación Involuntaria - Art. 42</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <h6>Referencia Legal</h6>
+                        <p class="mb-0">Ley Nacional 26.657 - Arts. 20, 21 y 22 sobre Internación Involuntaria. Control judicial obligatorio en un plazo máximo de 5 días. Requisitos: Peligro cierto e inminente para sí o para terceros, and que otras alternativas terapéuticas hayan resultado insuficientes.</p>
+                    </div>
+
+                    <form id="internacionForm" class="form-grid">
+                        <input type="hidden" id="internacionId">
+                        <div class="form-group">
+                            <label class="form-label">Nombre del Paciente *</label>
+                            <input type="text" class="form-control" id="internacionNombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">DNI *</label>
+                            <input type="text" class="form-control" id="internacionDNI" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Edad *</label>
+                            <input type="number" class="form-control" id="internacionEdad" required min="1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="internacionTelefono">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Expediente de referencia</label>
+                            <select class="form-select" id="internacionExpediente">
+                                <option value="">Seleccionar expediente...</option>
+                            </select>
+                            <span id="internacionExpedienteInfo" class="text-muted" style="font-size: 0.8rem;"></span>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">Diagnóstico y Justificación *</label>
+                            <textarea class="form-control" rows="3" id="internacionDiagnostico" required></textarea>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">Organismos Intervinientes *</label>
+                            <select class="form-select organismo-select" id="internacionOrganismo" required>
+                                <option value="">Seleccionar organismo...</option>
+                            </select>
+                            <div class="add-organismo mt-2" id="internacionAddOrganismo" style="display: none;">
+                                <input type="text" class="form-control" id="internacionNuevoOrganismo" placeholder="Nombre del nuevo organismo">
+                                <input type="text" class="form-control mt-2" id="internacionNuevoContacto" placeholder="Contacto (email/teléfono)">
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="internacionNuevoOrganismoCheck">
+                                <label class="form-check-label" for="internacionNuevoOrganismoCheck">
+                                    Agregar nuevo organismo
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">Intervención de la Defensoría *</label>
+                            <select class="form-select" id="internacionIntervencion" required>
+                                <option value="">Seleccionar tipo de intervención...</option>
+                                <option value="Patrocinante Actora">Patrocinante Actora</option>
+                                <option value="Patrocinante Demandada">Patrocinante Demandada</option>
+                                <option value="Patrocinante presunto incapaz">Patrocinante presunto incapaz</option>
+                                <option value="Ministerio Público del incapaz">Ministerio Público del incapaz</option>
+                                <option value="Asistencia Letrada del Incapaz">Asistencia Letrada del Incapaz</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="controls-form">
+                    <button type="button" class="button button-secondary" data-bs-dismiss="modal" onclick="resetForm('internacion')">Cancelar</button>
+                    <button type="button" class="button button-success" onclick="printModal('internacion')">Imprimir</button>
+                    <button type="button" class="button" id="saveInternacion">
+                        <span id="internacionSpinner" class="spinner-border spinner-border-sm" role="status" style="display: none;"></span>
+                        <span id="internacionButtonText">Guardar Registro</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ver Registro -->
+    <div class="modal fade" id="verRegistroModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Detalles del Registro</h2>
+                </div>
+                <div class="modal-body" id="verRegistroBody">
+                    <!-- Aquí se cargarán los datos dinámicamente -->
+                </div>
+                <div class="controls-form">
+                    <button type="button" class="button button-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="button button-success" onclick="printVerRegistro()">Imprimir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDEo_AZS9Sx-YwePNNqGwLvsWR9X1nlL5A",
+            authDomain: "proteccion-unificada.firebaseapp.com",
+            databaseURL: "https://proteccion-unificada-default-rtdb.firebaseio.com",
+            projectId: "proteccion-unificada",
+            storageBucket: "proteccion-unificada.firebasestorage.app",
+            messagingSenderId: "536876739483",
+            appId: "1:536876739483:web:6ce9044af245cc116a4f3e"
+        };
+        const firebaseConfig2 = {
+            apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
+            authDomain: "causas-defensoria.firebaseapp.com",
+            databaseURL: "https://causas-defensoria-default-rtdb.firebaseio.com",
+            projectId: "causas-defensoria",
+        };
+        
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const app2 = firebase.initializeApp(firebaseConfig2, "app2");
+        const db2 = app2.firestore();
+        
+        // Variables globales
+        let organismos = [];
+        let registros = [];
+        let expedientesIndex = {};
+        let currentRegistroId = null;
+        let isEditing = false;
+        let currentEditType = null;
+        let paginaActual = 1;
+        const recordsPerPage = 10;
+        let registroActual = null;
+        
+        // Organismos por defecto
+        const defaultOrganismos = [
+            { nombre: "Hospital Barreyro", email: "hospitaldepediatriabarreyro@gmail.com", tipo: "Hospital de Pediatría" },
+            { nombre: "Hospital Carrillo", email: "hospitalsaludmentalcarrillo@gmail.com", tipo: "Hospital de Salud Mental" },
+            { nombre: "Ministerio de Salud Pública de Misiones", email: "juridicomspmisiones@gmail.com", tipo: "Oficios dirigidos a cualquier Hospital", contacto: "Jordana Duarte Martinelli - +5493755636878" },
+            { nombre: "Unidad Central de Traslado", email: "mps-uct@hotmail.com", tipo: "Servicios de traslado médico" },
+            { nombre: "Dirección de Asuntos de Familia", telefono: "+5493764856048", tipo: "Atención en asuntos familiares" },
+            { nombre: "Fundación Reto a la Vida", email: "retomisiones@gmail.com", tipo: "Fundación de apoyo social" }
+        ];
+        
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+        });
+        
+        // Función para inicializar la aplicación
+        async function initApp() {
+            // Configurar eventos
+            setupEventListeners();
+            // Cargar organismos
+            loadOrganismos();
+            // Cargar expedientes
+            await cargarExpedientes();
+            // Cargar registros
+            loadRegistros();
+        }
+        
+        // Configurar eventos
+        function setupEventListeners() {
+            // Botón actualizar
+            document.getElementById('btnActualizar').addEventListener('click', loadRegistros);
+            
+            // Filtros
+            document.getElementById('buscador').addEventListener('input', handleFilterChange);
+            document.getElementById('filtroTipo').addEventListener('change', handleFilterChange);
+            document.getElementById('filtroEstado').addEventListener('change', handleFilterChange);
+            
+            // Botones de guardar en modales
+            document.getElementById('saveProteccion').addEventListener('click', () => saveRegistro('proteccion'));
+            document.getElementById('saveCapacidad').addEventListener('click', () => saveRegistro('capacidad'));
+            document.getElementById('saveRestriccion').addEventListener('click', () => saveRegistro('restriccion'));
+            document.getElementById('saveInternacion').addEventListener('click', () => saveRegistro('internacion'));
+            
+            // Eventos de impresión
+            document.getElementById('btnPrintListado').addEventListener('click', printListado);
+            
+            // Configurar checkboxes para agregar nuevos organismos
+            setupOrganismoCheckboxes();
+            
+            // Eventos para mostrar la info del expediente
+            document.getElementById('proteccionExpediente').addEventListener('change', (e) => showExpedienteInfo('proteccion', e.target.value));
+            document.getElementById('capacidadExpediente').addEventListener('change', (e) => showExpedienteInfo('capacidad', e.target.value));
+            document.getElementById('restriccionExpediente').addEventListener('change', (e) => showExpedienteInfo('restriccion', e.target.value));
+            document.getElementById('internacionExpediente').addEventListener('change', (e) => showExpedienteInfo('internacion', e.target.value));
+        }
+        
+        // Funciones de carga de datos
+        async function cargarExpedientes() {
+            try {
+                const querySnapshot = await db2.collection("causas").get();
+                expedientesIndex = {};
+                const selects = [
+                    "proteccionExpediente",
+                    "capacidadExpediente",
+                    "restriccionExpediente",
+                    "internacionExpediente"
+                ];
+                selects.forEach(selectId => {
+                    const select = document.getElementById(selectId);
+                    if (select) {
+                        select.innerHTML = '<option value="">Seleccionar expediente...</option>';
+                    }
+                });
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const numCausa = data.numCausa;
+                    expedientesIndex[numCausa] = {
+                        ...data,
+                        firebaseId: doc.id
+                    };
+                    const optionText = `${numCausa} - ${data.caratula || 'Sin carátula'}`;
+                    selects.forEach(selectId => {
+                        const select = document.getElementById(selectId);
+                        if (select) {
+                            const option = document.createElement("option");
+                            option.value = numCausa;
+                            option.textContent = optionText;
+                            select.appendChild(option);
+                        }
+                    });
+                });
+                console.log("Expedientes cargados exitosamente.");
+            } catch (e) {
+                console.error("Error al cargar expedientes: ", e);
+                mostrarAlertaFlotante("Error al cargar expedientes. Verifica tu configuración de Firebase.", 'danger');
+            }
+        }
+        
+        function showExpedienteInfo(tipo, numCausa) {
+            const infoSpan = document.getElementById(`${tipo}ExpedienteInfo`);
+            if (numCausa && expedientesIndex[numCausa]) {
+                const expediente = expedientesIndex[numCausa];
+                infoSpan.textContent = `Carátula: ${expediente.caratula}`;
+            } else {
+                infoSpan.textContent = '';
+            }
+        }
+        
+        // Cargar organismos
+        function loadOrganismos() {
+            organismos = [...defaultOrganismos];
+            populateOrganismosSelects();
+        }
+        
+        // Llenar los selects de organismos en todos los formularios
+        function populateOrganismosSelects() {
+            const selects = [
+                "proteccionOrganismo",
+                "capacidadOrganismo",
+                "restriccionOrganismo",
+                "internacionOrganismo"
+            ];
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                if (select) {
+                    select.innerHTML = '<option value="">Seleccionar organismo...</option>';
+                    organismos.forEach((org, index) => {
+                        const option = document.createElement("option");
+                        option.value = index;
+                        option.textContent = org.nombre;
+                        select.appendChild(option);
+                    });
+                    const otroOption = document.createElement("option");
+                    otroOption.value = "otro";
+                    otroOption.textContent = "Otro (especificar)";
+                    select.appendChild(otroOption);
+                }
+            });
+        }
+        
+        // Configurar checkboxes para agregar nuevos organismos
+        function setupOrganismoCheckboxes() {
+            const checkboxes = [
+                { checkId: 'proteccionNuevoOrganismoCheck', addId: 'proteccionAddOrganismo', selectId: 'proteccionOrganismo' },
+                { checkId: 'capacidadNuevoOrganismoCheck', addId: 'capacidadAddOrganismo', selectId: 'capacidadOrganismo' },
+                { checkId: 'restriccionNuevoOrganismoCheck', addId: 'restriccionAddOrganismo', selectId: 'restriccionOrganismo' },
+                { checkId: 'internacionNuevoOrganismoCheck', addId: 'internacionAddOrganismo', selectId: 'internacionOrganismo' }
+            ];
+
+            checkboxes.forEach(item => {
+                const checkbox = document.getElementById(item.checkId);
+                const addDiv = document.getElementById(item.addId);
+                const select = document.getElementById(item.selectId);
+                if (checkbox) {
+                    checkbox.addEventListener('change', () => {
+                        if (checkbox.checked) {
+                            addDiv.style.display = 'block';
+                            select.disabled = true;
+                            select.required = false;
+                        } else {
+                            addDiv.style.display = 'none';
+                            select.disabled = false;
+                            select.required = true;
+                        }
+                    });
+                }
+            });
+        }
+        
+        // Cargar registros desde Firebase
+        function loadRegistros() {
+            const tbodyCasos = document.getElementById('tbodyCasos');
+            if (tbodyCasos) {
+                tbodyCasos.innerHTML = `<tr><td colspan="6" class="text-center py-4">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Cargando...</span>
+                                            </div>
+                                            <p class="mt-2">Cargando casos...</p>
+                                        </td></tr>`;
+            }
+
+            database.ref('registros').on('value', (snapshot) => {
+                const data = snapshot.val();
+                registros = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+                actualizarDashboard();
+                handleFilterChange();
+            });
+        }
+        
+        // Actualizar dashboard con KPIs
+        function actualizarDashboard() {
+            const dashboardCards = document.getElementById('dashboardCards');
+            
+            if (registros.length === 0) {
+                dashboardCards.innerHTML = '<div class="loading">No hay datos disponibles</div>';
+                return;
+            }
+            
+            // Calcular KPIs
+            const totalCasos = registros.length;
+            const proteccion = registros.filter(r => r.tipo === 'Protección Adulto Mayor').length;
+            const capacidad = registros.filter(r => r.tipo === 'Determinación de Capacidad').length;
+            const restriccion = registros.filter(r => r.tipo === 'Restricción de Capacidad').length;
+            const internacion = registros.filter(r => r.tipo === 'Internación Involuntaria').length;
+            
+            const kpisData = {
+                total: totalCasos,
+                proteccion: proteccion,
+                capacidad: capacidad,
+                restriccion: restriccion,
+                internacion: internacion
+            };
+            
+            let kpisHTML = '';
+            
+            // KPIs predefinidos con etiquetas formateadas
+            const kpisConfig = [
+                { key: 'total', label: 'Total de Casos', class: 'total' },
+                { key: 'proteccion', label: 'Protección Adulto Mayor', class: 'proteccion' },
+                { key: 'capacidad', label: 'Determinación de Capacidad', class: 'capacidad' },
+                { key: 'restriccion', label: 'Restricción de Capacidad', class: 'restriccion' },
+                { key: 'internacion', label: 'Internación Involuntaria', class: 'internacion' }
+            ];
+            
+            // Generar tarjetas de KPIs basadas en los datos
+            kpisConfig.forEach(kpi => {
+                if (kpisData[kpi.key] !== undefined) {
+                    kpisHTML += `
+                        <div class="dashboard-card ${kpi.class}">
+                            <div class="dashboard-number">${kpisData[kpi.key]}</div>
+                            <div class="dashboard-label">${kpi.label}</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            dashboardCards.innerHTML = kpisHTML;
+        }
+        
+        // Funciones de filtrado y paginación
+        function filtrarDatos() {
+            const q = (document.getElementById('buscador').value || "").toLowerCase();
+            const tipo = (document.getElementById('filtroTipo').value || "").toLowerCase();
+            const estado = (document.getElementById('filtroEstado').value || "").toLowerCase();
+            
+            return registros.filter(reg => {
+                const okTexto = !q || 
+                    reg.nombre?.toLowerCase().includes(q) ||
+                    reg.dni?.toLowerCase().includes(q) ||
+                    reg.tipo?.toLowerCase().includes(q);
+                
+                const okTipo = !tipo || (reg.tipo || "").toLowerCase() === tipo;
+                const okEstado = !estado || (reg.estado || "").toLowerCase() === estado;
+                
+                return okTexto && okTipo && okEstado;
+            });
+        }
+        
+        const handleFilterChange = () => {
+            const datosFiltrados = filtrarDatos();
+            paginaActual = 1;
+            renderTablaPaginada(datosFiltrados);
+        };
+        
+        const renderTablaPaginada = (datosFiltrados) => {
+            const startIndex = (paginaActual - 1) * recordsPerPage;
+            const endIndex = startIndex + recordsPerPage;
+            const dataToRender = datosFiltrados.slice(startIndex, endIndex);
+            renderTabla(dataToRender);
+            renderPaginacion(datosFiltrados.length, dataToRender.length);
+        };
+        
+        // Renderizar tabla
+        function renderTabla(data) {
+            const tbodyCasos = document.getElementById('tbodyCasos');
+            if (!tbodyCasos) return;
+            
+            tbodyCasos.innerHTML = data.length ? "" : "<tr><td colspan='6'>No hay registros que coincidan con la búsqueda</td></tr>";
+            
+            data.forEach(registro => {
+                const estadoClase = registro.estado === 'Abierto' ? 'estado-abierto' : 
+                                  registro.estado === 'En Proceso' ? 'estado-proceso' : 'estado-cerrado';
+                
+                tbodyCasos.insertAdjacentHTML("beforeend", `
+                    <tr>
+                        <td>${registro.nombre || ""}</td>
+                        <td>${registro.dni || ""}</td>
+                        <td>${registro.tipo || ""}</td>
+                        <td><span class="estado-pill ${estadoClase}">${registro.estado || "Abierto"}</span></td>
+                        <td>${formatearFecha(registro.fecha, false)}</td>
+                        <td class="actions">
+                            <button class="button button-info ver-detalles" data-id="${registro.id}" title="Ver">Ver</button>
+                            <button class="button editar-detalles" data-id="${registro.id}" title="Editar">Editar</button>
+                            <button class="button button-danger eliminar-detalles" data-id="${registro.id}" title="Eliminar">Eliminar</button>
+                        </td>
+                    </tr>
+                `);
+            });
+            
+            // Asignar eventos a los botones
+            document.querySelectorAll(".ver-detalles").forEach(b => b.onclick = () => verRegistro(b.dataset.id));
+            document.querySelectorAll(".editar-detalles").forEach(b => b.onclick = () => editarRegistro(b.dataset.id));
+            document.querySelectorAll(".eliminar-detalles").forEach(b => b.onclick = () => eliminarRegistro(b.dataset.id));
+        }
+        
+        // PAGINACIÓN: Render y Controles
+        function renderPaginacion(totalRecords, recordsOnPage) {
+            const container = document.getElementById("paginacion-container");
+            const totalPages = Math.ceil(totalRecords / recordsPerPage);
+            container.style.display = totalPages > 1 ? "flex" : "none";
+            container.innerHTML = `
+                <div class="page-info">
+                    Página ${paginaActual} de ${totalPages} | Mostrando ${recordsOnPage} de ${totalRecords} registros
+                </div>
+                <div class="nav-buttons">
+                    <button id="btnPrevPage" class="button" ${paginaActual === 1 ? 'disabled' : ''}>Anterior</button>
+                    <button id="btnNextPage" class="button" ${paginaActual === totalPages ? 'disabled' : ''}>Siguiente</button>
+                </div>
+            `;
+
+            document.getElementById("btnPrevPage").onclick = () => {
+                paginaActual--;
+                const datosFiltrados = filtrarDatos();
+                renderTablaPaginada(datosFiltrados);
+            };
+
+            document.getElementById("btnNextPage").onclick = () => {
+                paginaActual++;
+                const datosFiltrados = filtrarDatos();
+                renderTablaPaginada(datosFiltrados);
+            };
+        }
+        
+        // Funciones auxiliares
+        function formatearFecha(fecha, conHora = false) {
+            if (!fecha) return "";
+            const d = new Date(fecha);
+            if (isNaN(d)) return "";
+            
+            const dia = String(d.getDate()).padStart(2, '0');
+            const mes = String(d.getMonth() + 1).padStart(2, '0');
+            const año = d.getFullYear();
+            
+            if (!conHora) {
+                return `${dia}/${mes}/${año}`;
+            }
+            
+            const horas = String(d.getHours()).padStart(2, '0');
+            const minutos = String(d.getMinutes()).padStart(2, '0');
+            
+            return `${dia}/${mes}/${año} ${horas}:${minutos}`;
+        }
+        
+        function mostrarAlertaFlotante(mensaje, tipo) {
+            const floatingAlert = document.getElementById('floating-alert');
+            floatingAlert.textContent = mensaje;
+            floatingAlert.classList.remove('danger', 'success');
+            floatingAlert.classList.add(tipo);
+            floatingAlert.classList.add('show');
+            setTimeout(() => {
+                floatingAlert.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Funciones para ver, editar y eliminar registros
+        function verRegistro(id) {
+            const registro = registros.find(r => r.id === id);
+            if (registro) {
+                registroActual = registro;
+                mostrarModalVerRegistro(registro);
+            }
+        }
+        
+        function mostrarModalVerRegistro(registro) {
+            const modalBody = document.getElementById('verRegistroBody');
+            const expedienteCaratula = registro.expedienteReferencia && expedientesIndex[registro.expedienteReferencia] 
+                ? `${expedientesIndex[registro.expedienteReferencia].numCausa} - ${expedientesIndex[registro.expedienteReferencia].caratula || 'Sin carátula'}` 
+                : 'No asociado';
+            
+            let descripcionLabel = '';
+            if (registro.tipo === 'Protección Adulto Mayor') {
+                descripcionLabel = 'Situación de Vulnerabilidad';
+            } else if (registro.tipo === 'Determinación de Capacidad') {
+                descripcionLabel = 'Motivo de Evaluación';
+            } else if (registro.tipo === 'Restricción de Capacidad') {
+                descripcionLabel = 'Fundamentos de la Restricción';
+            } else if (registro.tipo === 'Internación Involuntaria') {
+                descripcionLabel = 'Diagnóstico y Justificación';
+            }
+            
+            const estadoClase = registro.estado === 'Abierto' ? 'estado-abierto' : 
+                              registro.estado === 'En Proceso' ? 'estado-proceso' : 'estado-cerrado';
+            
+            modalBody.innerHTML = `
+                <div class="detalle-registro">
+                    <h4>Información General</h4>
+                    <div class="detalle-item">
+                        <span class="detalle-label">Tipo de Caso:</span>
+                        <span class="detalle-value">${registro.tipo}</span>
+                    </div>
+                    <div class="detalle-item">
+                        <span class="detalle-label">Estado:</span>
+                        <span class="detalle-value"><span class="estado-pill ${estadoClase}">${registro.estado || "Abierto"}</span></span>
+                    </div>
+                    <div class="detalle-item">
+                        <span class="detalle-label">Fecha de Registro:</span>
+                        <span class="detalle-value">${formatearFecha(registro.fecha, true)}</span>
+                    </div>
+                </div>
+                
+                <div class="detalle-registro">
+                    <h4>Datos de la Persona</h4>
+                    <div class="detalle-item">
+                        <span class="detalle-label">Nombre:</span>
+                        <span class="detalle-value">${registro.nombre}</span>
+                    </div>
+                    <div class="detalle-item">
+                        <span class="detalle-label">DNI:</span>
+                        <span class="detalle-value">${registro.dni}</span>
+                    </div>
+                    <div class="detalle-item">
+                        <span class="detalle-label">Edad:</span>
+                        <span class="detalle-value">${registro.edad}</span>
+                    </div>
+                    <div class="detalle-item">
+                        <span class="detalle-label">Teléfono:</span>
+                        <span class="detalle-value">${registro.telefono || 'No especificado'}</span>
+                    </div>
+                    ${registro.direccion ? `
+                    <div class="detalle-item">
+                        <span class="detalle-label">Dirección:</span>
+                        <span class="detalle-value">${registro.direccion}</span>
+                    </div>
+                    ` : ''}
+                </div>
+                
+                <div class="detalle-registro">
+                    <h4>Detalles del Caso</h4>
+                    <div class="detalle-item">
+                        <span class="detalle-label">Expediente de Referencia:</span>
+                        <span class="detalle-value">${expedienteCaratula}</span>
+                    </div>
+                    <div class="detalle-item">
+                        <span class="detalle-label">${descripcionLabel}:</span>
+                        <span class="detalle-value">${registro.descripcion}</span>
+                    </div>
+                    <div class="detalle-item">
+                        <span class="detalle-label">Intervención de la Defensoría:</span>
+                        <span class="detalle-value">${registro.intervencion}</span>
+                    </div>
+                    <div class="detalle-item">
+                        <span class="detalle-label">Organismo Interviniente:</span>
+                        <span class="detalle-value">${registro.organismo?.nombre || 'No especificado'}</span>
+                    </div>
+                    ${registro.organismo?.contacto ? `
+                    <div class="detalle-item">
+                        <span class="detalle-label">Contacto del Organismo:</span>
+                        <span class="detalle-value">${registro.organismo.contacto}</span>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            const modal = new bootstrap.Modal(document.getElementById('verRegistroModal'));
+            modal.show();
+        }
+        
+        function printVerRegistro() {
+            if (!registroActual) return;
+            
+            const html = buildRegistroPrintable(registroActual);
+            printHTMLContent(html);
+        }
+        
+        function editarRegistro(id) {
+            const registro = registros.find(r => r.id === id);
+            if (registro) {
+                // Abrir el modal correspondiente y cargar los datos
+                const tipo = getTipoClass(registro.tipo);
+                abrirModalEdicion(tipo, registro);
+            }
+        }
+        
+        function eliminarRegistro(id) {
+            if (confirm("¿Estás seguro que deseas eliminar este registro? Esta acción es irreversible.")) {
+                database.ref('registros/' + id).remove()
+                .then(() => {
+                    mostrarAlertaFlotante('Registro eliminado exitosamente.', 'success');
+                })
+                .catch(error => {
+                    console.error("Error al eliminar:", error);
+                    mostrarAlertaFlotante('Error al eliminar el registro.', 'danger');
+                });
+            }
+        }
+        
+        // Funciones auxiliares para tipos
+        function getTipoClass(tipo) {
+            const classes = {
+                'Protección Adulto Mayor': 'proteccion',
+                'Determinación de Capacidad': 'capacidad',
+                'Restricción de Capacidad': 'restriccion',
+                'Internación Involuntaria': 'internacion'
+            };
+            return classes[tipo] || '';
+        }
+        
+        // Función para abrir modal de edición
+        function abrirModalEdicion(tipo, registro) {
+            isEditing = true;
+            currentEditType = tipo;
+            const modalElement = document.getElementById(`${tipo}Modal`);
+            const modalInstance = new bootstrap.Modal(modalElement);
+            
+            // Llenar campos del formulario
+            document.getElementById(`${tipo}Id`).value = registro.id;
+            document.getElementById(`${tipo}Nombre`).value = registro.nombre;
+            document.getElementById(`${tipo}DNI`).value = registro.dni;
+            document.getElementById(`${tipo}Edad`).value = registro.edad;
+            document.getElementById(`${tipo}Telefono`).value = registro.telefono;
+            if (tipo === 'proteccion') {
+                document.getElementById(`${tipo}Direccion`).value = registro.direccion;
+            }
+            if (registro.expedienteReferencia) {
+                document.getElementById(`${tipo}Expediente`).value = registro.expedienteReferencia;
+                showExpedienteInfo(tipo, registro.expedienteReferencia);
+            }
+            const descripcionId = tipo === 'proteccion' ? 'proteccionSituacion' :
+                                  tipo === 'capacidad' ? 'capacidadMotivo' :
+                                  tipo === 'restriccion' ? 'restriccionFundamentos' : 'internacionDiagnostico';
+            document.getElementById(descripcionId).value = registro.descripcion;
+            document.getElementById(`${tipo}Intervencion`).value = registro.intervencion;
+            
+            // Lógica para el organismo interviniente
+            const selectOrganismo = document.getElementById(`${tipo}Organismo`);
+            const organismoIndex = organismos.findIndex(org => org.nombre === registro.organismo.nombre);
+            const checkbox = document.getElementById(`${tipo}NuevoOrganismoCheck`);
+            const addDiv = document.getElementById(`${tipo}AddOrganismo`);
+
+            if (organismoIndex !== -1) {
+                selectOrganismo.value = organismoIndex;
+                checkbox.checked = false;
+                addDiv.style.display = 'none';
+                selectOrganismo.disabled = false;
+                selectOrganismo.required = true;
+            } else {
+                checkbox.checked = true;
+                addDiv.style.display = 'block';
+                document.getElementById(`${tipo}NuevoOrganismo`).value = registro.organismo.nombre;
+                document.getElementById(`${tipo}NuevoContacto`).value = registro.organismo.contacto;
+                selectOrganismo.disabled = true;
+                selectOrganismo.required = false;
+            }
+            
+            document.getElementById(`${tipo}ButtonText`).textContent = 'Actualizar Registro';
+            modalInstance.show();
+        }
+        
+        // Función para guardar un registro
+        function saveRegistro(tipo) {
+            const form = document.getElementById(`${tipo}Form`);
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            const spinnerId = `${tipo}Spinner`;
+            const buttonTextId = `${tipo}ButtonText`;
+            const saveButton = document.getElementById(`save${capitalizeFirstLetter(tipo)}`);
+
+            // Mostrar spinner y deshabilitar botón
+            document.getElementById(spinnerId).style.display = 'inline-block';
+            document.getElementById(buttonTextId).textContent = 'Guardando...';
+            saveButton.disabled = true;
+
+            const nombre = getVal(`${tipo}Nombre`);
+            const dni = getVal(`${tipo}DNI`);
+            const edad = getVal(`${tipo}Edad`);
+            const telefono = getVal(`${tipo}Telefono`);
+            const direccion = getVal(`${tipo}Direccion`) || '';
+            const expedienteReferencia = getVal(`${tipo}Expediente`);
+            const descripcion = getVal(`${tipo}Situacion`) || getVal(`${tipo}Motivo`) || getVal(`${tipo}Fundamentos`) || getVal(`${tipo}Diagnostico`);
+            const intervencion = getVal(`${tipo}Intervencion`);
+
+            let organismoNombre = '';
+            let organismoContacto = '';
+
+            if (document.getElementById(`${tipo}NuevoOrganismoCheck`)?.checked) {
+                organismoNombre = getVal(`${tipo}NuevoOrganismo`);
+                organismoContacto = getVal(`${tipo}NuevoContacto`);
+
+                // Guardar el nuevo organismo en la lista
+                if (organismoNombre) {
+                    const nuevoOrganismo = {
+                        nombre: organismoNombre,
+                        contacto: organismoContacto,
+                        tipo: "Otro"
+                    };
+                    organismos.push(nuevoOrganismo);
+                    populateOrganismosSelects(); // Volver a llenar los selects
+                }
+            } else {
+                const sel = document.getElementById(`${tipo}Organismo`);
+                const idx = sel ? sel.value : '';
+                if (idx !== '' && idx !== 'otro' && organismos[idx]) {
+                    organismoNombre = organismos[idx].nombre || '';
+                    organismoContacto = organismos[idx].email || organismos[idx].telefono || organismos[idx].contacto || '';
+                }
+            }
+
+            const nuevoRegistro = {
+                tipo: getTipoNombre(tipo),
+                nombre,
+                dni,
+                edad,
+                telefono,
+                direccion,
+                expedienteReferencia,
+                descripcion,
+                intervencion,
+                organismo: { nombre: organismoNombre, contacto: organismoContacto },
+                fecha: new Date().toISOString(),
+                estado: 'Abierto'
+            };
+
+            const id = getVal(`${tipo}Id`);
+
+            if (isEditing && id) {
+                database.ref('registros/' + id).set(nuevoRegistro)
+                .then(() => {
+                    mostrarAlertaFlotante('Registro actualizado exitosamente.', 'success');
+                    resetForm(tipo);
+                    loadRegistros();
+                })
+                .catch(error => {
+                    console.error("Error al actualizar:", error);
+                    mostrarAlertaFlotante('Error al actualizar el registro.', 'danger');
+                })
+                .finally(() => {
+                    document.getElementById(spinnerId).style.display = 'none';
+                    document.getElementById(buttonTextId).textContent = 'Guardar Registro';
+                    saveButton.disabled = false;
+                });
+            } else {
+                const newRegistroRef = database.ref('registros').push();
+                newRegistroRef.set(nuevoRegistro)
+                .then(() => {
+                    mostrarAlertaFlotante('Registro guardado exitosamente.', 'success');
+                    resetForm(tipo);
+                    loadRegistros();
+                })
+                .catch(error => {
+                    console.error("Error al guardar:", error);
+                    mostrarAlertaFlotante('Error al guardar el registro.', 'danger');
+                })
+                .finally(() => {
+                    document.getElementById(spinnerId).style.display = 'none';
+                    document.getElementById(buttonTextId).textContent = 'Guardar Registro';
+                    saveButton.disabled = false;
+                });
+            }
+        }
+
+        function resetForm(tipo) {
+            document.getElementById(`${tipo}Form`).reset();
+
+            const modalElement = document.getElementById(`${tipo}Modal`);
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+
+            const addDiv = document.getElementById(`${tipo}AddOrganismo`);
+            const select = document.getElementById(`${tipo}Organismo`);
+            const checkbox = document.getElementById(`${tipo}NuevoOrganismoCheck`);
+
+            if (addDiv && select && checkbox) {
+                checkbox.checked = false;
+                addDiv.style.display = 'none';
+                select.disabled = false;
+                select.required = true;
+            }
+            
+            document.getElementById(`${tipo}Id`).value = '';
+            isEditing = false;
+            currentEditType = null;
+            document.getElementById(`${tipo}ButtonText`).textContent = 'Guardar Registro';
+        }
+
+        function getVal(id) {
+            const element = document.getElementById(id);
+            return element ? element.value : '';
+        }
+
+        function getTipoNombre(tipo) {
+            switch(tipo) {
+                case 'proteccion': return 'Protección Adulto Mayor';
+                case 'capacidad': return 'Determinación de Capacidad';
+                case 'restriccion': return 'Restricción de Capacidad';
+                case 'internacion': return 'Internación Involuntaria';
+                default: return tipo;
+            }
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        
+        // Función para imprimir listado
+        function printListado() {
+            const datosFiltrados = filtrarDatos();
+            const html = buildListadoPrintable(datosFiltrados);
+            printHTMLContent(html);
+        }
+        
+        function buildListadoPrintable(data) {
+            let rows = '';
+            data.forEach(registro => {
+                rows += `
+                    <tr>
+                        <td>${registro.nombre || ""}</td>
+                        <td>${registro.dni || ""}</td>
+                        <td>${registro.tipo || ""}</td>
+                        <td>${registro.estado || "Abierto"}</td>
+                        <td>${formatearFecha(registro.fecha, false)}</td>
+                    </tr>
+                `;
+            });
+            
+            const html = `
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <title>Listado de Casos - Imprimir</title>
+                    <style>
+                        body { font-family: 'Arial', sans-serif; margin: 20px; color: #333; }
+                        h1 { color: #007bff; text-align: center; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f8f9fa; }
+                        .footer { margin-top: 30px; font-size: 0.9em; text-align: center; color: #777; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Listado de Casos - Sistema de Protección</h1>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>DNI</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows}
+                        </tbody>
+                    </table>
+                    <div class="footer">
+                        <p>Generado por el Sistema de Protección de Personas Adultas.</p>
+                    </div>
+                </body>
+                </html>
+            `;
+            return html;
+        }
+        
+        function printHTMLContent(html) {
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write(html);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+        }
+        
+        // Función para imprimir modal
+        function printModal(tipo) {
+            const nombre = getVal(`${tipo}Nombre`);
+            const dni = getVal(`${tipo}DNI`);
+            const edad = getVal(`${tipo}Edad`);
+            const telefono = getVal(`${tipo}Telefono`);
+            const direccion = tipo === 'proteccion' ? getVal('proteccionDireccion') : '';
+            const expedienteReferencia = getVal(`${tipo}Expediente`);
+            const descripcion = tipo === 'proteccion'
+                ? getVal('proteccionSituacion')
+                : tipo === 'capacidad'
+                ? getVal('capacidadMotivo')
+                : tipo === 'restriccion'
+                ? getVal('restriccionFundamentos')
+                : getVal('internacionDiagnostico');
+            const intervencion = getVal(`${tipo}Intervencion`);
+
+            let organismoNombre = '';
+            let organismoContacto = '';
+
+            if (document.getElementById(`${tipo}NuevoOrganismoCheck`)?.checked) {
+                organismoNombre = getVal(`${tipo}NuevoOrganismo`);
+                organismoContacto = getVal(`${tipo}NuevoContacto`);
+            } else {
+                const sel = document.getElementById(`${tipo}Organismo`);
+                const idx = sel ? sel.value : '';
+                if (idx !== '' && idx !== 'otro' && organismos[idx]) {
+                    organismoNombre = organismos[idx].nombre || '';
+                    organismoContacto = organismos[idx].email || organismos[idx].telefono || organismos[idx].contacto || '';
+                }
+            }
+
+            const registroTmp = {
+                tipo: getTipoNombre(tipo),
+                nombre, dni, edad: edad ? parseInt(edad) : '',
+                telefono, direccion, expedienteReferencia, descripcion, intervencion,
+                organismo: { nombre: organismoNombre, contacto: organismoContacto },
+                fecha: new Date().toISOString(),
+                estado: '—'
+            };
+
+            const html = buildRegistroPrintable(registroTmp);
+            printHTMLContent(html);
+        }
+
+        function buildRegistroPrintable(registro) {
+            const expedienteCaratula = registro.expedienteReferencia ? `${expedientesIndex[registro.expedienteReferencia]?.numCausa} - ${expedientesIndex[registro.expedienteReferencia]?.caratula || 'Sin carátula'}` : 'No asociado';
+            const html = `
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <title>Registro de Caso - Imprimir</title>
+                    <style>
+                        body { font-family: 'Arial', sans-serif; margin: 20px; color: #333; }
+                        .print-container { max-width: 800px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+                        h1 { color: #2c3e50; text-align: center; }
+                        h3 { margin-top: 20px; padding-bottom: 5px; border-bottom: 2px solid #3498db; }
+                        p { margin-bottom: 10px; line-height: 1.6; }
+                        .info-box { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
+                        strong { color: #555; }
+                        .footer { margin-top: 30px; font-size: 0.9em; text-align: center; color: #777; }
+                    </style>
+                </head>
+                <body>
+                    <div class="print-container">
+                        <h1>Registro de Caso: ${registro.tipo}</h1>
+                        <p><strong>Fecha de Registro:</strong> ${new Date(registro.fecha).toLocaleString()}</p>
+
+                        <h3>Datos de la Persona</h3>
+                        <div class="info-box">
+                            <p><strong>Nombre:</strong> ${registro.nombre}</p>
+                            <p><strong>DNI:</strong> ${registro.dni}</p>
+                            <p><strong>Edad:</strong> ${registro.edad}</p>
+                            <p><strong>Teléfono:</strong> ${registro.telefono || 'No especificado'}</p>
+                            <p><strong>Dirección:</strong> ${registro.direccion || 'No especificado'}</p>
+                        </div>
+
+                        <h3>Detalles del Caso</h3>
+                        <div class="info-box">
+                            <p><strong>Expediente de referencia:</strong> ${expedienteCaratula}</p>
+                            <p><strong>Descripción/Justificación:</strong> ${registro.descripcion}</p>
+                            <p><strong>Intervención de la Defensoría:</strong> ${registro.intervencion}</p>
+                            <p><strong>Organismo Interviniente:</strong> ${registro.organismo?.nombre || 'No especificado'} (${registro.organismo?.contacto || 'Sin contacto'})</p>
+                        </div>
+
+                        <div class="footer">
+                            <p>Generado por el Sistema Unificado de Protección de Personas.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+            return html;
+        }
+    </script>
+</body>
+</html>

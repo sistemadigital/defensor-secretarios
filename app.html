@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Digital de Causas</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --primary-light: #7BB0F0;
+            --primary-dark: #357ABD;
+            --primary-foreground: #FFFFFF;
+            --background: #F5F9FF;
+            --foreground: #2C3E50;
+            --card: #FFFFFF;
+            --card-foreground: #2C3E50;
+            --secondary: #E8F1FC;
+            --secondary-foreground: #2C3E50;
+            --muted: #EFF5FD;
+            --muted-foreground: #7F8C8D;
+            --accent: #4A90E2;
+            --accent-foreground: #FFFFFF;
+            --destructive: #E74C3C;
+            --destructive-foreground: #FFFFFF;
+            --border: #D6E4F5;
+            --input: #D6E4F5;
+            --ring: #4A90E2;
+            --radius: 8px;
+            --shadow-sm: 0 2px 4px rgba(74, 144, 226, 0.1);
+            --shadow-md: 0 4px 8px rgba(74, 144, 226, 0.15);
+            --shadow-lg: 0 8px 16px rgba(74, 144, 226, 0.2);
+            --font-sans: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-sans);
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Barra de navegación superior */
+        .top-nav {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--primary-foreground);
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            flex-shrink: 0;
+        }
+
+        .app-title {
+            font-size: 22px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            flex: 1;
+            justify-content: center;
+            margin: 0 20px;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 20px 16px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-size: 15px;
+            border-radius: var(--radius);
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .logout-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: var(--primary-foreground);
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            backdrop-filter: blur(5px);
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Menú hamburguesa para móviles */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--primary-foreground);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* Contenido principal */
+        .main-content {
+            flex: 1;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            overflow: auto;
+            gap: 25px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .content-header h2 {
+            font-weight: 600;
+            color: var(--primary-dark);
+            font-size: 26px;
+        }
+
+        .date-display {
+            color: var(--muted-foreground);
+            font-size: 14px;
+        }
+
+        /* Módulos estadísticos */
+        .modules-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .module-card {
+            background: linear-gradient(135deg, var(--card) 0%, var(--secondary) 100%);
+            border-radius: var(--radius);
+            padding: 25px 20px;
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .module-title {
+            font-size: 15px;
+            color: var(--muted-foreground);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .module-count {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .module-change {
+            font-size: 12px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .positive {
+            color: #27AE60;
+        }
+
+        .negative {
+            color: var(--destructive);
+        }
+
+        /* Contenedor del gráfico */
+        .chart-container {
+            background-color: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 25px;
+            flex: 1;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-header h3 {
+            font-weight: 600;
+            color: var(--primary-dark);
+            font-size: 18px;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chart-action-btn {
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            padding: 8px 15px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--foreground);
+            transition: all 0.2s ease;
+        }
+
+        .chart-action-btn:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .chart-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: var(--muted-foreground);
+        }
+
+        /* Módulos de contenido */
+        .module-content {
+            display: none;
+            flex: 1;
+            overflow: auto;
+        }
+
+        .module-content.active {
+            display: block;
+        }
+
+        .module-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .module-icon {
+            font-size: 64px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .module-placeholder h3 {
+            font-size: 24px;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+
+        .module-placeholder p {
+            color: var(--muted-foreground);
+            max-width: 500px;
+            line-height: 1.6;
+        }
+
+        /* Responsividad */
+        @media (max-width: 1024px) {
+            .nav-menu {
+                margin: 0 10px;
+            }
+            
+            .nav-link {
+                padding: 20px 12px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-menu {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+                flex-direction: column;
+                margin: 0;
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                box-shadow: var(--shadow-lg);
+                padding: 10px 0;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+            
+            .nav-menu.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            .nav-item {
+                width: 100%;
+            }
+            
+            .nav-link {
+                padding: 15px 20px;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+
+            .modules-container {
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+
+            .module-card {
+                padding: 20px 15px;
+            }
+
+            .module-count {
+                font-size: 28px;
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .chart-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .chart-action-btn {
+                flex: 1;
+                text-align: center;
+            }
+
+            .main-content {
+                padding: 15px;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modules-container {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .module-card {
+                padding: 18px 15px;
+            }
+
+            .module-title {
+                font-size: 14px;
+            }
+
+            .module-count {
+                font-size: 24px;
+            }
+
+            .app-title {
+                font-size: 18px;
+            }
+
+            .content-header h2 {
+                font-size: 22px;
+            }
+
+            .chart-container {
+                padding: 15px;
+            }
+
+            .module-placeholder {
+                padding: 20px;
+            }
+
+            .module-icon {
+                font-size: 48px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de navegación superior -->
+    <nav class="top-nav">
+        <div class="app-title">Sistema Digital de Causas</div>
+        
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        
+        <ul class="nav-menu" id="navMenu">
+            <li class="nav-item">
+                <a href="#inicio" class="nav-link active" data-module="inicio">Inicio</a>
+            </li>
+            <li class="nav-item">
+                <a href="#causas" class="nav-link" data-module="causas">Registro de Causas</a>
+            </li>
+            <li class="nav-item">
+                <a href="#partes" class="nav-link" data-module="partes">Partes</a>
+            </li>
+            <li class="nav-item">
+                <a href="#calendario" class="nav-link" data-module="calendario">Calendario</a>
+            </li>
+            <li class="nav-item">
+                <a href="#proteccion" class="nav-link" data-module="proteccion">Protección de Personas</a>
+            </li>
+            <li class="nav-item">
+                <a href="#dictamenes" class="nav-link" data-module="dictamenes">Dictámenes y Escritos</a>
+            </li>
+            <li class="nav-item">
+                <a href="#biblioteca" class="nav-link" data-module="biblioteca">Biblioteca de Documentos</a>
+            </li>
+            <li class="nav-item">
+                <a href="#notificaciones" class="nav-link" data-module="notificaciones">Notificaciones</a>
+            </li>
+            <li class="nav-item">
+                <a href="#agenda" class="nav-link" data-module="agenda">Agenda</a>
+            </li>
+            <li class="nav-item">
+                <a href="#estadistica" class="nav-link" data-module="estadistica">Estadística</a>
+            </li>
+        </ul>
+        
+        <button class="logout-btn" id="logoutBtn">Cerrar Sesión</button>
+    </nav>
+
+    <!-- Contenido principal - Módulo Inicio -->
+    <main class="main-content module-content active" id="inicio">
+        <header class="content-header">
+            <h2>Panel de Control</h2>
+            <div class="date-display" id="currentDate"></div>
+        </header>
+
+        <!-- Módulos estadísticos -->
+        <div class="modules-container" id="modulesContainer">
+            <div class="loading" id="modulesLoading">
+                <p>Cargando datos...</p>
+            </div>
+        </div>
+
+        <!-- Gráfico de evolución de causas -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3>Evolución de Causas Judiciales</h3>
+                <div class="chart-actions">
+                    <button class="chart-action-btn" id="toggleDataBtn">Ver Datos</button>
+                    <button class="chart-action-btn" id="exportChartBtn">Exportar</button>
+                    <button class="chart-action-btn" id="timeRangeBtn">Últimos 12 meses</button>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <div class="loading" id="chartLoading">
+                    <p>Cargando gráfico...</p>
+                </div>
+                <canvas id="casesChart" style="display: none;"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <!-- Módulos de contenido adicionales -->
+    <div class="module-content" id="causas">
+        <div class="module-placeholder">
+            <div class="module-icon">⚖️</div>
+            <h3>Registro de Causas</h3>
+            <p>Módulo para gestionar y registrar todas las causas judiciales del sistema.</p>
+        </div>
+    </div>
+
+    <div class="module-content" id="partes">
+        <div class="module-placeholder">
+            <div class="module-icon">👥</div>
+            <h3>Partes Intervinientes</h3>
+            <p>Gestión de las partes involucradas en los procesos judiciales.</p>
+        </div>
+    </div>
+
+    <div class="module-content" id="calendario">
+        <div class="module-placeholder">
+            <div class="module-icon">📅</div>
+            <h3>Calendario Judicial</h3>
+            <p>Programación y seguimiento de audiencias, vistas y plazos procesales.</p>
+        </div>
+    </div>
+
+    <div class="module-content" id="proteccion">
+        <div class="module-placeholder">
+            <div class="module-icon">🛡️</div>
+            <h3>Protección de Personas</h3>
+            <p>Sistema de medidas cautelares y protección para personas en situación de vulnerabilidad.</p>
+        </div>
+    </div>
+
+    <div class="module-content" id="dictamenes">
+        <div class="module-placeholder">
+            <div class="module-icon">📝</div>
+            <h3>Dictámenes y Escritos</h3>
+            <p>Gestión de documentos, dictámenes y escritos presentados en los expedientes.</p>
+        </div>
+    </div>
+
+    <div class="module-content" id="biblioteca">
+        <div class="module-placeholder">
+            <div class="module-icon">📚</div>
+            <h3>Biblioteca de Documentos</h3>
+            <p>Repositorio centralizado de documentos, plantillas y recursos legales.</p>
+        </div>
+    </div>
+
+    <div class="module-content" id="notificaciones">
+        <div class="module-placeholder">
+            <div class="module-icon">🔔</div>
+            <h3>Notificaciones</h3>
+            <p>Sistema de notificaciones y comunicaciones internas del sistema.</p>
+        </div>
+    </div>
+
+    <div class="module-content" id="agenda">
+        <div class="module-placeholder">
+            <div class="module-icon">🗓️</div>
+            <h3>Agenda</h3>
+            <p>Gestión de actividades, reuniones y compromisos del personal judicial.</p>
+        </div>
+    </div>
+
+    <div class="module-content" id="estadistica">
+        <div class="module-placeholder">
+            <div class="module-icon">📊</div>
+            <h3>Estadísticas</h3>
+            <p>Análisis y reportes estadísticos de la actividad judicial.</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Configuración de Firebase - USANDO SOLO UNA APP
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDXZYAxWsvMiMGCrPRp3EBVuU0dzuWF4M",
+            authDomain: "sistemadefensoria6.firebaseapp.com",
+            projectId: "sistemadefensoria6",
+            storageBucket: "sistemadefensoria6.firebasestorage.app",
+            messagingSenderId: "1024631392849",
+            appId: "1:1024631392849:web:1dc13292e690e2ed100670"
+        };
+
+        // Inicializar Firebase - SOLO UNA APP
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Verificar autenticación
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+            } else {
+                loadFirebaseData();
+            }
+        });
+
+        // Datos para los módulos estadísticos
+        let moduleData = [];
+        let casesData = {
+            labels: [],
+            datasets: []
+        };
+
+        // Cargar datos desde Firebase
+        async function loadFirebaseData() {
+            try {
+                await loadModuleData();
+                await loadChartData();
+                
+                renderModules();
+                createChart();
+            } catch (error) {
+                console.error("Error cargando datos de Firebase:", error);
+                loadFallbackData();
+                renderModules();
+                createChart();
+            }
+        }
+
+        // Cargar datos para los módulos desde Firebase
+        async function loadModuleData() {
+            try {
+                // Obtener conteos de las colecciones desde Firestore
+                const causasSnapshot = await getDocs(collection(db, "causas"));
+                const proteccionSnapshot = await getDocs(collection(db, "proteccion"));
+                const partesSnapshot = await getDocs(collection(db, "partes"));
+                const notificacionesSnapshot = await getDocs(collection(db, "notificaciones"));
+                
+                moduleData = [
+                    { 
+                        title: "Causas Activas", 
+                        count: causasSnapshot.size, 
+                        change: 0, 
+                        positive: true 
+                    },
+                    { 
+                        title: "Casos Protección", 
+                        count: proteccionSnapshot.size, 
+                        change: 0, 
+                        positive: true 
+                    },
+                    { 
+                        title: "Partes Registradas", 
+                        count: partesSnapshot.size, 
+                        change: 0, 
+                        positive: true 
+                    },
+                    { 
+                        title: "Notificaciones", 
+                        count: notificacionesSnapshot.size, 
+                        change: 0, 
+                        positive: true 
+                    }
+                ];
+            } catch (error) {
+                console.error("Error cargando datos de módulos:", error);
+                throw error;
+            }
+        }
+
+        // Cargar datos para el gráfico desde Firebase
+        async function loadChartData() {
+            try {
+                const causasQuery = query(collection(db, "causas"), orderBy("fecha", "asc"));
+                const causasSnapshot = await getDocs(causasQuery);
+                
+                const dataByMonthAndType = {};
+                const tiposCausa = ["Civiles", "Penales", "Laborales", "Familiares"];
+                
+                // Inicializar estructura de datos
+                tiposCausa.forEach(tipo => {
+                    dataByMonthAndType[tipo] = {};
+                });
+                
+                // Procesar cada causa
+                causasSnapshot.forEach(doc => {
+                    const causa = doc.data();
+                    let fecha;
+                    
+                    // Manejar diferentes formatos de fecha
+                    if (causa.fecha && causa.fecha.toDate) {
+                        fecha = causa.fecha.toDate();
+                    } else if (causa.fecha) {
+                        fecha = new Date(causa.fecha);
+                    } else {
+                        fecha = new Date();
+                    }
+                    
+                    const mesAnio = `${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
+                    const tipo = causa.tipo || "Civiles";
+                    
+                    if (!dataByMonthAndType[tipo][mesAnio]) {
+                        dataByMonthAndType[tipo][mesAnio] = 0;
+                    }
+                    dataByMonthAndType[tipo][mesAnio]++;
+                });
+                
+                // Obtener todos los meses únicos
+                const mesesUnicos = new Set();
+                tiposCausa.forEach(tipo => {
+                    Object.keys(dataByMonthAndType[tipo]).forEach(mes => {
+                        mesesUnicos.add(mes);
+                    });
+                });
+                
+                // Ordenar meses cronológicamente
+                const mesesOrdenados = Array.from(mesesUnicos).sort((a, b) => {
+                    const [mesA, anioA] = a.split('/').map(Number);
+                    const [mesB, anioB] = b.split('/').map(Number);
+                    return anioA - anioB || mesA - mesB;
+                });
+                
+                // Crear estructura de datos para el gráfico
+                casesData.labels = mesesOrdenados.map(mes => {
+                    const [mesNum, anio] = mes.split('/');
+                    const nombresMeses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", 
+                                         "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+                    return `${nombresMeses[parseInt(mesNum)-1]} ${anio}`;
+                });
+                
+                // Colores para cada tipo de causa
+                const colores = {
+                    "Civiles": "#4A90E2",
+                    "Penales": "#E74C3C",
+                    "Laborales": "#27AE60",
+                    "Familiares": "#F39C12"
+                };
+                
+                // Crear datasets para cada tipo de causa
+                casesData.datasets = tiposCausa.map(tipo => {
+                    const datos = mesesOrdenados.map(mes => {
+                        return dataByMonthAndType[tipo][mes] || 0;
+                    });
+                    
+                    return {
+                        label: `Causas ${tipo}`,
+                        data: datos,
+                        borderColor: colores[tipo],
+                        backgroundColor: `${colores[tipo]}20`,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: colores[tipo],
+                        pointBorderColor: "#FFFFFF",
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    };
+                });
+            } catch (error) {
+                console.error("Error cargando datos del gráfico:", error);
+                throw error;
+            }
+        }
+
+        // Datos de respaldo en caso de error
+        function loadFallbackData() {
+            moduleData = [
+                { title: "Causas Activas", count: 0, change: 0, positive: true },
+                { title: "Casos Protección", count: 0, change: 0, positive: true },
+                { title: "Partes Registradas", count: 0, change: 0, positive: true },
+                { title: "Notificaciones", count: 0, change: 0, positive: true }
+            ];
+            
+            // Datos de ejemplo para el gráfico
+            casesData = {
+                labels: ["Ene 2023", "Feb 2023", "Mar 2023", "Abr 2023", "May 2023"],
+                datasets: [
+                    {
+                        label: "Causas Civiles",
+                        data: [0, 0, 0, 0, 0],
+                        borderColor: "#4A90E2",
+                        backgroundColor: "rgba(74, 144, 226, 0.1)",
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            };
+        }
+
+        // Generar módulos estadísticos
+        function renderModules() {
+            const container = document.getElementById('modulesContainer');
+            const loadingElement = document.getElementById('modulesLoading');
+            
+            loadingElement.style.display = 'none';
+            container.innerHTML = '';
+            
+            moduleData.forEach(module => {
+                const moduleCard = document.createElement('div');
+                moduleCard.className = 'module-card';
+                moduleCard.innerHTML = `
+                    <div class="module-title">${module.title}</div>
+                    <div class="module-count">${module.count}</div>
+                    <div class="module-change ${module.positive ? 'positive' : 'negative'}">
+                        ${module.positive ? '↗' : '↘'} ${module.change}% este mes
+                    </div>
+                `;
+                container.appendChild(moduleCard);
+            });
+        }
+
+        // Crear gráfico de evolución
+        function createChart() {
+            const ctx = document.getElementById('casesChart').getContext('2d');
+            const loadingElement = document.getElementById('chartLoading');
+            
+            loadingElement.style.display = 'none';
+            document.getElementById('casesChart').style.display = 'block';
+            
+            // Calcular el total de causas para cada mes
+            const totalData = casesData.labels.map((_, index) => {
+                return casesData.datasets.reduce((sum, dataset) => sum + dataset.data[index], 0);
+            });
+            
+            const chartData = {
+                labels: casesData.labels,
+                datasets: [
+                    ...casesData.datasets,
+                    {
+                        label: "Total de Causas",
+                        data: totalData,
+                        borderColor: "#2C3E50",
+                        backgroundColor: "transparent",
+                        tension: 0.4,
+                        fill: false,
+                        pointBackgroundColor: "#2C3E50",
+                        pointBorderColor: "#FFFFFF",
+                        pointBorderWidth: 3,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        borderWidth: 3,
+                        borderDash: [5, 5]
+                    }
+                ]
+            };
+            
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#2C3E50',
+                            bodyColor: '#2C3E50',
+                            borderColor: '#D6E4F5',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y} causas`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(214, 228, 245, 0.5)'
+                            },
+                            ticks: {
+                                color: '#7F8C8D'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(214, 228, 245, 0.5)'
+                            },
+                            ticks: {
+                                color: '#7F8C8D',
+                                callback: function(value) {
+                                    return value + ' causas';
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    },
+                    elements: {
+                        line: {
+                            borderWidth: 2
+                        }
+                    }
+                }
+            });
+            
+            return chart;
+        }
+
+        // Actualizar fecha actual
+        function updateDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('es-ES', options);
+        }
+
+        // Funcionalidad del menú hamburguesa
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('active');
+        });
+
+        // Funcionalidad de navegación entre módulos
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Cerrar menú en móviles
+                if (window.innerWidth <= 768) {
+                    document.getElementById('navMenu').classList.remove('active');
+                }
+                
+                // Remover clase activa de todos los enlaces
+                document.querySelectorAll('.nav-link').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Agregar clase activa al enlace clickeado
+                this.classList.add('active');
+                
+                // Ocultar todos los módulos
+                document.querySelectorAll('.module-content').forEach(module => {
+                    module.classList.remove('active');
+                });
+                
+                // Mostrar el módulo seleccionado
+                const moduleId = this.getAttribute('data-module');
+                document.getElementById(moduleId).classList.add('active');
+                
+                // Actualizar el título del módulo actual
+                document.getElementById('currentModule').textContent = this.textContent;
+            });
+        });
+
+        // Funcionalidad del botón de salir
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            if(confirm('¿Está seguro que desea salir del sistema?')) {
+                signOut(auth).then(() => {
+                    window.location.href = 'index.html';
+                }).catch((error) => {
+                    console.error("Error al cerrar sesión:", error);
+                });
+            }
+        });
+
+        // Funcionalidad de los botones del gráfico
+        document.getElementById('toggleDataBtn').addEventListener('click', function() {
+            alert('Función de visualización de datos activada');
+        });
+
+        document.getElementById('exportChartBtn').addEventListener('click', function() {
+            alert('Función de exportación del gráfico activada');
+        });
+
+        document.getElementById('timeRangeBtn').addEventListener('click', function() {
+            alert('Cambio de rango de tiempo activado');
+        });
+
+        // Cerrar menú al hacer clic fuera en dispositivos móviles
+        document.addEventListener('click', function(event) {
+            const navMenu = document.getElementById('navMenu');
+            const menuToggle = document.getElementById('menuToggle');
+            
+            if (window.innerWidth <= 768 && 
+                !navMenu.contains(event.target) && 
+                !menuToggle.contains(event.target) &&
+                navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+            }
+        });
+
+        // Inicializar la interfaz
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDate();
+            // Los datos se cargan después de la autenticación
+        });
+    </script>
+</body>
+</html>
