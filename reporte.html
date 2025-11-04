@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>⚖️Estadísticas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #34495e;
+      --accent: #3498db;
+      --accent-light: #5dade2;
+      --success: #2ecc71;
+      --warning: #f39c12;
+      --danger: #e74c3c;
+      --light: #ecf0f1;
+      --dark: #2c3e50;
+      --text: #2c3e50;
+      --text-muted: #7f8c8d;
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+      --radius: 12px;
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      background-color: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ===== DASHBOARD ===== */
+    .dashboard {
+      display: block;
+      padding: 1rem;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 1.5rem 1rem;
+      text-align: center;
+      background-color: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    h1 {
+      color: var(--primary);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    h5 {
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-bottom: 1.5rem;
+    }
+
+    .filters {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    label {
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    select {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 1rem;
+      transition: var(--transition);
+      appearance: none;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="%237f8c8d"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>');
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 1.2em;
+      min-width: 200px;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .dashboard-content {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .dashboard-content {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .dashboard-content {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .card-total {
+      font-weight: 800;
+      font-size: 1.8rem;
+      color: var(--accent);
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    .chart-container {
+      height: 300px;
+      position: relative;
+    }
+
+    .loading-overlay, .no-data-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      border-radius: var(--radius);
+      text-align: center;
+      flex-direction: column;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .buttons-container {
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: var(--transition);
+      margin: 0 0.5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn:hover {
+      background: var(--accent-light);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: var(--secondary);
+    }
+
+    .btn-secondary:hover {
+      background: #415b76;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    /* Estilos para gráficos específicos */
+    .bar {
+      transition: opacity 0.3s;
+    }
+
+    .bar:hover {
+      opacity: 0.8;
+    }
+
+    .line {
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .area {
+      opacity: 0.5;
+    }
+
+    .treemap-rect {
+      stroke: #fff;
+      stroke-width: 1px;
+    }
+
+    .treemap-text {
+      font-size: 10px;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+
+    /* Estilos para el iframe del informe trimestral */
+    .informe-trimestral-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: white;
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+    }
+
+    .informe-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: var(--primary);
+      color: white;
+    }
+
+    .informe-iframe {
+      flex: 1;
+      border: none;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+  <section class="dashboard" id="dashboard">
+    <header>
+      <h2>Estadísticas Defensoría Civil y Comercial 6</h2>
+      <h5>Diseño y programación de Rómulo Fioravante. Leg2481. Año 2025</h5>
+      <div class="filters">
+        <div class="filter-group">
+          <label for="chartSelector">Gráfico a Mostrar</label>
+          <select id="chartSelector"></select>
+        </div>
+        <div class="filter-group">
+          <label for="filtroRango">Rango</label>
+          <select id="filtroRango">
+            <option value="semana">Semanal (7 días)</option>
+            <option value="mes" selected>Mensual (30 días)</option>
+            <option value="anio">Anual (365 días)</option>
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <div class="dashboard-content">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title" id="chartTitle">Estado</h3>
+        </div>
+        <div id="loading" class="loading-overlay">
+          <div class="spinner"></div>
+          <p>Cargando datos...</p>
+        </div>
+        <div id="no-data" class="no-data-overlay" style="display:none;">
+          <h3>No hay datos para mostrar</h3>
+          <p>Intente seleccionar otro tipo de visualización.</p>
+        </div>
+        <div id="totalGeneral" class="card-total">0</div>
+        <div id="mainChart" class="chart-container"></div>
+        <div id="chart-legend" class="legend"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Resumen General</h3>
+        </div>
+        <div id="summaryChart" class="chart-container"></div>
+        <div id="summary-legend" class="legend"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Tendencia Temporal</h3>
+        </div>
+        <div id="trendChart" class="chart-container"></div>
+      </div>
+    </div>
+
+    <div class="buttons-container">
+      <button id="btnPrintDashboard" class="btn">
+        <i class="fas fa-print"></i> Imprimir Estadísticas
+      </button>
+      <button id="btnDownload" class="btn">
+        <i class="fas fa-download"></i> Descargar como Imagen
+      </button>
+      <button id="btnRefresh" class="btn btn-secondary">
+        <i class="fas fa-sync-alt"></i> Actualizar Datos
+      </button>
+      <button id="btnInformeTrimestral" class="btn" style="background: var(--success);">
+        <i class="fas fa-file-alt"></i> Informe Trimestral Oficial
+      </button>
+    </div>
+  </section>
+
+  <!-- Contenedor para el informe trimestral -->
+  <div class="informe-trimestral-container" id="informeTrimestral">
+    <div class="informe-header">
+      <h2>Informe Trimestral Oficial</h2>
+      <button id="btnCerrarInforme" class="btn" style="background: var(--danger);">
+        <i class="fas fa-times"></i> Cerrar
+      </button>
+    </div>
+    <iframe src="https://sistema-secretarios.github.io/estadistica/" class="informe-iframe"></iframe>
+  </div>
+
+  <script type="module">
+    // Importación de Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, collection, query, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+    // === Configuración de Firebase ===
+    const firebaseConfigCausas = {
+      apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
+      authDomain: "causas-defensoria.firebaseapp.com",
+      projectId: "causas-defensoria",
+      storageBucket: "causas-defensoria.firebasestorage.app",
+      messagingSenderId: "186064671470",
+      appId: "1:186064671470:web:b58bae5eadbe6e469f19ff"
+    };
+    
+    const firebaseConfigAtencion = {
+      apiKey: "AIzaSyDgxLS98sk6GkLrjMu3BVS2cmZ9exdh4dY",
+      authDomain: "atencion-publico-def6.firebaseapp.com",
+      databaseURL: "https://atencion-publico-def6-default-rtdb.firebaseio.com",
+      projectId: "atencion-publico-def6",
+      storageBucket: "atencion-publico-def6.firebasestorage.app",
+      messagingSenderId: "1052433106688",
+      appId: "1:1052433106688:web:8ac3e144bcf377ac4b55e5"
+    };
+
+    const appCausas = initializeApp(firebaseConfigCausas, "causasApp");
+    const appAtencion = initializeApp(firebaseConfigAtencion, "atencionApp");
+    const dbCausas = getFirestore(appCausas);
+    const dbAtencion = getDatabase(appAtencion);
+
+    // === Estado ===
+    let datosCacheCausas = null;
+    let datosCacheAtencion = null;
+    let chPrincipal = null;
+
+    // === Elementos DOM ===
+    const dashboardPage = document.getElementById("dashboard");
+    const loadingOverlay = document.getElementById("loading");
+    const noDataOverlay = document.getElementById("no-data");
+    const chartSelector = document.getElementById("chartSelector");
+    const filtroRango = document.getElementById("filtroRango");
+    const btnInformeTrimestral = document.getElementById("btnInformeTrimestral");
+    const informeTrimestral = document.getElementById("informeTrimestral");
+    const btnCerrarInforme = document.getElementById("btnCerrarInforme");
+
+    // === Paletas de colores ===
+    const colorScales = {
+      estado: d3.scaleOrdinal(d3.schemePaired),
+      prioridad: d3.scaleOrdinal(d3.schemeSet1),
+      intervencion: d3.scaleOrdinal(d3.schemeSet2),
+      audiencias: d3.scaleOrdinal(d3.schemeOranges[7]),
+      gesel: d3.scaleOrdinal(d3.schemeGreens[7]),
+      vencimiento: d3.scaleOrdinal(d3.schemePurples[7]),
+      recursos: d3.scaleOrdinal(d3.schemeSet1),
+      usuarioAsignado: d3.scaleOrdinal(d3.schemeSet3),
+      type: d3.scaleOrdinal(["#34c759", "#ff9500", "#af52de", "#ff3b30"]),
+      generic: d3.scaleOrdinal(d3.schemeTableau10)
+    };
+
+    // === Lista de gráficos disponibles ===
+    const chartsData = [
+      { id: "estado", name: "Estado", key: "estado", source: "causas" },
+      { id: "prioridad", name: "Prioridad", key: "prioridad", source: "causas" },
+      { id: "intervencion", name: "Intervención", key: "intervencion", source: "causas" },
+      { id: "audiencias", name: "Audiencias", key: "audiencias", dateFilter: true, source: "causas" },
+      { id: "gesel", name: "Audiencia Gesel", key: "gesel", dateFilter: true, source: "causas" },
+      { id: "vencimiento", name: "Vencimientos", key: "vencimiento", dateFilter: true, source: "causas" },
+      { id: "recursos", name: "Recursos", key: "recursos", source: "causas" },
+      { id: "usuarioAsignado", name: "Usuario Asignado", key: "usuarioAsignado", source: "causas" },
+      { id: "atencion", name: "Atención al Público", key: "type", source: "atencion" }
+    ];
+
+    // === Mostrar/ocultar informe trimestral ===
+    btnInformeTrimestral.addEventListener("click", () => {
+      informeTrimestral.style.display = "flex";
+    });
+
+    btnCerrarInforme.addEventListener("click", () => {
+      informeTrimestral.style.display = "none";
+    });
+
+    // === Inicialización del dashboard ===
+    function initDashboard() {
+      chartSelector.innerHTML = "";
+      chartsData.forEach(c => {
+        const option = document.createElement("option");
+        option.value = c.id;
+        option.textContent = c.name;
+        chartSelector.appendChild(option);
+      });
+
+      chartSelector.addEventListener("change", actualizarDashboard);
+      filtroRango.addEventListener("change", actualizarDashboard);
+      document.getElementById("btnRefresh").addEventListener("click", cargarDatos);
+      document.getElementById("btnPrintDashboard").addEventListener("click", () => window.print());
+      document.getElementById("btnDownload").addEventListener("click", descargarImagen);
+
+      cargarDatos();
+    }
+
+    // === Crear gráfico de dona ===
+    function crearGraficoTorta(id){
+      d3.select(id).select("svg").remove();
+      const container = document.getElementById(id.replace("#", ""));
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      const size = Math.min(width, height);
+      
+      const svg = d3.select(id).append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("viewBox", `0 0 ${size} ${size}`)
+        .attr("preserveAspectRatio", "xMidYMid meet");
+        
+      const g = svg.append("g").attr("transform", `translate(${size/2}, ${size/2})`);
+      const radius = Math.min(size, size) / 2 - 20;
+      const arc = d3.arc().innerRadius(radius * 0.6).outerRadius(radius);
+      const pie = d3.pie().value(d => d.v).sort(null);
+      
+      return { svg, g, arc, pie, radius };
+    }
+
+    // === Formatear fecha a DD/MM/AAAA ===
+    function formatearFecha(timestamp) {
+      if (!timestamp) return "Sin dato";
+      const date = typeof timestamp.toDate === 'function' ? timestamp.toDate() : new Date(timestamp);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    // === Actualizar gráfico de dona ===
+    function actualizarGraficoTorta(chart, data, key, colorKey, totalId){
+      const agg = d3.rollups(data, d => d.length, d => {
+        const value = d[key];
+        if (value && typeof value.toDate === 'function') {
+          return formatearFecha(value);
+        }
+        return value || "Sin dato";
+      }).map(([k, v]) => ({ k, v }));
+      
+      const total = d3.sum(agg, d => d.v);
+      document.getElementById(totalId).textContent = total;
+
+      const arcs = chart.g.selectAll(".arc").data(chart.pie(agg), d => d.data.k);
+      arcs.exit().remove();
+
+      const newArcs = arcs.enter().append("g").attr("class", "arc");
+      newArcs.append("path")
+        .attr("fill", d => (colorScales[colorKey] || colorScales.generic)(d.data.k))
+        .transition().duration(750).attrTween("d", function(d){
+            const i = d3.interpolate(d.startAngle, d.endAngle);
+            return function(t){
+                d.endAngle = i(t);
+                return chart.arc(d);
+            };
+        });
+
+      arcs.select("path").transition().duration(750).attr("d", chart.arc);
+
+      const legendContainer = document.getElementById("chart-legend");
+      legendContainer.innerHTML = "";
+      
+      const legendData = agg.sort((a,b) => d3.descending(a.v,b.v));
+      
+      legendData.forEach(item => {
+        const percentage = total > 0 ? ((item.v / total) * 100).toFixed(1) : 0;
+        
+        const legendItem = document.createElement("div");
+        legendItem.className = "legend-item";
+        
+        const colorBox = document.createElement("span");
+        colorBox.className = "legend-color";
+        colorBox.style.backgroundColor = (colorScales[colorKey] || colorScales.generic)(item.k);
+        
+        const text = document.createElement("span");
+        text.textContent = `${item.k}: ${item.v} (${percentage}%)`;
+        
+        legendItem.appendChild(colorBox);
+        legendItem.appendChild(text);
+        legendContainer.appendChild(legendItem);
+      });
+    }
+
+    // === Lógica de rangos ===
+    function obtenerDias(){
+      if(filtroRango.value==="semana") return 7;
+      if(filtroRango.value==="mes") return 30;
+      if(filtroRango.value==="anio") return 365;
+      return 30;
+    }
+    
+    function fechaValidaEnRango(valor){
+      const dias = obtenerDias();
+      if(!valor) return false;
+      const hoy = new Date();
+      const limite = new Date(hoy); 
+      limite.setDate(hoy.getDate() - dias); // 👈 cambio: hacia atrás
+      const toDate = (v) => v && typeof v==="object" && "seconds" in v ? new Date(v.seconds * 1000) : new Date(v);
+      const d = toDate(valor);
+      return !isNaN(d) && d >= limite && d <= hoy; // 👈 ahora compara pasado hasta hoy
+    }
+    
+    function obtenerCampo(obj, posibles){
+      for(const k of posibles){ 
+        if(k in obj && obj[k] != null) return obj[k]; 
+      }
+      return null;
+    }
+
+    // === Render principal ===
+    function actualizarDashboard(){
+      if (datosCacheCausas === null || datosCacheAtencion === null) return;
+
+      loadingOverlay.style.display = "none";
+      if(!chPrincipal) chPrincipal = crearGraficoTorta("#mainChart");
+
+      const selectedChartId = chartSelector.value;
+      const chartConfig = chartsData.find(c => c.id === selectedChartId);
+
+      let data = [];
+      if(chartConfig.source === "atencion"){
+        data = datosCacheAtencion;
+        document.getElementById("filtroRango").style.display = "none";
+      } else if (chartConfig.source === "causas") {
+        data = datosCacheCausas;
+        document.getElementById("filtroRango").style.display = "block";
+        if(chartConfig.dateFilter){
+          data = data.filter(d => fechaValidaEnRango(obtenerCampo(d, [chartConfig.key])));
+        }
+      }
+
+      document.getElementById("chartTitle").textContent = chartConfig.name;
+
+      if (data.length > 0) {
+        noDataOverlay.style.display = "none";
+        actualizarGraficoTorta(chPrincipal, data, chartConfig.key, chartConfig.key, "totalGeneral");
+        actualizarGraficosSecundarios();
+      } else {
+        noDataOverlay.style.display = "flex";
+        d3.select("#mainChart svg").remove();
+        document.getElementById("chart-legend").innerHTML = "";
+        document.getElementById("totalGeneral").textContent = "0";
+        chPrincipal = null;
+      }
+    }
+
+    function actualizarGraficosSecundarios() {
+      if (datosCacheCausas && datosCacheCausas.length > 0) {
+        const summaryChart = crearGraficoTorta("#summaryChart");
+        const agg = d3.rollups(datosCacheCausas, d => d.length, d => d.estado || "Sin dato").map(([k, v]) => ({ k, v }));
+        const totalEstados = d3.sum(agg, d => d.v);
+        
+        const arcs = summaryChart.g.selectAll(".arc").data(summaryChart.pie(agg), d => d.data.k);
+        arcs.exit().remove();
+
+        const newArcs = arcs.enter().append("g").attr("class", "arc");
+        newArcs.append("path")
+          .attr("fill", d => colorScales.estado(d.data.k))
+          .transition().duration(750).attrTween("d", function(d){
+              const i = d3.interpolate(d.startAngle, d.endAngle);
+              return function(t){
+                  d.endAngle = i(t);
+                  return summaryChart.arc(d);
+              };
+          });
+
+        arcs.select("path").transition().duration(750).attr("d", summaryChart.arc);
+
+        const summaryLegend = document.getElementById("summary-legend");
+        summaryLegend.innerHTML = "";
+        
+        agg.sort((a,b) => d3.descending(a.v,b.v)).forEach(item => {
+          const percentage = totalEstados > 0 ? ((item.v / totalEstados) * 100).toFixed(1) : 0;
+          const legendItem = document.createElement("div");
+          legendItem.className = "legend-item";
+          const colorBox = document.createElement("span");
+          colorBox.className = "legend-color";
+          colorBox.style.backgroundColor = colorScales.estado(item.k);
+          const text = document.createElement("span");
+          text.textContent = `${item.k}: ${item.v} (${percentage}%)`;
+          legendItem.appendChild(colorBox);
+          legendItem.appendChild(text);
+          summaryLegend.appendChild(legendItem);
+        });
+      }
+      
+      if (datosCacheAtencion && datosCacheAtencion.length > 0) {
+        const container = document.getElementById("trendChart");
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        
+        d3.select("#trendChart svg").remove();
+        
+        const svg = d3.select("#trendChart")
+          .append("svg")
+          .attr("width", width)
+          .attr("height", height);
+        
+        const margin = { top: 20, right: 20, bottom: 30, left: 50 };
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+        
+        const g = svg.append("g")
+          .attr("transform", `translate(${margin.left},${margin.top})`);
+        
+        const now = new Date();
+        const days = 30; 
+        const dates = Array.from({ length: days }, (_, i) => {
+          const d = new Date(now);
+          d.setDate(now.getDate() - (days - 1) + i);
+          return d;
+        });
+        
+        const dateCounts = dates.map(date => {
+          const count = datosCacheAtencion.filter(d => {
+            const fieldDate = d.timestamp;
+            if (!fieldDate) return false;
+            const dDate = new Date(fieldDate);
+            return dDate.toDateString() === date.toDateString();
+          }).length;
+          return { date, count };
+        });
+        
+        const x = d3.scaleTime()
+          .domain(d3.extent(dates))
+          .range([0, innerWidth]);
+        
+        const y = d3.scaleLinear()
+          .domain([0, d3.max(dateCounts, d => d.count)])
+          .range([innerHeight, 0])
+          .nice();
+        
+        const line = d3.line()
+          .x(d => x(d.date))
+          .y(d => y(d.count));
+        
+        g.append("path")
+          .datum(dateCounts)
+          .attr("class", "line")
+          .attr("d", line)
+          .attr("stroke", colorScales.generic("default"))
+          .attr("stroke-width", 2)
+          .attr("fill", "none");
+        
+        g.append("g")
+          .attr("transform", `translate(0,${innerHeight})`)
+          .call(d3.axisBottom(x).ticks(d3.timeDay.every(7)));
+        
+        g.append("g")
+          .call(d3.axisLeft(y));
+      }
+    }
+
+    function cargarDatos() {
+      loadingOverlay.style.display = "flex";
+      
+      onSnapshot(query(collection(dbCausas, "causas")), snap => {
+        const arr = [];
+        snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+        datosCacheCausas = arr;
+        actualizarDashboard();
+      }, err => {
+        console.error("Error al obtener datos de causas:", err);
+        datosCacheCausas = [];
+        actualizarDashboard();
+      });
+
+      onValue(ref(dbAtencion, "atencion"), snap => {
+        const data = snap.val();
+        const arr = data ? Object.values(data) : [];
+        datosCacheAtencion = arr;
+        actualizarDashboard();
+      }, err => {
+        console.error("Error al obtener datos de atenciones:", err);
+        datosCacheAtencion = [];
+        actualizarDashboard();
+      });
+    }
+
+    function descargarImagen() {
+      const card = document.querySelector(".card");
+      html2canvas(card).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "estadisticas.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      });
+    }
+
+    // Inicializar el dashboard directamente
+    initDashboard();
+  </script>
+</body>
+</html>
