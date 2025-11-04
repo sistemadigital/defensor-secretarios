@@ -1199,7 +1199,7 @@
                 </div>
             </div>
             <div class="controls-form" style="justify-content:flex-end;">
-                <a href="https://defensoria6.github.io/linea-tiempo/" id="btnVerLineaTiempo" class="button"><i class="fa-solid fa-timeline"></i> Ver Línea de Tiempo</a>
+                <a href="https://personal2025rf.github.io/sistema2/lineatiempo.html" id="btnVerLineaTiempo" class="button"><i class="fa-solid fa-timeline"></i> Ver Línea de Tiempo</a>
                 <button id="btnCerrarVer" class="button button-secondary"><i class="fa fa-xmark"></i>Cerrar</button>
                 <button id="btnPrintRegistro" class="button button-success"><i class="fa fa-print"></i>Imprimir Registro</button>
             </div>
@@ -1501,7 +1501,7 @@
         function accionesHTML(id){
             return `<button class="button ver-detalles" data-id="${id}" title="Ver"><i class="fa fa-eye"></i></button>
                     <button class="button button-secondary editar-detalles" data-id="${id}" title="Editar"><i class="fa fa-pen"></i></button>
-                    <a href="https://defensoria6.github.io/linea-tiempo/?id=${id}" class="button" title="Ver Línea de Tiempo"><i class="fa-solid fa-timeline"></i></a>`;
+                    <a href="https://personal2025rf.github.io/sistema2/lineatiempo.html?id=${id}" class="button" title="Ver Línea de Tiempo"><i class="fa-solid fa-timeline"></i></a>`;
         }
 
         function renderTablas(data){
@@ -1848,7 +1848,7 @@
 
                 verContenido.innerHTML = contenidoHTML;
                 await cargarNotas(id);
-                btnVerLineaTiempo.href = `https://defensoria6.github.io/linea-tiempo/?id=${causaActualId}`;
+                btnVerLineaTiempo.href = `https://personal2025rf.github.io/sistema2/lineatiempo.html?id=${causaActualId}`;
                 modalVer.style.display = "flex";
             } catch(e) {
                 console.error(e);
