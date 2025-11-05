@@ -70,7 +70,6 @@
             color: var(--text-primary);
             line-height: 1.5;
             min-height: 100vh;
-            /* overflow-x: hidden; <-- ESTA LÍNEA FUE ELIMINADA */
         }
 
         /* Header */
@@ -773,7 +772,9 @@
             line-height: 1.4;
         }
 
-        /* Responsive mejorado para móviles */
+        /* ===========================================
+           ESTILOS MEJORADOS PARA MÓVIL (inspirados en partes.html)
+           =========================================== */
         @media (max-width: 1024px) {
             .container {
                 max-width: 100%;
@@ -886,13 +887,62 @@
                 -webkit-overflow-scrolling: touch;
                 padding-bottom: 4px;
             }
+            
+            /* Estilo similar a partes.html para móviles */
+            .modal .content {
+                border-radius: 12px;
+                max-width: 95%;
+            }
+            
+            .modal-header {
+                border-radius: 12px 12px 0 0;
+                padding: 15px 20px;
+            }
+            
+            .modal-body {
+                padding: 20px;
+                max-height: 60vh;
+            }
+            
+            .modal-footer {
+                background: #fff;
+                padding: 15px 20px;
+                border-top: 1px solid #eee;
+                display: flex;
+                gap: 10px;
+                justify-content: flex-end;
+                border-radius: 0 0 12px 12px;
+            }
+            
+            .detail-grid {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .detail-item {
+                margin-bottom: 10px;
+            }
+            
+            .detail-label {
+                font-weight: var(--font-weight-semibold);
+                color: var(--primary-blue);
+                font-size: var(--caption-size);
+                margin-bottom: 4px;
+                text-transform: uppercase;
+            }
+            
+            .detail-value {
+                font-size: var(--body-regular-size);
+                color: var(--text-primary);
+                padding: 8px 0;
+                border-bottom: 1px solid var(--secondary-light-gray);
+            }
         }
 
         @media (max-width: 576px) {
             .container {
                 padding: var(--spacing-xs);
-                width: 100%;
-                /* overflow-x: hidden; <-- ESTA LÍNEA FUE ELIMINADA */
             }
             
             .kpi-cards {
@@ -984,6 +1034,25 @@
                 max-width: 90%;
                 font-size: 0.9rem;
                 padding: 10px 15px;
+            }
+            
+            /* Estilo de partes.html para móviles pequeños */
+            .table-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--spacing-s);
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+            }
+            
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-actions {
+                flex-direction: column;
             }
         }
         
