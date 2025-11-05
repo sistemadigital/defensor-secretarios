@@ -52,12 +52,10 @@
             background: var(--background);
             min-height: 100vh;
             color: var(--foreground);
-            overflow-x: hidden;
         }
 
         .app-container {
             min-height: 100vh;
-            width: 100%;
         }
 
         .navbar {
@@ -72,22 +70,12 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border);
-            flex-wrap: wrap;
-            gap: 15px;
         }
 
         .navbar-brand {
             font-size: 24px;
             font-weight: bold;
             color: var(--primary);
-            white-space: nowrap;
-        }
-
-        .navbar-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
         }
 
         .navbar-btn {
@@ -98,8 +86,10 @@
             cursor: pointer;
             font-weight: bold;
             transition: background 0.3s;
-            white-space: nowrap;
-            flex-shrink: 0;
+        }
+
+        .navbar-btn + .navbar-btn {
+            margin-left: 10px;
         }
 
         .btn-blue {
@@ -119,15 +109,12 @@
             cursor: pointer;
             font-weight: bold;
             margin-right: 10px;
-            flex-shrink: 0;
         }
 
         .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
         }
 
         .profile-pic {
@@ -137,7 +124,6 @@
             object-fit: cover;
             border: 2px solid var(--primary);
             cursor: pointer;
-            flex-shrink: 0;
         }
 
         .profile-pic-placeholder {
@@ -151,13 +137,11 @@
             color: var(--primary-foreground);
             font-weight: bold;
             cursor: pointer;
-            flex-shrink: 0;
         }
 
         .welcome-message {
             color: var(--foreground);
             font-weight: 600;
-            white-space: nowrap;
         }
 
         .logout-btn {
@@ -169,8 +153,6 @@
             cursor: pointer;
             font-weight: bold;
             transition: background 0.3s;
-            white-space: nowrap;
-            flex-shrink: 0;
         }
 
         .logout-btn:hover {
@@ -180,7 +162,6 @@
         .main-content {
             display: flex;
             min-height: calc(100vh - 80px);
-            width: 100%;
         }
 
         .sidebar {
@@ -188,15 +169,10 @@
             background: var(--sidebar);
             backdrop-filter: blur(10px);
             padding: 20px 0;
-            transition: all 0.3s ease;
+            transition: width 0.3s ease;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             border-right: 1px solid var(--sidebar-border);
-            position: fixed;
-            height: calc(100vh - 80px);
-            z-index: 999;
-            left: 0;
-            top: 80px;
         }
 
         .sidebar.expanded {
@@ -209,12 +185,10 @@
 
         .sidebar-menu {
             list-style: none;
-            width: 100%;
         }
 
         .sidebar-menu li {
             margin-bottom: 5px;
-            width: 100%;
         }
 
         .sidebar-menu a {
@@ -226,7 +200,6 @@
             transition: all 0.3s;
             border-left: 4px solid transparent;
             cursor: pointer;
-            width: 100%;
         }
 
         .sidebar-menu a:hover {
@@ -239,7 +212,6 @@
             font-size: 20px;
             min-width: 30px;
             text-align: center;
-            flex-shrink: 0;
         }
 
         .sidebar-menu .text {
@@ -247,7 +219,6 @@
             white-space: nowrap;
             opacity: 0;
             transition: opacity 0.3s;
-            overflow: hidden;
         }
 
         .sidebar.expanded .sidebar-menu .text {
@@ -259,19 +230,10 @@
             padding: 0;
             background: var(--background);
             position: relative;
-            margin-left: 70px;
-            transition: margin-left 0.3s ease;
-            width: calc(100% - 70px);
-        }
-
-        .sidebar.expanded + .content-area {
-            margin-left: 280px;
-            width: calc(100% - 280px);
         }
 
         .welcome-screen {
             padding: 40px;
-            width: 100%;
         }
 
         .welcome-card {
@@ -282,7 +244,6 @@
             text-align: center;
             margin-bottom: 30px;
             border: 1px solid var(--border);
-            width: 100%;
         }
 
         .welcome-card h1 {
@@ -299,11 +260,10 @@
 
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 25px;
             margin-top: 30px;
             justify-content: center;
-            width: 100%;
         }
 
         @media (min-width: 1200px) {
@@ -320,7 +280,6 @@
             transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
             border: 1px solid var(--border);
-            width: 100%;
         }
 
         .feature-card:hover {
@@ -375,16 +334,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 100%;
         }
 
         .iframe-title {
             font-size: 18px;
             font-weight: bold;
             color: var(--card-foreground);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         .close-iframe {
@@ -395,7 +350,6 @@
             border-radius: calc(var(--radius) - 0.5rem);
             cursor: pointer;
             font-weight: bold;
-            flex-shrink: 0;
         }
 
         .close-iframe:hover {
@@ -408,63 +362,18 @@
             border: none;
         }
 
-        /* Mejoras responsivas */
-        @media (max-width: 1200px) {
-            .navbar {
-                padding: 12px 15px;
-            }
-            
-            .navbar-brand {
-                font-size: 20px;
-            }
-            
-            .cards-grid {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            }
-        }
-
-        @media (max-width: 992px) {
-            .navbar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            
-            .navbar-buttons {
-                width: 100%;
-                justify-content: flex-start;
-            }
-            
-            .user-info {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .content-area {
-                margin-left: 0;
-                width: 100%;
-            }
-            
+        /* MODIFICACIONES PRINCIPALES: Móviles y tablets */
+        @media (max-width: 1024px) {
             .sidebar {
-                transform: translateX(-100%);
-                width: 280px;
-            }
-            
-            .sidebar.expanded {
-                transform: translateX(0);
-            }
-            
-            .sidebar.expanded + .content-area {
-                margin-left: 0;
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
+                position: fixed;
+                left: 0;
+                top: 80px;
                 height: calc(100vh - 80px);
                 z-index: 999;
+                transform: translateX(-100%);
+                width: 280px;
+                overflow-y: auto;
+                transition: transform 0.3s ease;
             }
 
             .sidebar.show {
@@ -475,8 +384,25 @@
                 opacity: 1;
             }
 
+            .sidebar-menu {
+                height: 100%;
+                overflow-y: auto;
+                padding-bottom: 20px;
+            }
+
+            .sidebar-menu li {
+                margin-bottom: 0;
+            }
+
+            .sidebar-menu a {
+                padding: 15px 20px;
+                min-height: 50px;
+                display: flex;
+                align-items: center;
+            }
+
             .content-area {
-                padding: 0;
+                padding: 20px;
             }
 
             .welcome-screen {
@@ -504,14 +430,23 @@
                 display: none;
             }
             
-            .navbar-buttons {
-                flex-direction: column;
-                width: 100%;
+            /* Mejorar el scroll en móviles */
+            .sidebar-menu {
+                scrollbar-width: thin;
+                scrollbar-color: var(--primary) var(--sidebar);
             }
-            
-            .navbar-btn {
-                width: 100%;
-                text-align: center;
+
+            .sidebar-menu::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            .sidebar-menu::-webkit-scrollbar-track {
+                background: var(--sidebar);
+            }
+
+            .sidebar-menu::-webkit-scrollbar-thumb {
+                background: var(--primary);
+                border-radius: 2px;
             }
         }
 
@@ -521,7 +456,7 @@
             }
 
             .navbar-brand {
-                font-size: 18px;
+                font-size: 20px;
             }
 
             .welcome-screen {
@@ -534,34 +469,6 @@
 
             .feature-card {
                 padding: 20px;
-            }
-            
-            .iframe-header {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
-            }
-            
-            .iframe-title {
-                font-size: 16px;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .navbar-brand {
-                font-size: 16px;
-            }
-            
-            .welcome-card h1 {
-                font-size: 20px;
-            }
-            
-            .welcome-card p {
-                font-size: 16px;
-            }
-            
-            .feature-card {
-                padding: 15px;
             }
         }
 
@@ -638,21 +545,6 @@
         .btn:hover {
             background: oklch(0.62 0.17 244.9955);
         }
-        
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 998;
-        }
-        
-        .overlay.active {
-            display: block;
-        }
     </style>
 </head>
 <body>
@@ -662,7 +554,7 @@
                 <button class="navbar-toggle" onclick="toggleSidebar()">☰</button>
                 <div class="navbar-brand">Sistema Defensoría Civil y Comercial 6</div>
             </div>
-            <div class="navbar-buttons">
+            <div>
                 <button class="navbar-btn btn-blue" onclick="openIframe('Sistema Operador', 'https://personal2025rf.github.io/operador/')">Sistema Operador</button>
                 <button class="navbar-btn btn-blue" onclick="openIframe('Estadistica Sistema', 'https://personal2025rf.github.io/reporte/')">Estadisticas</button>
                 <button class="navbar-btn btn-blue" onclick="openIframe('Agenda Defensor', 'https://defensorialocal-seis.github.io/agenda/')">Agenda Defensor</button>
@@ -678,45 +570,43 @@
             </div>
         </nav>
 
-        <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
-
         <div class="main-content">
             <aside class="sidebar" id="sidebar">
                 <ul class="sidebar-menu">
-                    <li><a onclick="loadPage('https://personal2025rf.github.io/sistema2/causas.html', 'Registro de Causas')">
+                    <li><a onclick="loadPage('https://sistemadigital.github.io/defensor-secretarios/causas.html', 'Registro de Causas')">
                         <span class="icon">📋</span>
                         <span class="text">Registro de Causas</span>
                     </a></li>                    
-                    <li><a onclick="loadPage('https://personal2025rf.github.io/sistema2/partes.html', 'Datos de Partes')">
+                    <li><a onclick="loadPage('https://sistemadigital.github.io/defensor-secretarios/partes.html', 'Datos de Partes')">
                         <span class="icon">📊</span>
                         <span class="text">Datos de Partes</span>
                     </a></li>
-                    <li><a onclick="loadPage('https://personal2025rf.github.io/sistema2/proteccioNNyA.html', 'Protección')">
+                    <li><a onclick="loadPage('https://sistemadigital.github.io/defensor-secretarios/proteccioNNyA.html', 'Protección')">
                         <span class="icon">🛡️</span>
                         <span class="text">Protección NNyA</span>
                     </a></li>
-                    <li><a onclick="loadPage('https://personal2025rf.github.io/sistema2/proteccion-adultos.html', 'Protección')">
+                    <li><a onclick="loadPage('https://sistemadigital.github.io/defensor-secretarios/proteccion-adultos.html', 'Protección')">
                         <span class="icon">🧩</span>
                         <span class="text">Protección Adultos</span>
                     </a></li>
-                    <li><a onclick="loadPage('https://personal2025rf.github.io/sistema2/calendario.html', 'Calendario')">
+                    <li><a onclick="loadPage('https://sistemadigital.github.io/defensor-secretarios/calendario.html', 'Calendario')">
                         <span class="icon">📅</span>
                         <span class="text">Calendario</span>
                     </a></li>
-                    <li><a onclick="loadIframe('https://personal2025rf.github.io/sistema2/dictamenes.html', 'Dictámenes Escritos Modelos')">
+                    <li><a onclick="loadIframe('https://sistemadigital.github.io/defensor-secretarios/dictamenes.html', 'Dictámenes Escritos Modelos')">
                         <span class="icon">📝</span>
                         <span class="text">Dictámenes Escritos Modelos</span>
                     </a></li>
-                    <li><a onclick="loadPage('https://personal2025rf.github.io/sistema2/documentos.html', 'Documentos')">
+                    <li><a onclick="loadPage('https://sistemadigital.github.io/defensor-secretarios/documentos.html', 'Documentos')">
                         <span class="icon">📄</span>
                         <span class="text">Documentos</span>
                     </a></li>
-                    <li><a onclick="openIframe('Organismos Directorio','https://personal2025rf.github.io/sistema2/organismos.html')">
+                    <li><a onclick="openIframe('Organismos Directorio','https://sistemadigital.github.io/defensor-secretarios/organismos.html')">
                             <span class="icon">🏛️</span>
                             <span class="text">Organismos Directorio</span>
                         </a>
                     </li>
-                    <li><a onclick="loadIframe('https://personal2025rf.github.io/sistema2/notificaciones.html', 'Notificaciones')">
+                    <li><a onclick="loadIframe('https://sistemadigital.github.io/defensor-secretarios/notificaciones.html', 'Notificaciones')">
                         <span class="icon">⚖️</span>
                         <span class="text">Notificaciones</span>
                     </a></li>
@@ -731,37 +621,37 @@
                     </div>
 
                     <div class="cards-grid">
-                         <div class="feature-card" onclick="loadPage('https://personal2025rf.github.io/sistema2/causas.html', 'Registro de Causas')">
+                         <div class="feature-card" onclick="loadPage('https://sistemadigital.github.io/defensor-secretarios/causas.html', 'Registro de Causas')">
                             <h3>Registro de Causas</h3>
                             <p>Registra, actualiza y da seguimiento a todas las causas y expedientes del sistema.</p>
                             <a class="btn-link">Acceder</a>
                         </div>
 		
-                        <div class="feature-card" onclick="loadPage('https://personal2025rf.github.io/sistema2/partes.html', 'Datos de Partes')">
+                        <div class="feature-card" onclick="loadPage('https://sistemadigital.github.io/defensor-secretarios/partes.html', 'Datos de Partes')">
                             <h3>Datos de Partes</h3>
                             <p>Gestiona y consulta información detallada sobre las partes involucradas en los procesos legales.</p>
                             <a class="btn-link">Acceder</a>
                         </div>
 
-                        <div class="feature-card" onclick="loadPage('https://personal2025rf.github.io/sistema2/proteccion-adultos.html', 'Protección')">
+                        <div class="feature-card" onclick="loadPage('https://sistemadigital.github.io/defensor-secretarios/proteccion-adultos.html', 'Protección')">
                             <h3>Protección de Personas</h3>
                             <p>Sistema especializado para la protección y seguimiento de personas en situación de vulnerabilidad.</p>
                             <a class="btn-link">Acceder</a>
                         </div>
 
-                        <div class="feature-card" onclick="loadPage('https://personal2025rf.github.io/sistema2/calendario.html', 'Calendario')">
+                        <div class="feature-card" onclick="loadPage('https://sistemadigital.github.io/defensor-secretarios/calendario.html', 'Calendario')">
                             <h3>Calendario</h3>
                             <p>Organiza y programa audiencias, citas y eventos importantes del calendario judicial.</p>
                             <a class="btn-link">Acceder</a>
                         </div>
 
-                        <div class="feature-card" onclick="loadPage('https://personal2025rf.github.io/sistema2/documentos.html', 'Documentos')">
+                        <div class="feature-card" onclick="loadPage('https://sistemadigital.github.io/defensor-secretarios/documentos.html', 'Documentos')">
                             <h3>Documentos</h3>
                             <p>Gestiona, almacena y organiza todos los documentos legales y administrativos.</p>
                             <a class="btn-link">Acceder</a>
                         </div>
 
-                        <div class="feature-card" onclick="loadPage('https://personal2025rf.github.io/sistema2/dictamenes.html', 'Atención al Público')">
+                        <div class="feature-card" onclick="loadPage('https://sistemadigital.github.io/defensor-secretarios/dictamenes.html', 'Atención al Público')">
                             <h3>Dictamenes Escritos Modelos</h3>
                             <p>Acceda a dictamenes Escritos Modelos Calculadora de plazos procesales y mucho mas.</p>
                             <a class="btn-link">Acceder</a>
@@ -893,22 +783,13 @@
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            
-            if (window.innerWidth <= 992) {
-                sidebar.classList.toggle('expanded');
-                overlay.classList.toggle('active');
+            if (window.innerWidth <= 1024) {
+                // En móviles y tablets: toggle de la clase 'show'
+                sidebar.classList.toggle('show');
             } else {
+                // En desktop: toggle de la clase 'expanded'
                 sidebar.classList.toggle('expanded');
             }
-        }
-
-        function closeSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            
-            sidebar.classList.remove('expanded');
-            overlay.classList.remove('active');
         }
 
         function loadPage(url, title) {
@@ -923,8 +804,9 @@
             iframe.src = url;
             iframeTitle.textContent = title;
             
-            if (window.innerWidth <= 992) {
-                closeSidebar();
+            if (window.innerWidth <= 1024) {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.remove('show');
             }
         }
 
@@ -941,8 +823,9 @@
             const iframe = document.getElementById("contentIframe");
             iframe.src = url;
             
-            if (window.innerWidth <= 992) {
-                closeSidebar();
+            if (window.innerWidth <= 1024) {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.remove('show');
             }
         }
 
@@ -952,6 +835,11 @@
             document.getElementById('iframeContainer').style.display = 'block';
             const welcome = document.getElementById('welcomeScreen');
             if (welcome) welcome.style.display = 'none';
+            
+            if (window.innerWidth <= 1024) {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.remove('show');
+            }
         }
 
         function closeIframe() {
@@ -983,26 +871,24 @@
             }
         }
 
+        // Cerrar sidebar al hacer clic fuera de él en móviles/tablets
         document.addEventListener('click', function(event) {
             const sidebar = document.getElementById('sidebar');
             const toggleBtn = document.querySelector('.navbar-toggle');
             
-            if (window.innerWidth <= 992 && 
+            if (window.innerWidth <= 1024 && 
                 !sidebar.contains(event.target) && 
                 !toggleBtn.contains(event.target) && 
-                sidebar.classList.contains('expanded')) {
-                closeSidebar();
+                sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
             }
         });
 
+        // Ajustar el sidebar al cambiar el tamaño de la ventana
         window.addEventListener('resize', function() {
             const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            
-            if (window.innerWidth > 992) {
-                overlay.classList.remove('active');
-            } else if (window.innerWidth <= 992 && sidebar.classList.contains('expanded')) {
-                overlay.classList.add('active');
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove('show');
             }
         });
     </script>
