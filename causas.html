@@ -298,6 +298,7 @@
         .table-wrap {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            width: 100%;
         }
 
         .data-table {
@@ -942,7 +943,26 @@
                 padding: var(--spacing-s);
             }
             
-            /* Mejoras específicas para móviles pequeños */
+            /* MEJORAS ESPECÍFICAS PARA MÓVILES PEQUEÑOS */
+            .table-wrap {
+                margin: 0 -8px;
+                width: calc(100% + 16px);
+            }
+            
+            .data-table {
+                min-width: 100%;
+                font-size: 0.8rem;
+            }
+            
+            .data-table th, 
+            .data-table td {
+                padding: 6px 4px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 120px;
+            }
+            
             .filter-group {
                 width: 100%;
             }
@@ -955,15 +975,6 @@
             .tab-button {
                 padding: 8px 12px;
                 font-size: 0.8rem;
-            }
-            
-            .table-wrap {
-                margin: 0 -8px;
-                padding: 0 8px;
-            }
-            
-            .data-table {
-                min-width: 100%;
             }
             
             .prioridad-pill {
@@ -1011,8 +1022,9 @@
             
             .data-table th, 
             .data-table td {
-                padding: 6px;
-                font-size: 0.8rem;
+                padding: 4px 2px;
+                font-size: 0.75rem;
+                max-width: 100px;
             }
             
             .button {
@@ -1308,7 +1320,7 @@
                 </div>
             </div>
             <div class="controls-form" style="justify-content:flex-end;">
-                <a href="https://personal2025rf.github.io/sistema2/lineatiempo.html" id="btnVerLineaTiempo" class="button"><i class="fa-solid fa-timeline"></i> Ver Línea de Tiempo</a>
+                <a href="https://sistemadigital.github.io/defensor-secretarios/lineatiempo.html" id="btnVerLineaTiempo" class="button"><i class="fa-solid fa-timeline"></i> Ver Línea de Tiempo</a>
                 <button id="btnCerrarVer" class="button button-secondary"><i class="fa fa-xmark"></i>Cerrar</button>
                 <button id="btnPrintRegistro" class="button button-success"><i class="fa fa-print"></i>Imprimir Registro</button>
             </div>
@@ -1610,7 +1622,7 @@
         function accionesHTML(id){
             return `<button class="button ver-detalles" data-id="${id}" title="Ver"><i class="fa fa-eye"></i></button>
                     <button class="button button-secondary editar-detalles" data-id="${id}" title="Editar"><i class="fa fa-pen"></i></button>
-                    <a href="https://personal2025rf.github.io/sistema2/lineatiempo.html?id=${id}" class="button" title="Ver Línea de Tiempo"><i class="fa-solid fa-timeline"></i></a>`;
+                    <a href="https://sistemadigital.github.io/defensor-secretarios/lineatiempo.html?id=${id}" class="button" title="Ver Línea de Tiempo"><i class="fa-solid fa-timeline"></i></a>`;
         }
 
         function renderTablas(data){
@@ -1957,7 +1969,7 @@
 
                 verContenido.innerHTML = contenidoHTML;
                 await cargarNotas(id);
-                btnVerLineaTiempo.href = `https://personal2025rf.github.io/sistema2/lineatiempo.html?id=${causaActualId}`;
+                btnVerLineaTiempo.href = `https://sistemadigital.github.io/defensor-secretarios/lineatiempo.html?id=${causaActualId}`;
                 modalVer.style.display = "flex";
             } catch(e) {
                 console.error(e);
