@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comisarías de Misiones</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* Variables CSS inspiradas en causas.html */
+        :root {
+            --primary-blue: #007bff;
+            --primary-light-blue: #e7f4ff;
+            --primary-dark-blue: #0056b3;
+            --secondary-gray: #f8f9fa;
+            --secondary-light-gray: #e9ecef;
+            --secondary-dark-gray: #6c757d;
+            --status-success: #28a745;
+            --status-warning: #ffc107;
+            --status-danger: #dc3545;
+            --status-info: #17a2b8;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-link: #007bff;
+            --text-light: #ffffff;
+            --background-default: #ffffff;
+            --background-card: #ffffff;
+            --background-header: #ffffff;
+            --background-table-header: #f8f9fa;
+            --border-default: #dee2e6;
+            --font-family: 'Arial', 'Helvetica', sans-serif;
+            --border-radius-default: 8px;
+            --border-radius-pill: 20px;
+            --shadow-subtle: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-card: 0 4px 6px rgba(0,0,0,0.1);
+            --spacing-xs: 4px;
+            --spacing-s: 8px;
+            --spacing-m: 16px;
+            --spacing-l: 24px;
+            --spacing-xl: 32px;
+        }
+
+        /* Estilos base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--secondary-gray);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: var(--spacing-m);
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--background-header);
+            border-radius: var(--border-radius-default);
+            box-shadow: var(--shadow-subtle);
+            padding: var(--spacing-m);
+            margin-bottom: var(--spacing-l);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: var(--primary-blue);
+            font-size: 1.75rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-s);
+        }
+
+        /* Contenedor principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Vista de módulos UR */
+        .ur-modules-view {
+            display: block;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--spacing-m);
+            margin-bottom: var(--spacing-l);
+        }
+
+        .ur-module {
+            background-color: var(--background-card);
+            border-radius: var(--border-radius-default);
+            padding: var(--spacing-l);
+            box-shadow: var(--shadow-card);
+            border-left: 4px solid var(--primary-blue);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .ur-module:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .ur-module-icon {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: var(--spacing-s);
+        }
+
+        .ur-module-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .ur-module-city {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-s);
+        }
+
+        .ur-module-count {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            background-color: var(--secondary-light-gray);
+            padding: var(--spacing-xs) var(--spacing-s);
+            border-radius: var(--border-radius-pill);
+        }
+
+        /* Vista de detalles de UR */
+        .ur-details-view {
+            display: none;
+        }
+
+        .ur-details-header {
+            background-color: var(--background-card);
+            border-radius: var(--border-radius-default);
+            box-shadow: var(--shadow-subtle);
+            padding: var(--spacing-m);
+            margin-bottom: var(--spacing-l);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ur-details-title {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-s);
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .back-button {
+            background-color: var(--primary-blue);
+            color: var(--text-light);
+            border: none;
+            border-radius: var(--border-radius-default);
+            padding: var(--spacing-s) var(--spacing-m);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .back-button:hover {
+            background-color: var(--primary-dark-blue);
+        }
+
+        .comisarias-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--spacing-m);
+        }
+
+        .comisaria-card {
+            background-color: var(--background-card);
+            border-radius: var(--border-radius-default);
+            padding: var(--spacing-m);
+            box-shadow: var(--shadow-subtle);
+            border-left: 4px solid var(--status-success);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .comisaria-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .comisaria-name {
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-primary);
+        }
+
+        .comisaria-role {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-s);
+        }
+
+        .comisaria-phone {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            text-decoration: none;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-s);
+            background-color: var(--primary-light-blue);
+            border-radius: var(--border-radius-default);
+            justify-content: center;
+        }
+
+        .comisaria-phone:hover {
+            color: var(--primary-dark-blue);
+            background-color: var(--secondary-light-gray);
+        }
+
+        .comisaria-phone:before {
+            content: "\f879";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+        }
+
+        .no-phone {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: var(--spacing-s);
+            background-color: var(--secondary-light-gray);
+            border-radius: var(--border-radius-default);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: var(--spacing-s);
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .modules-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+            
+            .ur-details-header {
+                flex-direction: column;
+                gap: var(--spacing-m);
+                align-items: flex-start;
+            }
+            
+            .comisarias-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.25rem;
+            }
+            
+            .ur-module {
+                padding: var(--spacing-m);
+            }
+            
+            .ur-module-icon {
+                font-size: 2rem;
+            }
+            
+            .ur-module-title {
+                font-size: 1.1rem;
+            }
+            
+            .comisaria-card {
+                padding: var(--spacing-s);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Vista de módulos UR -->
+        <section class="ur-modules-view" id="ur-modules-view">
+            <div class="modules-grid" id="modules-grid">
+                <!-- Los módulos de UR se cargarán aquí dinámicamente -->
+            </div>
+        </section>
+
+        <!-- Vista de detalles de UR -->
+        <section class="ur-details-view" id="ur-details-view">
+            <div class="ur-details-header">
+                <h2 class="ur-details-title" id="ur-details-title">
+                    <i class="fas fa-building"></i> <span id="current-ur-name"></span>
+                </h2>
+                <button class="back-button" id="back-button">
+                    <i class="fas fa-arrow-left"></i> Volver a Unidades Regionales
+                </button>
+            </div>
+            <div class="comisarias-list" id="comisarias-list">
+                <!-- Las comisarías de la UR seleccionada se cargarán aquí -->
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const data = {
+            "UR-I": [
+                { "name": "Comisaría Seccional 1ª", "role": "MISIONES (POSADAS)", "phone": "3764447545" },
+                { "name": "Comisaría Seccional 2ª", "role": "MISIONES (POSADAS)", "phone": "3764463375" },
+                { "name": "Comisaría Seccional 3ª", "role": "MISIONES (POSADAS)", "phone": "3764458282" },
+                { "name": "Comisaría Seccional 4ª", "role": "MISIONES (POSADAS)", "phone": "3764458145" },
+                { "name": "Comisaría Seccional 5ª", "role": "MISIONES (POSADAS)", "phone": "3764463200" },
+                { "name": "Comisaría Seccional 6ª", "role": "MISIONES (POSADAS)", "phone": "3764457335" },
+                { "name": "Comisaría Seccional 7ª", "role": "MISIONES (POSADAS)", "phone": "3764458428" },
+                { "name": "Comisaría Seccional 8ª", "role": "MISIONES (POSADAS)", "phone": "3764458025" },
+                { "name": "Comisaría Seccional 9ª", "role": "MISIONES (POSADAS)", "phone": "3764463428" },
+                { "name": "Comisaría de la Mujer", "role": "POSADAS", "phone": "3764447661" },
+                { "name": "Comisaría San José", "role": "SAN JOSÉ", "phone": "3758490332" },
+                { "name": "Comisaría de Apóstoles", "role": "APÓSTOLES", "phone": "3758422005" },
+                { "name": "Comisaría de San Ignacio", "role": "SAN IGNACIO", "phone": "3764470005" },
+                { "name": "Comisaría de la Mujer", "role": "APÓSTOLES", "phone": "3758422205" }
+            ],
+            "UR-II": [
+                { "name": "Comisaría Seccional 1ª", "role": "Jardín América", "phone": "3743460144" },
+                { "name": "Comisaría de la Mujer", "role": "Jardín América", "phone": "3743460835" },
+                { "name": "Comisaría de San Vicente", "role": "San Vicente", "phone": "3754460460" },
+                { "name": "Comisaría Seccional 1ª", "role": "Oberá", "phone": "3755421717" },
+                { "name": "Comisaría Seccional 2ª", "role": "Oberá", "phone": "3755420042" }
+            ],
+            "UR-III": [
+                { "name": "Comisaría de San Vicente", "role": "San Vicente", "phone": "3754460460" },
+                { "name": "Comisaría de la Mujer", "role": "San Vicente", "phone": "3754460280" },
+                { "name": "Comisaría de El Soberbio", "role": "El Soberbio", "phone": "3755495066" },
+                { "name": "Comisaría de Dos Hermanas", "role": "Dos Hermanas", "phone": "3757497009" }
+            ],
+            "UR-IV": [
+                { "name": "Comisaría de Leandro N. Alem", "role": "Leandro N. Alem", "phone": "3754420042" },
+                { "name": "Comisaría de la Mujer", "role": "Leandro N. Alem", "phone": "3754420042" },
+                { "name": "Comisaría de San Javier", "role": "San Javier", "phone": "3754460144" }
+            ],
+            "UR-V": [
+                { "name": "Comisaría de San Pedro", "role": "San Pedro", "phone": "3751460144" },
+                { "name": "Comisaría de la Mujer", "role": "San Pedro", "phone": "3751460144" },
+                { "name": "Comisaría de Fracrán", "role": "Fracrán", "phone": "3751200310" },
+                { "name": "Comisaría de Pozo Azul", "role": "Pozo Azul", "phone": "" },
+                { "name": "Comisaría de Tobuna", "role": "Tobuna", "phone": "3751620165" }
+            ],
+            "UR-VI": [
+                { "name": "Comisaría de Aristóbulo del Valle", "role": "Aristóbulo del Valle", "phone": "3755452140" },
+                { "name": "Comisaría de la Mujer", "role": "Aristóbulo del Valle", "phone": "3755452140" },
+                { "name": "Comisaría de El Salto", "role": "El Salto", "phone": "3755452140" },
+                { "name": "Comisaría de Campo Grande", "role": "Campo Grande", "phone": "3754490042" }
+            ],
+            "UR-VII": [
+                { "name": "Comisaría de Jardín América", "role": "Jardín América", "phone": "3743460144" },
+                { "name": "Comisaría de la Mujer", "role": "Jardín América", "phone": "3743460835" },
+                { "name": "Comisaría de San Vicente", "role": "San Vicente", "phone": "3754460460" },
+                { "name": "Comisaría Seccional 1ª", "role": "Oberá", "phone": "3755421717" },
+                { "name": "Comisaría Seccional 2ª", "role": "Oberá", "phone": "3755420042" }
+            ],
+            "UR-VIII": [
+                { "name": "Comisaría de San Pedro", "role": "San Pedro", "phone": "3751460144" },
+                { "name": "Comisaría de la Mujer", "role": "San Pedro", "phone": "3751460144" },
+                { "name": "Comisaría de Fracrán", "role": "Fracrán", "phone": "3751200310" },
+                { "name": "Comisaría de Pozo Azul", "role": "Pozo Azul", "phone": "" },
+                { "name": "Comisaría de Tobuna", "role": "Tobuna", "phone": "3751620165" }
+            ],
+            "UR-IX": [
+                { "name": "Comisaría de Puerto Piray", "role": "Puerto Piray", "phone": "3751467156" },
+                { "name": "Comisaría de Montecarlo", "role": "Montecarlo", "phone": "3751481300" }
+            ],
+            "UR-X": [
+                { "name": "Comisaría Seccional 1ª", "role": "Eldorado", "phone": "3751421717" },
+                { "name": "Comisaría Seccional 2ª", "role": "Eldorado", "phone": "3751420042" }
+            ],
+            "UR-XI": [
+                { "name": "Comisaría de El Soberbio", "role": "El Soberbio", "phone": "3755495066" },
+                { "name": "Comisaría de Dos Hermanas", "role": "Dos Hermanas", "phone": "3757497009" }
+            ],
+            "UR-XII": [
+                { "name": "Comisaría de Jardín América", "role": "Jardín América", "phone": "3743460144" },
+                { "name": "Comisaría de la Mujer", "role": "Jardín América", "phone": "3743460835" },
+                { "name": "Comisaría de San Vicente", "role": "San Vicente", "phone": "3754460460" },
+                { "name": "Comisaría Seccional 1ª", "role": "Oberá", "phone": "3755421717" },
+                { "name": "Comisaría Seccional 2ª", "role": "Oberá", "phone": "3755420042" }
+            ],
+            "UR-XIII": [
+                { "name": "Comisaría de Aristóbulo del Valle", "role": "Aristóbulo del Valle", "phone": "3755452140" },
+                { "name": "Comisaría de la Mujer", "role": "Aristóbulo del Valle", "phone": "3755452140" },
+                { "name": "Comisaría de El Salto", "role": "El Salto", "phone": "3755452140" },
+                { "name": "Comisaría de Campo Grande", "role": "Campo Grande", "phone": "3754490042" }
+            ],
+            "UR-XIV": [
+                { "name": "Comisaría de San Pedro", "role": "San Pedro", "phone": "3751460144" },
+                { "name": "Comisaría de la Mujer", "role": "San Pedro", "phone": "3751460144" },
+                { "name": "Comisaría de Fracrán", "role": "Fracrán", "phone": "3751200310" },
+                { "name": "Comisaría de Pozo Azul", "role": "Pozo Azul", "phone": "" },
+                { "name": "Comisaría de Tobuna", "role": "Tobuna", "phone": "3751620165" }
+            ],
+            "UR-XV": [
+                { "name": "Comisaría de Puerto Piray", "role": "Puerto Piray", "phone": "3751467156" },
+                { "name": "Comisaría de Montecarlo", "role": "Montecarlo", "phone": "3751481300" }
+            ]
+        };
+
+        // Mapeo de UR a ciudades
+        const urCities = {
+            "UR-I": "Posadas",
+            "UR-II": "Jardín América",
+            "UR-III": "San Vicente",
+            "UR-IV": "Leandro N. Alem",
+            "UR-V": "San Pedro",
+            "UR-VI": "Aristóbulo del Valle",
+            "UR-VII": "Jardín América",
+            "UR-VIII": "San Pedro",
+            "UR-IX": "Puerto Piray",
+            "UR-X": "Eldorado",
+            "UR-XI": "El Soberbio",
+            "UR-XII": "Jardín América",
+            "UR-XIII": "Aristóbulo del Valle",
+            "UR-XIV": "San Pedro",
+            "UR-XV": "Puerto Piray"
+        };
+
+        // Referencias a elementos del DOM
+        const urModulesView = document.getElementById('ur-modules-view');
+        const urDetailsView = document.getElementById('ur-details-view');
+        const modulesGrid = document.getElementById('modules-grid');
+        const comisariasList = document.getElementById('comisarias-list');
+        const currentUrName = document.getElementById('current-ur-name');
+        const backButton = document.getElementById('back-button');
+
+        // Función para renderizar los módulos de UR
+        function renderUrModules() {
+            modulesGrid.innerHTML = '';
+            
+            Object.keys(data).forEach(ur => {
+                const urModule = document.createElement('div');
+                urModule.className = 'ur-module';
+                urModule.dataset.ur = ur;
+                
+                const comisariasCount = data[ur].length;
+                const city = urCities[ur] || "Sin ciudad especificada";
+                
+                urModule.innerHTML = `
+                    <div class="ur-module-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h3 class="ur-module-title">${ur}</h3>
+                    <div class="ur-module-city">${city}</div>
+                    <div class="ur-module-count">${comisariasCount} comisarías</div>
+                `;
+                
+                urModule.addEventListener('click', () => {
+                    showUrDetails(ur);
+                });
+                
+                modulesGrid.appendChild(urModule);
+            });
+        }
+
+        // Función para mostrar los detalles de una UR específica
+        function showUrDetails(ur) {
+            // Cambiar vista
+            urModulesView.style.display = 'none';
+            urDetailsView.style.display = 'block';
+            
+            // Actualizar título
+            currentUrName.textContent = `${ur} - ${urCities[ur] || ""}`;
+            
+            // Renderizar comisarías
+            renderComisarias(ur);
+        }
+
+        // Función para renderizar las comisarías de una UR
+        function renderComisarias(ur) {
+            comisariasList.innerHTML = '';
+            
+            data[ur].forEach(comisaria => {
+                const comisariaCard = document.createElement('div');
+                comisariaCard.className = 'comisaria-card';
+                
+                const phoneElement = comisaria.phone 
+                    ? `<a href="tel:${comisaria.phone}" class="comisaria-phone">${comisaria.phone}</a>`
+                    : `<div class="no-phone">Número no disponible</div>`;
+                
+                comisariaCard.innerHTML = `
+                    <h4 class="comisaria-name">${comisaria.name}</h4>
+                    <div class="comisaria-role">${comisaria.role}</div>
+                    ${phoneElement}
+                `;
+                
+                comisariasList.appendChild(comisariaCard);
+            });
+        }
+
+        // Evento para volver a la vista de módulos
+        backButton.addEventListener('click', () => {
+            urDetailsView.style.display = 'none';
+            urModulesView.style.display = 'block';
+        });
+
+        // Inicializar la aplicación
+        renderUrModules();
+    </script>
+</body>
+</html>
