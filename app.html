@@ -68,9 +68,9 @@
             width: 100%;
         }
 
-        .navbar-left { display: flex; align-items: center; gap: 20px; }
-        .navbar-right { display: flex; align-items: center; gap: 15px; }
-        .navbar-brand { font-size: 20px; font-weight: bold; color: var(--primary); white-space: nowrap; }
+        .navbar-left { display: flex; align-items: center; gap: 20px; min-width: 0; }
+        .navbar-right { display: flex; align-items: center; gap: 15px; flex-shrink: 0; }
+        .navbar-brand { font-size: 20px; font-weight: bold; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .menu-container { position: relative; }
         .menu-toggle {
@@ -229,30 +229,23 @@
         .rect-module:nth-child(11) { border-left-color: rgba(20, 184, 166, 0.8); }
         .rect-module:nth-child(12) { border-left-color: rgba(217, 70, 239, 0.8); }
 
-        /* ========================================================
-           AJUSTE IFRAME: Full Screen pero DEBAJO de la cabecera
-           ======================================================== 
-        */
         .iframe-container { 
             display: none; 
-            /* Fijo para cubrir todo */
             position: fixed; 
             top: 0; 
             left: 0; 
             width: 100vw; 
             height: 100vh; 
-            /* Z-index menor que navbar (5000) pero mayor que contenido (0) */
             z-index: 4000; 
             background: var(--background);
             flex-direction: column;
-            /* Padding superior igual a la altura de la navbar para no taparla */
             padding-top: 70px;
         }
 
         .iframe-header { 
             background: var(--card); 
             padding: 0 20px; 
-            height: 50px; /* Barra del título del módulo más pequeña */
+            height: 50px; 
             border-bottom: 1px solid var(--border); 
             display: flex; 
             justify-content: space-between; 
@@ -262,13 +255,21 @@
 
         .content-iframe { 
             width: 100%; 
-            /* Ocupa todo el espacio restante automáticamente */
             flex: 1; 
             border: none; 
             display: block;
         }
 
+        /* AJUSTES PARA MÓVILES (SOLUCIÓN AL BOTÓN SALIR) */
         @media (max-width: 850px) {
+            .navbar { padding: 10px; }
+            .navbar-brand { font-size: 14px; white-space: normal; line-height: 1.1; max-width: 150px; }
+            .navbar-left { gap: 10px; }
+            .menu-toggle { padding: 8px 10px; font-size: 13px; min-width: 80px; }
+            .user-info { gap: 8px; }
+            #userName { display: none; } /* Ocultamos nombre para dejar espacio al botón */
+            .logout-btn { padding: 8px 10px; font-size: 13px; }
+
             .split-layout { flex-direction: column; }
             .left-panel { min-height: 200px; }
             .right-panel { align-items: center; }
