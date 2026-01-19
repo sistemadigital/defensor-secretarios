@@ -42,19 +42,30 @@
             color: var(--foreground);
         }
 
-        /* Navbar Original */
+        /* Navbar: AJUSTADA PARA ESTAR SIEMPRE VISIBLE */
         .navbar {
             background: var(--card);
             backdrop-filter: blur(10px);
-            padding: 12px 20px;
+            padding: 10px 20px;
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            position: sticky;
+            /* Cambiado a fixed para que siempre esté arriba */
+            position: fixed;
             top: 0;
-            z-index: 1000;
+            left: 0;
+            width: 100%;
+            /* Z-index muy alto para estar sobre el iframe */
+            z-index: 5000;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border);
+            height: 70px; /* Altura fija definida para cálculos */
+        }
+
+        /* Ajuste para que el contenido no quede debajo de la navbar fija */
+        .main-content {
+            padding-top: 75px; 
+            width: 100%;
         }
 
         .navbar-left { display: flex; align-items: center; gap: 20px; }
@@ -86,7 +97,7 @@
             background: var(--popover);
             border-radius: calc(var(--radius) - 0.5rem);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            z-index: 1100;
+            z-index: 5100; /* Mayor que la navbar para que el dropdown se vea */
             margin-top: 8px;
             border: 1px solid var(--border);
             overflow: hidden;
@@ -117,7 +128,7 @@
 
         /* Estilos Pantalla Principal */
         .welcome-screen {
-            padding: 40px;
+            padding: 20px 40px;
             min-height: calc(100vh - 80px);
             display: flex;
             justify-content: center;
@@ -163,18 +174,13 @@
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
             display: flex;
             justify-content: center;
-            align-items: center; /* Centrado vertical si hay poco contenido */
-            align-items: flex-start; /* Alineado arriba para grillas largas */
-            overflow-y: auto; /* Scroll si es muy alto */
+            align-items: flex-start; 
+            overflow-y: auto; 
         }
 
-        /* ========================================================
-           NUEVOS ESTILOS: Módulos Rectangulares (Grid Moderno) 
-           ========================================================
-        */
+        /* Módulos Rectangulares */
         .module-grid {
             display: grid;
-            /* Grid automático y responsivo: Tarjetas de mínimo 180px de ancho */
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 20px;
             width: 100%;
@@ -196,11 +202,8 @@
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             border: 1px solid rgba(255,255,255,0.6);
-            /* Borde izquierdo grueso para el color */
             border-left-width: 6px;
             border-left-style: solid;
-            
-            /* Tipografía */
             color: var(--foreground);
             font-weight: 700;
             font-size: 15px;
@@ -213,7 +216,6 @@
             box-shadow: 0 15px 30px rgba(0,0,0,0.1);
         }
 
-        /* Colores de bordes laterales (Mismos colores que antes) */
         .rect-module:nth-child(1) { border-left-color: rgba(239, 68, 68, 0.8); }
         .rect-module:nth-child(2) { border-left-color: rgba(59, 130, 246, 0.8); }
         .rect-module:nth-child(3) { border-left-color: rgba(16, 185, 129, 0.8); }
@@ -227,9 +229,44 @@
         .rect-module:nth-child(11) { border-left-color: rgba(20, 184, 166, 0.8); }
         .rect-module:nth-child(12) { border-left-color: rgba(217, 70, 239, 0.8); }
 
-        .iframe-container { display: none; width: 100%; height: 100%; }
-        .iframe-header { background: var(--card); padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .content-iframe { width: 100%; height: calc(100vh - 140px); border: none; }
+        /* ========================================================
+           AJUSTE IFRAME: Full Screen pero DEBAJO de la cabecera
+           ======================================================== 
+        */
+        .iframe-container { 
+            display: none; 
+            /* Fijo para cubrir todo */
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            /* Z-index menor que navbar (5000) pero mayor que contenido (0) */
+            z-index: 4000; 
+            background: var(--background);
+            flex-direction: column;
+            /* Padding superior igual a la altura de la navbar para no taparla */
+            padding-top: 70px;
+        }
+
+        .iframe-header { 
+            background: var(--card); 
+            padding: 0 20px; 
+            height: 50px; /* Barra del título del módulo más pequeña */
+            border-bottom: 1px solid var(--border); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-shrink: 0;
+        }
+
+        .content-iframe { 
+            width: 100%; 
+            /* Ocupa todo el espacio restante automáticamente */
+            flex: 1; 
+            border: none; 
+            display: block;
+        }
 
         @media (max-width: 850px) {
             .split-layout { flex-direction: column; }
@@ -238,7 +275,7 @@
         }
 
         /* Modal Perfil */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); }
+        .modal { display: none; position: fixed; z-index: 6000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); }
         .modal-content-profile { background: var(--popover); margin: 15% auto; padding: 30px; border-radius: var(--radius); width: 90%; max-width: 400px; text-align: center; }
         .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 0.8rem; cursor: pointer; font-weight: bold; }
         
@@ -248,9 +285,7 @@
         .avatar-option:hover { transform: scale(1.1); border-color: var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .avatar-container { display: flex; justify-content: center; gap: 30px; margin: 25px 0; }
 
-        /* ======================================================== */
-        /* MODAL DE LOGOUT */
-        /* ======================================================== */
+        /* Modal Logout */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0;
@@ -260,7 +295,7 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 5000;
+            z-index: 6000;
             animation: fadeIn 0.3s ease;
         }
 
@@ -277,7 +312,6 @@
 
         .modal-title-logout { color: var(--destructive); font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; }
         .modal-text-logout { color: #555; font-size: 1rem; margin-bottom: 25px; font-weight: 500; }
-        
         .modal-buttons-logout { display: flex; gap: 15px; justify-content: center; }
         
         .btn-confirm-logout { 
@@ -496,7 +530,7 @@
 
         function loadPage(url, title) {
             document.getElementById('welcomeScreen').style.display = 'none';
-            document.getElementById('iframeContainer').style.display = 'block';
+            document.getElementById('iframeContainer').style.display = 'flex'; // Changed to flex for column layout
             document.getElementById('contentIframe').src = url;
             document.getElementById('iframeTitle').textContent = title;
             if(menuOpen) toggleMenu();
