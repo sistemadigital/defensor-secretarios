@@ -35,7 +35,6 @@
             box-sizing: border-box;
         }
 
-        /* FONDO ACTUALIZADO CON IMAGEN */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
@@ -44,7 +43,6 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            /* Reemplazo del gradiente por la imagen solicitada */
             background: url('https://github.com/sistemadigital/iconos/blob/main/azulfondo.jpg?raw=true') no-repeat center center fixed;
             background-size: cover;
             position: relative;
@@ -90,7 +88,6 @@
             z-index: 1;
         }
 
-        /* Panel de Introducción */
         .intro-panel {
             flex: 2.2;
             background: #fff;
@@ -149,7 +146,6 @@
             text-transform: uppercase;
         }
 
-        /* BARRA DE ICONOS */
         .icons-bar {
             margin-top: 25px;
             width: 100%;
@@ -175,7 +171,6 @@
             transform: scale(1.2);
         }
 
-        /* Panel derecho */
         .right-panel {
             flex: 1.2;
             display: flex;
@@ -323,7 +318,6 @@
 
         .developer { color: var(--primary); font-weight: 600; }
 
-        /* Animaciones */
         @keyframes fadeInSlow { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideInText { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes fadeInSubText { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -331,9 +325,36 @@
 
         .fade-in { animation: fadeIn 0.5s ease forwards; }
 
+        /* AJUSTES PARA MÓVIL CORREGIDOS */
         @media (max-width: 1024px) {
-            .intro-panel { flex-direction: column; gap: 20px; }
-            .intro-title { font-size: 2.5rem; }
+            body {
+                align-items: flex-start;
+                padding: 10px;
+            }
+            .login-container {
+                flex-direction: column;
+                min-height: auto;
+                max-width: 500px;
+                margin: 20px auto;
+            }
+            .intro-panel {
+                flex-direction: column;
+                gap: 20px;
+                padding: 30px 20px;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            .intro-image {
+                max-width: 180px;
+            }
+            .intro-title {
+                font-size: 2.2rem;
+                white-space: normal;
+                text-align: center;
+            }
+            .right-panel {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
