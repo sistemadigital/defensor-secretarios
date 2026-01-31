@@ -3,12 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Causas</title>
+    <title>Causas Judiciales - Sistema Completo</title>
+    
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    
+    <!-- Font Awesome -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+    
+    <!-- jsPDF para generación de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- html2canvas para capturar contenido -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <style>
-        /* MANTENGO TODO EL CSS ORIGINAL SIN CAMBIOS */
+        /* TODO EL CSS ORIGINAL SE MANTIENE SIN CAMBIOS */
         :root {
             --primary-blue: #007bff;
             --primary-light-blue: #e7f4ff;
@@ -281,7 +292,7 @@
             display: flex;
             gap: var(--spacing-s);
         }
-        #modal, #modalVer, #alertModal, #modalEventosHoy {
+        #modal, #modalVer, #alertModal, #modalEventosHoy, #modalIA, #modalPDF {
             display: none;
             position: fixed;
             inset: 0;
@@ -291,7 +302,7 @@
             padding: 20px;
             z-index: 1000;
         }
-        #modal .content, #modalVer .content, #alertModal .content, #modalEventosHoy .content {
+        #modal .content, #modalVer .content, #alertModal .content, #modalEventosHoy .content, #modalIA .content, #modalPDF .content {
             background: #fff;
             border-radius: 16px;
             max-width: 980px;
@@ -610,14 +621,6 @@
             border-radius: 12px;
             color: #fff;
         }
-        .prioridad-destacada h4 {
-            margin: 0;
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-        .prioridad-destacada .fa-exclamation-triangle {
-            font-size: 1.5rem;
-        }
         .prioridad-destacada.prioridad-baja { background-color: var(--status-success); }
         .prioridad-destacada.prioridad-media { background-color: var(--status-warning); }
         .prioridad-destacada.prioridad-alta { background-color: var(--status-danger); }
@@ -726,16 +729,654 @@
         input[type="datetime-local"]::-moz-datetime-edit-ampm-field {
             display: none;
         }
+        
+        /* ESTILOS PARA LAS FUNCIONALIDADES DE VOZ */
+        .voice-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            align-items: center;
+        }
+        .voice-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .voice-btn:hover {
+            background: var(--primary-dark-blue);
+        }
+        .voice-btn.listening {
+            background: var(--status-danger);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+        .voice-btn.speaking {
+            background: var(--status-success);
+        }
+        .voice-status {
+            font-size: 0.85rem;
+            color: var(--secondary-dark-gray);
+            font-style: italic;
+            display: none;
+        }
+        .voice-status.active {
+            display: inline;
+            color: var(--status-info);
+        }
+        #voiceToolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .text-to-speech-btn {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .text-to-speech-btn:hover {
+            background: var(--primary-dark-blue);
+        }
+        .voice-input-container {
+            position: relative;
+        }
+        .voice-input-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--primary-blue);
+            cursor: pointer;
+            padding: 4px;
+        }
+        .voice-input-btn:hover {
+            color: var(--primary-dark-blue);
+        }
+        
+        /* ================================================================ */
+        /* NUEVOS ESTILOS PARA ASISTENTE IA - PANTALLA COMPLETA */
+        /* ================================================================ */
+        #modalIA {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+        }
+        
+        #modalIA .content {
+            max-width: 100%;
+            max-height: 100%;
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+            box-shadow: none;
+            animation: none;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #modalIA .modal-header {
+            border-radius: 0;
+            justify-content: space-between;
+            padding: 12px 24px;
+            flex-shrink: 0;
+        }
+        
+        #modalIA .modal-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+        
+        #modalIA .modal-body {
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .ia-pantalla-completa-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .ia-header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+        
+        .ia-conversacion-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .ia-conversacion {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .ia-mensaje {
+            padding: 16px 20px;
+            border-radius: 16px;
+            max-width: 85%;
+            word-wrap: break-word;
+            line-height: 1.6;
+            position: relative;
+        }
+        
+        .ia-mensaje.usuario {
+            background: var(--primary-blue);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .ia-mensaje.asistente {
+            background: white;
+            border: 1px solid #dee2e6;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .ia-mensaje-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .ia-mensaje-header strong {
+            font-size: 0.95rem;
+        }
+        
+        .ia-mensaje-acciones {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .ia-btn-voz {
+            background: transparent;
+            border: none;
+            color: var(--primary-blue);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 4px;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        
+        .ia-btn-voz:hover {
+            background: rgba(0, 123, 255, 0.1);
+        }
+        
+        .ia-btn-voz.speaking {
+            background: rgba(0, 123, 255, 0.2);
+            color: var(--primary-dark-blue);
+        }
+        
+        .ia-input-container-pantalla {
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+            padding: 16px 0;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .ia-input-wrapper {
+            flex: 1;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 8px 16px;
+            border: 2px solid transparent;
+            transition: border 0.2s;
+        }
+        
+        .ia-input-wrapper:focus-within {
+            border-color: var(--primary-blue);
+        }
+        
+        .ia-input-wrapper input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px 0;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .ia-btn-microfono {
+            background: transparent;
+            border: none;
+            color: var(--primary-blue);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .ia-btn-microfono:hover {
+            background: rgba(0, 123, 255, 0.1);
+        }
+        
+        .ia-btn-microfono.listening {
+            background: var(--status-danger);
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .ia-btn-enviar {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        
+        .ia-btn-enviar:hover {
+            background: var(--primary-dark-blue);
+        }
+        
+        .ia-botones-control {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .ia-botones-control .button {
+            padding: 10px 20px;
+        }
+        
+        .ia-resultado-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--primary-blue);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .ia-resultado-card:hover {
+            transform: translateX(5px);
+            background: #f8f9fa;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .ia-card-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        
+        .ia-card-title {
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 6px;
+            display: block;
+            font-size: 1rem;
+        }
+        
+        .ia-card-body {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+        
+        .ia-highlight {
+            background-color: #fff3cd;
+            font-weight: bold;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        
+        .ia-analisis-detallado {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary-blue);
+        }
+        
+        .ia-analisis-detallado h4 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .ia-estadistica-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 6px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .ia-estadistica-item:last-child {
+            border-bottom: none;
+        }
+        
+        .ia-estadistica-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .ia-estadistica-valor {
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        
+        .ia-lista-expedientes {
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .ia-expediente-item {
+            padding: 8px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.9rem;
+        }
+        
+        .ia-expediente-item:last-child {
+            border-bottom: none;
+        }
+        
+        .ia-expediente-numero {
+            font-weight: bold;
+            color: var(--primary-blue);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        
+        .ia-expediente-numero:hover {
+            color: var(--primary-dark-blue);
+        }
+        
+        .ia-expediente-datos {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        
+        /* NUEVOS ESTILOS PARA CHIPS DE SUGERENCIAS */
+        .ia-chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .ia-chip {
+            background: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .ia-chip:hover {
+            background: #dee2e6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .ia-chip.prioridad-alta {
+            background: rgba(220, 53, 69, 0.1);
+            border-color: var(--status-danger);
+            color: var(--status-danger);
+        }
+        
+        .ia-chip.vencimientos {
+            background: rgba(255, 140, 0, 0.1);
+            border-color: var(--color-vencimientos);
+            color: var(--color-vencimientos);
+        }
+        
+        .ia-chip.estadisticas {
+            background: rgba(23, 162, 184, 0.1);
+            border-color: var(--status-info);
+            color: var(--status-info);
+        }
+        
+        /* ANIMACIÓN DE PUNTOS PARA PENSAR */
+        @keyframes dots {
+            0%, 20% { content: "."; }
+            40% { content: ".."; }
+            60%, 100% { content: "..."; }
+        }
+        
+        .ia-pensando::after {
+            content: "...";
+            animation: dots 1.5s steps(1, end) infinite;
+        }
+        
+        .ia-mensaje-carga {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 16px;
+            padding: 16px 20px;
+            align-self: flex-start;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--secondary-dark-gray);
+        }
+        
+        /* ================================================================ */
+        /* NUEVOS ESTILOS PARA GENERADOR DE PDF */
+        /* ================================================================ */
+        #modalPDF .content {
+            max-width: 600px;
+            padding: 20px;
+        }
+        
+        .pdf-generator-container {
+            padding: 15px;
+        }
+        
+        .pdf-form-group {
+            margin-bottom: 20px;
+        }
+        
+        .pdf-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+        
+        .pdf-form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .pdf-form-group input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+        
+        .pdf-preview-container {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .pdf-preview-title {
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        
+        .pdf-preview-content {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .pdf-preview-item {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #ccc;
+        }
+        
+        .pdf-preview-item:last-child {
+            border-bottom: none;
+        }
+        
+        .pdf-preview-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: inline-block;
+            width: 150px;
+        }
+        
+        /* Nuevo botón para generación de PDF */
+        .btn-generar-pdf {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(40, 167, 69, 0.2);
+        }
+        
+        .btn-generar-pdf:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        /* Estados para el generador de PDF */
+        .pdf-loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+        
+        .pdf-success {
+            color: var(--status-success);
+            font-weight: 600;
+        }
+        
+        .pdf-error {
+            color: var(--status-danger);
+            font-weight: 600;
+        }
+        
+        /* Chips mejorados para IA con opción de PDF */
+        .ia-chip.pdf {
+            background: rgba(40, 167, 69, 0.1);
+            border-color: var(--status-success);
+            color: var(--status-success);
+        }
+        
         @media print {
             .button, .actions, .action-buttons, .controls-form,
             #btnNuevo, #btnPrintListado, #btnPrintFechas, #btnPrintForm,
             #btnPrintRegistro, #btnCerrarVer, #btnAgregarNota, #btnVerLineaTiempo,
-            #btnPrintTodos, #btnPrintFiltrado, #btnEventosHoy,
+            #btnPrintTodos, #btnPrintFiltrado, #btnEventosHoy, #btnAsistenteIA,
             .fa-solid, .fas, .far, .fa, .fa-eye, .fa-pen, .fa-trash, .fa-plus,
             .fa-save, .fa-print, .fa-xmark, .fa-check, .fa-arrow-left, .fa-arrow-right,
             .fa-exclamation-triangle, .fa-timeline, .fa-file-pen, .fa-calendar-day,
             .btn-eliminar-audiencia, .btn-audiencia, .floating-alert,
-            .prioridad-destacada, .tabs-nav, .tab-button, .editor-toolbar {
+            .prioridad-destacada, .tabs-nav, .tab-button, .editor-toolbar,
+            .voice-controls, .voice-btn, .text-to-speech-btn, .voice-input-btn,
+            .btn-generar-pdf, .ia-btn-voz, .ia-btn-microfono, .ia-btn-enviar {
                 display: none !important;
             }
             .header, .filters-section, .sidebar, .pagination-container {
@@ -780,8 +1421,6 @@
                 display: table-cell !important;
                 padding: 8px !important;
                 font-weight: bold !important;
-                width: 40% !important;
-                border-bottom: 1px solid #ddd !important;
             }
             .field input, .field textarea, .field select {
                 display: table-cell !important;
@@ -806,6 +1445,9 @@
                 padding: 0 !important;
                 min-height: auto !important;
                 max-height: none !important;
+            }
+            #modalIA, #modalPDF {
+                display: none !important;
             }
         }
         /* Estilos para el modal de eventos de hoy */
@@ -886,7 +1528,7 @@
                 max-width: 100%;
                 padding: var(--spacing-s);
             }
-            #modal .content, #modalVer .content, #modalEventosHoy .content {
+            #modal .content, #modalVer .content, #modalEventosHoy .content, #modalIA .content, #modalPDF .content {
                 max-width: 95%;
             }
             .filter-row-1, .filter-row-2 {
@@ -894,6 +1536,9 @@
             }
             .filter-group {
                 min-width: 120px;
+            }
+            .ia-pantalla-completa-container {
+                padding: 15px;
             }
         }
         @media (max-width: 768px) {
@@ -929,15 +1574,32 @@
             #formCausa .grid {
                 grid-template-columns: 1fr;
             }
+            /* AJUSTE PARA SOLAPAS EN MOVIL */
             .tabs-nav {
-                flex-wrap: nowrap;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
+                flex-wrap: wrap; /* Permite que las pestañas bajen de línea */
+                justify-content: center; /* Centra las pestañas */
+                overflow-x: hidden;
             }
             .tab-button {
-                padding: 10px 14px;
-                font-size: 0.85rem;
+                padding: 8px 12px;
+                font-size: 0.8rem;
+                flex-grow: 1; /* Hace que ocupen el ancho disponible */
+                text-align: center;
+                border-bottom: 1px solid #ddd;
             }
+            /* AJUSTE MODAL EN MÓVIL */
+            #modal .content {
+                display: flex;
+                flex-direction: column;
+                height: 100%; /* Ocupa altura completa */
+                max-height: 95vh;
+                margin: 10px;
+            }
+            .modal-body {
+                flex: 1; /* Ocupa el espacio restante */
+                overflow-y: auto; /* Scroll solo en el cuerpo */
+            }
+            
             .data-table {
                 min-width: 600px;
             }
@@ -953,6 +1615,34 @@
             .filter-row-1, .filter-row-2 {
                 flex-direction: column;
             }
+            .voice-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .text-to-speech-btn {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-top: 10px;
+                align-self: flex-end;
+            }
+            .ia-input-container-pantalla {
+                flex-direction: column;
+            }
+            .ia-botones-control {
+                flex-direction: column;
+                width: 100%;
+            }
+            .ia-botones-control .button {
+                width: 100%;
+            }
+            .ia-conversacion-wrapper {
+                padding: 15px;
+            }
+            .ia-mensaje {
+                max-width: 90%;
+                padding: 14px 16px;
+            }
         }
         @media (max-width: 576px) {
             .container {
@@ -967,11 +1657,12 @@
             .table-title {
                 font-size: var(--body-large-size);
             }
-            #modal .content, #modalVer .content, #modalEventosHoy .content {
+            #modal .content, #modalVer .content, #modalEventosHoy .content, #modalIA .content, #modalPDF .content {
                 max-width: 100%;
                 max-height: 100vh;
                 border-radius: 0;
                 margin: 0;
+                height: 100vh;
             }
             .modal-header,
             .modal-body,
@@ -986,8 +1677,8 @@
                 justify-content: center;
             }
             .tab-button {
-                padding: 8px 12px;
-                font-size: 0.8rem;
+                padding: 6px 10px;
+                font-size: 0.75rem;
             }
             .table-wrap {
                 margin: 0 -8px;
@@ -1020,6 +1711,23 @@
                 padding: 4px 8px;
                 font-size: 0.8rem;
             }
+            .voice-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .ia-header-controls {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            .ia-mensaje-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .ia-mensaje-acciones {
+                align-self: flex-end;
+            }
         }
         @media (max-width: 360px) {
             .container {
@@ -1042,6 +1750,9 @@
                 padding: 8px 12px;
                 font-size: 0.85rem;
             }
+            .ia-pantalla-completa-container {
+                padding: 10px;
+            }
         }
     </style>
 </head>
@@ -1059,8 +1770,15 @@
             <button id="btnEventosHoy" class="button">
                 <i class="fas fa-calendar-day"></i> Eventos Hoy
             </button>
+            <button id="btnAsistenteIA" class="button">
+                Asistente IA
+            </button>
+            <button id="btnGenerarPDF" class="button button-success">
+                <i class="fas fa-file-pdf"></i> Generar Resumen PDF
+            </button>
         </div>
     </header>
+    
     <main class="container">
         <section class="filters-section">
             <h2 class="filters-title">Filtros de Búsqueda</h2>
@@ -1068,7 +1786,12 @@
                 <div class="filter-row-1">
                     <div class="filter-group">
                         <label class="filter-label" for="buscador">Búsqueda</label>
-                        <input type="text" id="buscador" class="input" placeholder="🔍 Buscar...">
+                        <div class="voice-input-container">
+                            <input type="text" id="buscador" class="input" placeholder="🔍 Buscar...">
+                            <button class="voice-input-btn" id="btnVoiceSearch" title="Búsqueda por voz">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="filter-group">
                         <label class="filter-label" for="filtroTipoProceso">Tipo de Proceso</label>
@@ -1134,6 +1857,7 @@
                 </button>
             </div>
         </section>
+        
         <section class="table-section">
             <h2 class="table-title">Expedientes Judiciales</h2>
             <div class="table-wrap">
@@ -1163,7 +1887,96 @@
         <div id="paginacion-container"></div>
     </main>
 
-    <!-- MODAL EVENTOS HOY -->
+    <!-- Modal para generación de PDF -->
+    <div id="modalPDF">
+        <div class="content">
+            <div class="modal-header">
+                <i class="fas fa-file-pdf"></i>
+                <h2 style="margin:0;">Generar Resumen PDF</h2>
+            </div>
+            <div class="modal-body pdf-generator-container">
+                <div class="pdf-form-group">
+                    <label for="pdfNombreCliente">Nombre y Apellido del Cliente</label>
+                    <input type="text" id="pdfNombreCliente" placeholder="Ej: Juan Pérez" autocomplete="off">
+                </div>
+                
+                <div class="pdf-form-group">
+                    <label>Buscar en:</label>
+                    <div style="display: flex; gap: 10px; margin-top: 8px;">
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="radio" name="pdfBusqueda" value="caratula" checked> Carátula del expediente
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="radio" name="pdfBusqueda" value="datosnnya"> Datos de NNyA
+                        </label>
+                    </div>
+                </div>
+                
+                <div id="pdfPreview" class="pdf-preview-container" style="display: none;">
+                    <div class="pdf-preview-title">Vista previa del resumen</div>
+                    <div id="pdfPreviewContent" class="pdf-preview-content"></div>
+                </div>
+                
+                <div id="pdfResultado" style="margin-top: 15px; display: none;"></div>
+            </div>
+            <div class="controls-form">
+                <button id="btnCerrarPDF" class="button button-secondary">
+                    <i class="fa fa-xmark"></i> Cancelar
+                </button>
+                <button id="btnBuscarClientePDF" class="button">
+                    <i class="fas fa-search"></i> Buscar Cliente
+                </button>
+                <button id="btnGenerarPDFFinal" class="button button-success" style="display: none;">
+                    <i class="fas fa-download"></i> Generar PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Asistente IA (sin cambios) -->
+    <div id="modalIA">
+        <div class="content">
+            <div class="modal-header">
+                <h2 style="margin:0;">Asistente IA - Análisis Inteligente</h2>
+            </div>
+            <div class="modal-body">
+                <div class="ia-pantalla-completa-container">
+                    <div class="ia-header-controls">
+                        <div class="ia-botones-control">
+                            <button id="btnNuevaConsultaIA" class="button button-secondary">
+                                <i class="fas fa-plus-circle"></i> Nueva Consulta
+                            </button>
+                            <button id="btnSalirIA" class="button button-danger">
+                                <i class="fas fa-sign-out-alt"></i> Salir
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="ia-conversacion-wrapper">
+                        <div class="ia-conversacion" id="iaConversacion">
+                        </div>
+                    </div>
+                    
+                    <div class="ia-input-container-pantalla">
+                        <div class="ia-input-wrapper">
+                            <input type="text" id="iaPregunta" placeholder="Escribe tu pregunta o usa el micrófono..." autocomplete="off">
+                            <button id="btnVoiceIA" class="ia-btn-microfono" title="Usar voz para consultar">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                        </div>
+                        <button id="iaEnviar" class="ia-btn-enviar">
+                            <i class="fas fa-paper-plane"></i> Enviar
+                        </button>
+                    </div>
+                    
+                    <div class="ia-chips-container" id="iaChipsContainer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Eventos Hoy (sin cambios) -->
     <div id="modalEventosHoy">
         <div class="content">
             <div class="modal-header">
@@ -1200,7 +2013,7 @@
         </div>
     </div>
 
-    <!-- MODALES EXISTENTES -->
+    <!-- Modal Formulario Expediente (sin cambios) -->
     <div id="modal">
         <div class="content">
             <div class="modal-header">
@@ -1228,7 +2041,12 @@
                             </div>
                             <div class="field">
                                 <label for="caratula">Carátula Completa *</label>
-                                <textarea id="caratula" rows="2" required></textarea>
+                                <div class="voice-input-container">
+                                    <textarea id="caratula" rows="2" required></textarea>
+                                    <button class="voice-input-btn" id="btnVoiceCaratula" title="Dictado por voz">
+                                        <i class="fas fa-microphone"></i>
+                                    </button>
+                                </div>
                                 <span class="error-message">Este campo es obligatorio.</span>
                             </div>
                             <div class="field">
@@ -1270,7 +2088,13 @@
                             </div>
                             <div class="field">
                                 <label for="datosNnya">Datos de NNyA (máx. 500 palabras)</label>
-                                <textarea id="datosNnya" disabled></textarea><div class="counter" id="counterNnya" style="display:none">0/500</div>
+                                <div class="voice-input-container">
+                                    <textarea id="datosNnya" disabled></textarea>
+                                    <button class="voice-input-btn" id="btnVoiceDatosNnya" title="Dictado por voz">
+                                        <i class="fas fa-microphone"></i>
+                                    </button>
+                                </div>
+                                <div class="counter" id="counterNnya" style="display:none">0/500</div>
                             </div>
                         </div>
                         <div id="tab2" class="tab-content">
@@ -1290,7 +2114,13 @@
                             </div>
                             <div class="field">
                                 <label for="nnyaGesell">NNyA en Gesell (máx. 400 palabras)</label>
-                                <textarea id="nnyaGesell" disabled></textarea><div class="counter" id="counterNnyaGesell" style="display:none">0/400</div>
+                                <div class="voice-input-container">
+                                    <textarea id="nnyaGesell" disabled></textarea>
+                                    <button class="voice-input-btn" id="btnVoiceNnyaGesell" title="Dictado por voz">
+                                        <i class="fas fa-microphone"></i>
+                                    </button>
+                                </div>
+                                <div class="counter" id="counterNnyaGesell" style="display:none">0/400</div>
                             </div>
                         </div>
                         <div id="tab4" class="tab-content">
@@ -1316,23 +2146,29 @@
                                 </div>
                                 <div class="field">
                                     <label for="estadoRecursos">Estado de Recursos</label>
-                                    <select id="estadoRecursos"><option value="">Seleccione un estado</option><option>Pendiente</option><option>En trámite</option><option>Resuelto</option><option>Rechazado</option></select>
+                                    <select id="estadoRecursos"><option value="">Seleccione un estado</option><option>Pendiente</option><option>En trámite</option<option>Resuelto</option><option>Rechazado</option></select>
                                 </div>
                             </div>
                         </div>
                         <div id="tab7" class="tab-content">
                             <div class="field">
                                 <label for="observaciones">Observaciones (máx. 1000 palabras)</label>
-                                <div class="editor-toolbar">
+                                <div id="voiceToolbar" class="editor-toolbar">
                                     <button type="button" id="btnBold" title="Negrita"><i class="fas fa-bold"></i></button>
                                     <button type="button" id="btnColorAzul" class="color-button azul" title="Color Azul">A</button>
                                     <button type="button" id="btnColorRojo" class="color-button rojo" title="Color Rojo">A</button>
                                     <button type="button" id="btnColorVerde" class="color-button verde" title="Color Verde">A</button>
                                     <button type="button" id="btnColorNormal" class="color-button normal" title="Color Normal">Normal</button>
+                                    <button type="button" id="btnVoiceObservaciones" class="voice-btn" title="Dictado por voz">
+                                        <i class="fas fa-microphone"></i> Voz
+                                    </button>
                                 </div>
                                 <div id="observaciones-editor" contenteditable="true"></div>
                                 <input type="hidden" id="observaciones" name="observaciones">
                                 <div class="counter" id="counter">0/1000</div>
+                                <div class="voice-controls">
+                                    <span class="voice-status" id="voiceStatus"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1343,17 +2179,27 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal Ver Expediente (sin cambios) -->
     <div id="modalVer">
         <div class="content">
             <div class="modal-header">
                 <i class="fa-solid fa-eye"></i>
                 <h2 style="margin:0;">Detalle del Expediente</h2>
+                <button class="text-to-speech-btn" id="btnTextToSpeech" title="Escuchar contenido">
+                    <i class="fas fa-volume-up"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <div id="verContenido"></div>
                 <div id="agregarNota">
                     <label for="notaBitacora">Agregar Nota de Seguimiento:</label>
-                    <textarea id="notaBitacora" placeholder="Escribe aquí la nota..."></textarea>
+                    <div class="voice-input-container">
+                        <textarea id="notaBitacora" placeholder="Escribe aquí la nota..."></textarea>
+                        <button class="voice-input-btn" id="btnVoiceNota" title="Dictado por voz">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    </div>
                     <button id="btnAgregarNota" class="button"><i class="fa fa-plus"></i> Guardar Nota</button>
                 </div>
                 <div class="notes-history">
@@ -1367,6 +2213,8 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal Alerta (sin cambios) -->
     <div id="alertModal">
         <div class="content">
             <h3 id="alertTitle"></h3>
@@ -1376,7 +2224,12 @@
             </div>
         </div>
     </div>
+
     <script>
+        // ================================================================
+        // CÓDIGO ORIGINAL COMPLETO (SIN MODIFICACIONES)
+        // ================================================================
+        
         const firebaseConfig = {
             apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
             authDomain: "causas-defensoria.firebaseapp.com",
@@ -1400,7 +2253,6 @@
             db = firebase.firestore();
             console.log("Firebase Firestore inicializado correctamente");
             
-            // HABILITAR PERSISTENCIA DE FIREBASE
             try {
                 db.enablePersistence()
                     .then(() => {
@@ -1431,7 +2283,11 @@
         let unsubCausas = null;
         let usuariosCache = [];
         let juzgadosPorTipoCache = {};
-        let filterTimeout = null; // Para debounce de búsqueda
+        let filterTimeout = null;
+        
+        // VARIABLES PARA EL ASISTENTE IA (MEMORIA DE CONTEXTO)
+        let ultimoResultadoIA = []; // Memoria de contexto
+        let contextoActivo = false; // Indica si hay un contexto activo para refinar
         
         const recordsPerPage = 10;
         const intervencionOptions = [
@@ -1447,6 +2303,8 @@
         const modal = $("modal");
         const modalVer = $("modalVer");
         const modalEventosHoy = $("modalEventosHoy");
+        const modalIA = $("modalIA");
+        const modalPDF = $("modalPDF");
         const verContenido = $("verContenido");
         const tituloForm = $("tituloForm");
         const editId = $("editId");
@@ -1477,6 +2335,22 @@
         const alertTitle = $("alertTitle");
         const alertMessage = $("alertMessage");
         const btnAlertOK = $("btnAlertOK");
+        const iaConversacion = $("iaConversacion");
+        const iaPregunta = $("iaPregunta");
+        const iaEnviar = $("iaEnviar");
+        const btnAsistenteIA = $("btnAsistenteIA");
+        const btnNuevaConsultaIA = $("btnNuevaConsultaIA");
+        const btnSalirIA = $("btnSalirIA");
+        const btnVoiceIA = $("btnVoiceIA");
+        const iaChipsContainer = $("iaChipsContainer");
+        const btnGenerarPDF = $("btnGenerarPDF");
+        const pdfNombreCliente = $("pdfNombreCliente");
+        const pdfPreview = $("pdfPreview");
+        const pdfPreviewContent = $("pdfPreviewContent");
+        const pdfResultado = $("pdfResultado");
+        const btnBuscarClientePDF = $("btnBuscarClientePDF");
+        const btnGenerarPDFFinal = $("btnGenerarPDFFinal");
+        const btnCerrarPDF = $("btnCerrarPDF");
         
         const selTipo = $("tipoProceso"), selJuz = $("juzgado"), selUsu = $("usuarioAsignado"), selPrioridad = $("prioridad");
         const tabButtons = document.querySelectorAll(".tab-button");
@@ -1570,7 +2444,6 @@
             const errorSpan = numCausaField.querySelector('.error-message');
             
             if (modo === "nuevo" && numCausa) {
-                // Buscar en datosCache si ya existe este número
                 const existe = datosCache.some(causa => causa.numCausa === numCausa);
                 
                 if (existe) {
@@ -1579,10 +2452,8 @@
                     errorSpan.style.color = "#dc3545";
                     errorSpan.style.fontWeight = "bold";
                     
-                    // Mostrar alerta flotante
                     mostrarAlertaFlotante("El número de expediente ya existe en el sistema. Verifique e intente con otro número.", 'danger');
                     
-                    // Deshabilitar otros campos hasta que se corrija
                     deshabilitarCamposFormulario(true);
                 } else {
                     numCausaField.classList.remove('error');
@@ -1590,11 +2461,9 @@
                     errorSpan.style.color = "";
                     errorSpan.style.fontWeight = "";
                     
-                    // Habilitar campos si estaban deshabilitados
                     deshabilitarCamposFormulario(false);
                 }
             } else if (modo === "editar") {
-                // En modo edición, solo validar que no esté vacío
                 if (!numCausa) {
                     numCausaField.classList.add('error');
                     errorSpan.textContent = "Este campo es obligatorio.";
@@ -1606,7 +2475,6 @@
             }
         }
 
-        // FUNCIÓN PARA HABILITAR/DESHABILITAR CAMPOS DEL FORMULARIO
         function deshabilitarCamposFormulario(deshabilitar) {
             const campos = document.querySelectorAll('#formCausa input:not(#numCausa), #formCausa textarea, #formCausa select');
             const btnGuardar = $("btnGuardar");
@@ -1619,6 +2487,152 @@
                 btnGuardar.disabled = deshabilitar;
                 btnGuardar.style.opacity = deshabilitar ? "0.5" : "1";
                 btnGuardar.style.cursor = deshabilitar ? "not-allowed" : "pointer";
+            }
+        }
+        
+        // FUNCIONES FALTANTES AÑADIDAS
+        function recolectarDatosForm() {
+            const datos = {
+                numCausa: $("numCausa").value.trim(),
+                caratula: $("caratula").value.trim(),
+                tipoProceso: $("tipoProceso").value,
+                juzgado: $("juzgado").value,
+                prioridad: $("prioridad").value,
+                usuarioAsignado: $("usuarioAsignado").value,
+                estado: $("estado").value,
+                intervencion: $("intervencion").value,
+                datosNnya: $("datosNnya").value.trim(),
+                fechaInicio: $("fechaInicio").value || null,
+                fechaPase: $("fechaPase").value || null,
+                audienciaGesell: $("habilitarAudienciaGesell").checked ? $("audienciaGesell").value : null,
+                nnyaGesell: $("nnyaGesell").value.trim(),
+                vencimiento: $("vencimiento").value || null,
+                vencimientoRecursos: $("vencimientoRecursos").value || null,
+                recursos: $("recursos").value || null,
+                recursosContestacion: $("recursosContestacion").value || null,
+                estadoRecursos: $("estadoRecursos").value || null,
+                observaciones: observacionesHidden.value
+            };
+
+            const audienciasInputs = audienciasContainer.querySelectorAll('.audiencia-fecha');
+            datos.audiencias = [];
+            audienciasInputs.forEach(input => {
+                if (input.value) datos.audiencias.push(input.value);
+            });
+
+            const diligenciasItems = diligenciasContainer.querySelectorAll('.diligencia-item');
+            datos.diligencias = [];
+            diligenciasItems.forEach(item => {
+                const fecha = item.querySelector('.diligencia-fecha').value;
+                const detalle = item.querySelector('.diligencia-detalle').value.trim();
+                if (fecha) {
+                    datos.diligencias.push({ fecha, detalle });
+                }
+            });
+
+            return datos;
+        }
+
+        function resetFormCausa() {
+            $("formCausa").reset();
+            observacionesEditor.innerHTML = '';
+            observacionesHidden.value = '';
+            audienciasContainer.innerHTML = '';
+            diligenciasContainer.innerHTML = '';
+            $("habilitarAudienciaGesell").checked = false;
+            $("audienciaGesell").disabled = true;
+            $("nnyaGesell").disabled = true;
+            $("recursos-opcionales").style.display = 'none';
+            
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            tabButtons[0].classList.add('active');
+            tabContents[0].classList.add('active');
+            
+            $("counter").textContent = '0/1000';
+            $("counterNnya").textContent = '0/500';
+            $("counterNnyaGesell").textContent = '0/400';
+            
+            document.querySelectorAll('.field').forEach(field => field.classList.remove('error'));
+        }
+
+        function cargarDatosEnForm(data) {
+            $("numCausa").value = data.numCausa || '';
+            $("caratula").value = data.caratula || '';
+            $("tipoProceso").value = data.tipoProceso || '';
+            poblarJuzgadosPorTipo(data.tipoProceso);
+            setTimeout(() => { $("juzgado").value = data.juzgado || ''; }, 100);
+            $("prioridad").value = data.prioridad || 'Ninguna';
+            $("usuarioAsignado").value = data.usuarioAsignado || '';
+            $("estado").value = data.estado || 'En trámite';
+            $("intervencion").value = data.intervencion || '';
+            $("datosNnya").value = data.datosNnya || '';
+            $("fechaInicio").value = data.fechaInicio ? formatFechaParaInput(toDate(data.fechaInicio), false) : '';
+            $("fechaPase").value = data.fechaPase ? formatFechaParaInput(toDate(data.fechaPase), true) : '';
+            $("vencimiento").value = data.vencimiento ? formatFechaParaInput(toDate(data.vencimiento), true) : '';
+            $("vencimientoRecursos").value = data.vencimientoRecursos ? formatFechaParaInput(toDate(data.vencimientoRecursos), true) : '';
+            $("recursos").value = data.recursos || '';
+            $("recursosContestacion").value = data.recursosContestacion || '';
+            $("estadoRecursos").value = data.estadoRecursos || '';
+            observacionesEditor.innerHTML = data.observaciones || '';
+            observacionesHidden.value = data.observaciones || '';
+            
+            audienciasContainer.innerHTML = '';
+            if (Array.isArray(data.audiencias)) {
+                data.audiencias.forEach(aud => {
+                    const div = document.createElement('div');
+                    div.className = 'audiencia-item';
+                    div.innerHTML = `
+                        <input type="datetime-local" class="audiencia-fecha" value="${formatFechaParaInput(toDate(aud), true)}">
+                        <button type="button" class="btn-eliminar-audiencia"><i class="fa fa-trash"></i></button>
+                    `;
+                    audienciasContainer.appendChild(div);
+                    div.querySelector('.btn-eliminar-audiencia').onclick = function() {
+                        audienciasContainer.removeChild(div);
+                    };
+                });
+            }
+            
+            diligenciasContainer.innerHTML = '';
+            if (Array.isArray(data.diligencias)) {
+                data.diligencias.forEach(dilig => {
+                    const div = document.createElement('div');
+                    div.className = 'diligencia-item';
+                    div.innerHTML = `
+                        <input type="datetime-local" class="diligencia-fecha" value="${formatFechaParaInput(toDate(dilig.fecha), true)}">
+                        <input type="text" class="diligencia-detalle" placeholder="Detalle" value="${dilig.detalle || ''}">
+                        <button type="button" class="btn-eliminar-diligencia"><i class="fa fa-trash"></i></button>
+                    `;
+                    diligenciasContainer.appendChild(div);
+                    div.querySelector('.btn-eliminar-diligencia').onclick = function() {
+                        diligenciasContainer.removeChild(div);
+                    };
+                });
+            }
+            
+            if (data.audienciaGesell) {
+                $("habilitarAudienciaGesell").checked = true;
+                $("audienciaGesell").disabled = false;
+                $("nnyaGesell").disabled = false;
+                $("audienciaGesell").value = formatFechaParaInput(toDate(data.audienciaGesell), true);
+                $("nnyaGesell").value = data.nnyaGesell || '';
+            }
+            
+            if (data.recursos) {
+                $("recursos-opcionales").style.display = 'block';
+            }
+            
+            if (data.observaciones) {
+                const palabrasObs = data.observaciones.trim().split(/\s+/).filter(p => p.length > 0);
+                $("counter").textContent = `${palabrasObs.length}/1000`;
+            }
+            if (data.datosNnya) {
+                const palabrasNnya = data.datosNnya.trim().split(/\s+/).filter(p => p.length > 0);
+                $("counterNnya").textContent = `${palabrasNnya.length}/500`;
+            }
+            if (data.nnyaGesell) {
+                const palabrasGesell = data.nnyaGesell.trim().split(/\s+/).filter(p => p.length > 0);
+                $("counterNnyaGesell").textContent = `${palabrasGesell.length}/400`;
             }
         }
         
@@ -1782,7 +2796,6 @@
             if (current) filtroUsuario.value = current;
         }
 
-        // NUEVA FUNCIÓN DE SUSCRIPCIÓN OPTIMIZADA
         function suscribirCausas(reset = true) {
             if (reset) {
                 paginaActual = 1;
@@ -1801,7 +2814,6 @@
             console.log("Construyendo consulta optimizada...");
             let query = db.collection("causas");
             
-            // FILTROS DE SERVIDOR
             const fEstado = filtroEstado.value;
             const fUsuario = filtroUsuario.value;
             const fPrioridad = filtroPrioridad.value;
@@ -1812,14 +2824,12 @@
             const fHasta = filtroFechaHasta.value;
             const busqueda = buscador.value.trim();
             
-            // Aplicar filtros de igualdad
             if (fEstado) query = query.where("estado", "==", fEstado);
             if (fUsuario) query = query.where("usuarioAsignado", "==", fUsuario);
             if (fPrioridad) query = query.where("prioridad", "==", fPrioridad);
             if (fIntervencion) query = query.where("intervencion", "==", fIntervencion);
             if (fTipoProceso) query = query.where("tipoProceso", "==", fTipoProceso);
             
-            // Filtro por evento
             if (fEvento) {
                 switch(fEvento) {
                     case 'audiencias': query = query.where("audiencias", "!=", null); break;
@@ -1830,7 +2840,6 @@
                 }
             }
             
-            // Búsqueda por keywords (optimizada)
             if (busqueda) {
                 const palabras = busqueda.toLowerCase()
                     .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -1838,18 +2847,15 @@
                     .filter(p => p.length > 0);
                 
                 if (palabras.length > 0) {
-                    // Limitar a 10 palabras para no exceder límites de Firestore
                     const palabrasLimitadas = palabras.slice(0, 10);
                     query = query.where("keywords", "array-contains-any", palabrasLimitadas);
                 }
             }
             
-            // Filtro por fecha exacta (si desde y hasta son iguales)
             if (fDesde && fHasta && fDesde === fHasta) {
                 query = query.where("fechasFiltro", "array-contains", fDesde);
             }
             
-            // Ordenar por fecha de registro (descendente)
             query = query.orderBy("fechaRegistro", "desc");
             
             console.log("Suscribiendo a cambios optimizados...");
@@ -1861,9 +2867,7 @@
                         datosCache.push({ id: d.id, ...d.data() });
                     });
                     
-                    // FILTROS EN CLIENTE (solo para rango de fechas cuando son diferentes)
                     datosFiltrados = datosCache.filter(d => {
-                        // Filtro por rango de fechas (si desde y hasta son diferentes)
                         if (fDesde && fHasta && fDesde !== fHasta) {
                             const fechasCausa = d.fechasFiltro || [];
                             const tieneFechaEnRango = fechasCausa.some(fecha => {
@@ -1892,7 +2896,6 @@
             );
         }
 
-        // Función para debounce de filtros
         function actualizarFiltros() {
             clearTimeout(filterTimeout);
             filterTimeout = setTimeout(() => {
@@ -2087,7 +3090,6 @@
             editId.value = ""; 
             tituloForm.textContent = "Nuevo Expediente"; 
             
-            // Asegurarse de que los campos estén habilitados
             deshabilitarCamposFormulario(false);
             
             modal.style.display = "flex"; 
@@ -2126,13 +3128,11 @@
             alertModal.style.display = "none";
         };
         
-        // FUNCIÓN GUARDAR ACTUALIZADA CON INDEXING
         const guardarExpediente = async () => {
             if (!validateForm()) {
                 return;
             }
             
-            // Validar duplicado en modo nuevo
             if (modo === "nuevo") {
                 const numCausa = $("numCausa").value.trim();
                 const existe = datosCache.some(causa => causa.numCausa === numCausa);
@@ -2140,7 +3140,6 @@
                 if (existe) {
                     mostrarAlertaFlotante("No se puede guardar: El número de expediente ya está registrado en el sistema.", 'danger');
                     
-                    // Resaltar el campo en rojo
                     const numCausaField = $("numCausa").closest('.field');
                     numCausaField.classList.add('error');
                     const errorSpan = numCausaField.querySelector('.error-message');
@@ -2148,7 +3147,6 @@
                     errorSpan.style.color = "#dc3545";
                     errorSpan.style.fontWeight = "bold";
                     
-                    // Hacer scroll al campo problemático
                     $("numCausa").scrollIntoView({ behavior: 'smooth', block: 'center' });
                     $("numCausa").focus();
                     
@@ -2167,8 +3165,6 @@
             btnGuardar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
             
             try {
-                // GENERAR CAMPOS DE INDEXING
-                // 1. Keywords para búsqueda eficiente
                 const textoParaKeywords = [datos.numCausa, datos.caratula, datos.usuarioAsignado]
                     .join(' ')
                     .toLowerCase()
@@ -2178,7 +3174,6 @@
                     .filter(palabra => palabra.length > 0);
                 datos.keywords = textoParaKeywords;
                 
-                // 2. fechasFiltro para filtrado por fechas
                 const fechasSet = new Set();
                 const agregarFecha = (fecha) => {
                     if (!fecha) return;
@@ -2201,7 +3196,6 @@
                 datos.fechasFiltro = Array.from(fechasSet);
                 
                 if (modo === "nuevo") {
-                    // Validar duplicado en servidor (doble verificación)
                     const dupCheck = await db.collection("causas").where("numCausa", "==", $("numCausa").value.trim()).get();
                     if (!dupCheck.empty) {
                         mostrarAlertaFlotante("El N° Expediente ya existe en la base de datos.", 'danger');
@@ -2372,699 +3366,1367 @@
         $("btnCerrarVer").onclick = ()=> modalVer.style.display = "none";
         $("btnCerrarEventosHoy").onclick = ()=> modalEventosHoy.style.display = "none";
         
-        const printSection = (html)=>{ 
-            const w = window.open("","_blank","width=900,height=700"); 
-            w.document.write(`
-                <html>
-                    <head>
-                        <title>Imprimir</title>
-                        <style>
-                            @media print {
-                                .button, .actions, .action-buttons, .controls-form,
-                                #btnNuevo, #btnPrintListado, #btnPrintFechas, #btnPrintForm,
-                                #btnPrintRegistro, #btnCerrarVer, #btnAgregarNota, #btnVerLineaTiempo,
-                                #btnPrintTodos, #btnPrintFiltrado, #btnEventosHoy,
-                                .fa-solid, .fas, .far, .fa, .fa-eye, .fa-pen, .fa-trash, .fa-plus,
-                                .fa-save, .fa-print, .fa-xmark, .fa-check, .fa-arrow-left, .fa-arrow-right,
-                                .fa-exclamation-triangle, .fa-timeline, .fa-file-pen, .fa-calendar-day,
-                                .btn-eliminar-audiencia, .btn-audiencia, .floating-alert,
-                                .prioridad-destacada, .tabs-nav, .tab-button, .editor-toolbar {
-                                    display: none !important;
-                                }
-                                .header, .filters-section, .sidebar, .pagination-container {
-                                    display: none !important;
-                                }
-                                body, .container, .main-layout, .main {
-                                    margin: 0 !important;
-                                    padding: 0 !important;
-                                    width: 100% !important;
-                                    max-width: 100% !important;
-                                }
-                                .table-section, .kpi-section, .modal .content, #modalVer .content {
-                                    box-shadow: none !important;
-                                    border: 1px solid #ddd !important;
-                                    page-break-inside: avoid;
-                                }
-                                .data-table {
-                                    min-width: 100% !important;
-                                }
-                                .kpi-cards {
-                                    display: grid !important;
-                                    grid-template-columns: repeat(3, 1fr) !important;
-                                    gap: 10px !important;
-                                }
-                                .prioridad-pill {
-                                    color: #000 !important;
-                                    background-color: transparent !important;
-                                    border: 1px solid #000 !important;
-                                }
-                                .actions {
-                                    display: none !important;
-                                }
-                                .tab-content {
-                                    display: block !important;
-                                }
-                                #formCausa .grid {
-                                    display: table !important;
-                                    width: 100% !important;
-                                }
-                                .field {
-                                    display: table-row !important;
-                                    margin-bottom: 0 !important;
-                                }
-                                .field label {
-                                    display: table-cell !important;
-                                    padding: 8px !important;
-                                    font-weight: bold !important;
-                                    width: 40% !important;
-                                    border-bottom: 1px solid #ddd !important;
-                                }
-                                .field input, .field textarea, .field select {
-                                    display: table-cell !important;
-                                    width: 100% !important;
-                                    padding: 8px !important;
-                                    border: none !important;
-                                    border-bottom: 1px solid #ddd !important;
-                                    background: transparent !important;
-                                }
-                                .field textarea {
-                                    height: auto !important;
-                                    min-height: 60px !important;
-                                }
-                                .prioridad-texto {
-                                    color: #000 !important;
-                                    background-color: transparent !important;
-                                    border: 1px solid #000 !important;
-                                    font-weight: bold !important;
-                                }
-                                #verContenido p {
-                                    margin: 8px 0 !important;
-                                    font-size: 14px !important;
-                                    line-height: 1.4 !important;
-                                }
-                                #verContenido strong {
-                                    color: #000 !important;
-                                    font-weight: bold !important;
-                                }
-                                .notes-history {
-                                    margin-top: 20px !important;
-                                    padding-top: 20px !important;
-                                    border-top: 1px solid #ddd !important;
-                                }
-                                .notes-history h4 {
-                                    margin: 0 0 10px !important;
-                                    color: #000 !important;
-                                    font-size: 16px !important;
-                                    border-bottom: 2px solid #000 !important;
-                                    padding-bottom: 5px !important;
-                                }
-                                .note-item {
-                                    background: #f8f8f8 !important;
-                                    border-left: 4px solid #007bff !important;
-                                    padding: 10px !important;
-                                    margin-bottom: 10px !important;
-                                    border-radius: 8px !important;
-                                }
-                                .note-meta {
-                                    display: flex !important;
-                                    justify-content: space-between !important;
-                                    font-size: 12px !important;
-                                    color: #6c757d !important;
-                                    margin-bottom: 5px !important;
-                                }
-                                .note-text {
-                                    font-size: 14px !important;
-                                    line-height: 1.4 !important;
-                                }
-                                #observaciones-editor {
-                                    border: none !important;
-                                    padding: 0 !important;
-                                    min-height: auto !important;
-                                    max-height: none !important;
-                                }
-                            }
-                        </style>
-                    </head>
-                    <body>${html}</body>
-                </html>
-            `); 
-            w.document.close(); 
-            w.focus(); 
-            w.print(); 
-        };
+        // ================================================================
+        // NUEVAS FUNCIONALIDADES PARA GENERAR RESÚMENES PDF
+        // ================================================================
         
-        function generarTablaImpresion(data, titulo) {
-            let tableHTML = `
-                <table border="1" style="width:100%; border-collapse:collapse; margin-top:20px;">
-                    <thead>
-                        <tr>
-                            <th>N°</th>
-                            <th>Carátula</th>
-                            <th>Tipo</th>
-                            <th>Juzgado</th>
-                            <th>Usuario</th>
-                            <th>Estado</th>
-                            <th>Prioridad</th>
-                            <th>Registro</th>
-                            <th>Eventos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            data.forEach(d => {
-                const todosEventos = obtenerTodosEventos(d);
-                let eventosTexto = "—";
-                if (todosEventos.length > 0) {
-                    eventosTexto = todosEventos.map(evento => {
-                        let texto = `${evento.tipo}: ${formatearFecha(evento.fecha, true)}`;
-                        if (evento.tipo === "Diligencia" && evento.detalle) {
-                            texto += ` - ${evento.detalle}`;
-                        }
-                        return texto;
-                    }).join('; ');
+        // Variables para el generador de PDF
+        let clienteSeleccionado = null;
+        let causasDelCliente = [];
+        
+        // Abrir modal para generación de PDF
+        function abrirGeneradorPDF() {
+            modalPDF.style.display = "flex";
+            pdfNombreCliente.value = "";
+            pdfPreview.style.display = "none";
+            pdfResultado.style.display = "none";
+            btnGenerarPDFFinal.style.display = "none";
+            clienteSeleccionado = null;
+            causasDelCliente = [];
+            
+            pdfNombreCliente.focus();
+        }
+        
+        // Buscar cliente por nombre y apellido
+        function buscarClienteParaPDF() {
+            const nombreCompleto = pdfNombreCliente.value.trim();
+            if (!nombreCompleto) {
+                mostrarAlertaFlotante("Por favor, ingrese un nombre y apellido para buscar.", 'danger');
+                return;
+            }
+            
+            const tipoBusqueda = document.querySelector('input[name="pdfBusqueda"]:checked').value;
+            const partesNombre = nombreCompleto.toLowerCase().split(' ');
+            
+            // Buscar causas que contengan el nombre en la carátula o datos NNyA
+            causasDelCliente = datosCache.filter(causa => {
+                let textoBusqueda = "";
+                
+                if (tipoBusqueda === 'caratula') {
+                    textoBusqueda = (causa.caratula || "").toLowerCase();
+                } else if (tipoBusqueda === 'datosnnya') {
+                    textoBusqueda = (causa.datosNnya || "").toLowerCase();
                 }
-                tableHTML += `
-                    <tr>
-                        <td>${d.numCausa||""}</td>
-                        <td>${d.caratula||""}</td>
-                        <td>${d.tipoProceso||""}</td>
-                        <td>${d.juzgado||""}</td>
-                        <td>${d.usuarioAsignado||""}</td>
-                        <td>${d.estado||""}</td>
-                        <td>${d.prioridad||"Ninguna"}</td>
-                        <td>${formatearFecha(d.fechaRegistro, false)}</td>
-                        <td>${eventosTexto}</td>
-                    </tr>
+                
+                // Verificar si todas las partes del nombre están en el texto
+                return partesNombre.every(parte => 
+                    parte.length > 2 && textoBusqueda.includes(parte)
+                );
+            });
+            
+            if (causasDelCliente.length === 0) {
+                mostrarAlertaFlotante(`No se encontraron expedientes para "${nombreCompleto}"`, 'warning');
+                pdfPreview.style.display = 'none';
+                pdfResultado.style.display = 'block';
+                pdfResultado.innerHTML = `
+                    <div class="pdf-error">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        No se encontraron expedientes para "${nombreCompleto}"
+                    </div>
                 `;
-            });
-            tableHTML += `
-                    </tbody>
-                </table>
-            `;
-            return `<h2>${titulo}</h2>${tableHTML}`;
+                btnGenerarPDFFinal.style.display = 'none';
+                return;
+            }
+            
+            clienteSeleccionado = nombreCompleto;
+            
+            // Mostrar vista previa
+            mostrarVistaPreviaPDF();
         }
+        
+        // Mostrar vista previa del resumen
+        function mostrarVistaPreviaPDF() {
+            pdfPreview.style.display = 'block';
+            pdfResultado.style.display = 'none';
+            
+            let previewHTML = '';
+            
+            if (causasDelCliente.length === 1) {
+                const causa = causasDelCliente[0];
+                const eventos = obtenerTodosEventos(causa);
+                const ultimoEvento = eventos.length > 0 ? eventos[0] : null;
                 
-        $("btnPrintFiltrado").onclick = ()=> { 
-            const html = generarTablaImpresion(datosFiltrados, "Listado Filtrado de Expedientes Judiciales");
-            printSection(html); 
-        };
-        $("btnPrintRegistro").onclick = ()=> {
-            const contenido = `
-                <div style="padding: 20px; font-family: Arial, sans-serif;">
-                    <h2 style="text-align: center; margin-bottom: 20px; color: #007bff;">Detalle del Expediente</h2>
-                    <div style="margin-bottom: 20px;">
-                        ${verContenido.innerHTML}
+                // Extraer el texto de estado según las condiciones
+                const textoEstado = generarTextoEstado(causa, ultimoEvento);
+                
+                previewHTML = `
+                    <div class="pdf-preview-item">
+                        <span class="pdf-preview-label">Cliente:</span> ${clienteSeleccionado}
                     </div>
-                    <div class="notes-history">
-                        <h4 style="color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 5px;">Historial de Notas</h4>
-                        ${historialNotas.innerHTML}
+                    <div class="pdf-preview-item">
+                        <span class="pdf-preview-label">N° Expediente:</span> ${causa.numCausa || 'No especificado'}
                     </div>
-                </div>
-            `;
-            printSection(contenido);
-        };
+                    <div class="pdf-preview-label">Carátula:</span> ${causa.caratula ? causa.caratula.substring(0, 100) + '...' : 'No especificada'}
+                    <div class="pdf-preview-item">
+                        <span class="pdf-preview-label">Juzgado:</span> ${causa.juzgado || 'No especificado'}
+                    </div>
+                    <div class="pdf-preview-item">
+                        <span class="pdf-preview-label">Último movimiento:</span> ${ultimoEvento ? formatearFecha(ultimoEvento.fecha, true) : 'Sin movimientos registrados'}
+                    </div>
+                    <div class="pdf-preview-item">
+                        <span class="pdf-preview-label">Estado actual:</span> ${textoEstado}
+                    </div>
+                `;
+            } else {
+                previewHTML = `
+                    <div class="pdf-preview-item">
+                        <span class="pdf-preview-label">Cliente:</span> ${clienteSeleccionado}
+                    </div>
+                    <div class="pdf-preview-item">
+                        <span class="pdf-preview-label">Expedientes encontrados:</span> ${causasDelCliente.length}
+                    </div>
+                    <div style="margin-top: 15px; font-weight: bold; color: var(--primary-blue);">
+                        Se generará un PDF con resumen de todos los expedientes encontrados.
+                    </div>
+                `;
+            }
+            
+            pdfPreviewContent.innerHTML = previewHTML;
+            btnGenerarPDFFinal.style.display = 'inline-flex';
+        }
         
-        tabButtons.forEach(button => {
-            button.addEventListener("click", () => {
-                tabButtons.forEach(btn => btn.classList.remove("active"));
-                tabContents.forEach(content => content.classList.remove("active"));
-                button.classList.add("active");
-                const tabId = button.dataset.tab;
-                $(tabId).classList.add("active");
-            });
-        });
-        
-        function initEditor() {
-            if (btnBold) {
-                btnBold.addEventListener('click', function() {
-                    document.execCommand('bold', false, null);
-                    observacionesEditor.focus();
+        // Generar texto de estado según las condiciones especificadas
+        function generarTextoEstado(causa, ultimoEvento) {
+            // Verificar si hay audiencias futuras
+            if (causa.audiencias && Array.isArray(causa.audiencias)) {
+                const audienciasFuturas = causa.audiencias.filter(aud => {
+                    const fechaAud = toDate(aud);
+                    return fechaAud && fechaAud > new Date();
                 });
-            }
-            
-            if (btnColorAzul) {
-                btnColorAzul.addEventListener('click', function() {
-                    document.execCommand('styleWithCSS', false, true);
-                    document.execCommand('foreColor', false, '#007bff');
-                    observacionesEditor.focus();
-                });
-            }
-            
-            if (btnColorRojo) {
-                btnColorRojo.addEventListener('click', function() {
-                    document.execCommand('styleWithCSS', false, true);
-                    document.execCommand('foreColor', false, '#dc3545');
-                    observacionesEditor.focus();
-                });
-            }
-            
-            if (btnColorVerde) {
-                btnColorVerde.addEventListener('click', function() {
-                    document.execCommand('styleWithCSS', false, true);
-                    document.execCommand('foreColor', false, '#28a745');
-                    observacionesEditor.focus();
-                });
-            }
-            
-            if (btnColorNormal) {
-                btnColorNormal.addEventListener('click', function() {
-                    document.execCommand('styleWithCSS', false, true);
-                    document.execCommand('foreColor', false, '#212529');
-                    observacionesEditor.focus();
-                });
-            }
-            
-            if (observacionesEditor) {
-                observacionesEditor.addEventListener('input', function() {
-                    const text = this.innerText || this.textContent;
-                    const words = text.trim().split(/\s+/).filter(Boolean);
-                    $("counter").textContent = `${words.length}/1000`;
+                
+                if (audienciasFuturas.length > 0) {
+                    const proximaAudiencia = audienciasFuturas.reduce((masProxima, aud) => {
+                        const fechaAud = toDate(aud);
+                        const fechaMasProxima = toDate(masProxima);
+                        return fechaAud < fechaMasProxima ? aud : masProxima;
+                    }, audienciasFuturas[0]);
                     
-                    observacionesHidden.value = this.innerHTML;
+                    const fechaProxima = toDate(proximaAudiencia);
+                    return `Su causa judicial tiene señalada audiencia para el día ${formatearFecha(fechaProxima, false)} a las ${formatearFecha(fechaProxima, true).split(' ')[1]}`;
+                }
+            }
+            
+            // Verificar audiencia Gesell futura
+            if (causa.audienciaGesell) {
+                const fechaGesell = toDate(causa.audienciaGesell);
+                if (fechaGesell && fechaGesell > new Date()) {
+                    return `Su causa judicial tiene señalada audiencia en Cámara Gesell para el día ${formatearFecha(fechaGesell, false)} a las ${formatearFecha(fechaGesell, true).split(' ')[1]}`;
+                }
+            }
+            
+            // Verificar estado del proceso
+            if (causa.estado === 'En trámite') {
+                return 'El expediente está a control del Juzgado';
+            } else if (causa.estado === 'En Alzada') {
+                return 'El expediente ha pasado a resolución del Juzgado';
+            } else if (causa.estado === 'Finalizado') {
+                return 'El expediente tiene Sentencia firmada por el Juez, debe concurrir a nuestra oficina';
+            } else if (causa.estado === 'Archivado') {
+                return 'El expediente se encuentra archivado';
+            }
+            
+            // Por defecto
+            return 'Actualmente no tiene novedades judiciales';
+        }
+        
+        // Generar PDF final
+        function generarPDF() {
+            if (!clienteSeleccionado || causasDelCliente.length === 0) {
+                mostrarAlertaFlotante("No hay datos para generar el PDF.", 'danger');
+                return;
+            }
+            
+            // Mostrar indicador de carga
+            btnGenerarPDFFinal.disabled = true;
+            btnGenerarPDFFinal.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando PDF...';
+            
+            try {
+                // Crear documento PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
                 });
                 
-                observacionesEditor.addEventListener('paste', function(e) {
-                    e.preventDefault();
-                    const text = (e.clipboardData || window.clipboardData).getData('text/plain');
-                    document.execCommand('insertText', false, text);
+                const fechaActual = new Date();
+                const fechaConsulta = formatearFecha(fechaActual, true);
+                
+                // Configuración de márgenes y estilos
+                const margin = 20;
+                let yPos = margin;
+                
+                // Título del documento
+                doc.setFontSize(18);
+                doc.setFont("helvetica", "bold");
+                doc.text("RESUMEN DE ÚLTIMOS MOVIMIENTOS JUDICIALES", 105, yPos, { align: "center" });
+                yPos += 10;
+                
+                // Información del cliente
+                doc.setFontSize(14);
+                doc.setFont("helvetica", "bold");
+                doc.text("DATOS DEL CLIENTE", margin, yPos);
+                yPos += 8;
+                
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "normal");
+                doc.text(`Cliente: ${clienteSeleccionado}`, margin, yPos);
+                yPos += 6;
+                doc.text(`Fecha de consulta: ${fechaConsulta}`, margin, yPos);
+                yPos += 10;
+                
+                // Para cada expediente encontrado
+                causasDelCliente.forEach((causa, index) => {
+                    // Verificar si necesitamos nueva página
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = margin;
+                    }
+                    
+                    const eventos = obtenerTodosEventos(causa);
+                    const ultimoEvento = eventos.length > 0 ? eventos[0] : null;
+                    const textoEstado = generarTextoEstado(causa, ultimoEvento);
+                    
+                    // Información del expediente
+                    doc.setFontSize(14);
+                    doc.setFont("helvetica", "bold");
+                    doc.text(`EXPEDIENTE ${index + 1}`, margin, yPos);
+                    yPos += 8;
+                    
+                    doc.setFontSize(12);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`Número: ${causa.numCausa || 'No especificado'}`, margin, yPos);
+                    yPos += 6;
+                    
+                    // Carátula (puede ser larga, dividir en líneas)
+                    const caratulaLines = doc.splitTextToSize(`Carátula: ${causa.caratula || 'No especificada'}`, 170);
+                    doc.text(caratulaLines, margin, yPos);
+                    yPos += caratulaLines.length * 6;
+                    
+                    doc.text(`Juzgado: ${causa.juzgado || 'No especificado'}`, margin, yPos);
+                    yPos += 6;
+                    doc.text(`Tipo de proceso: ${causa.tipoProceso || 'No especificado'}`, margin, yPos);
+                    yPos += 6;
+                    doc.text(`Estado del proceso: ${causa.estado || 'No especificado'}`, margin, yPos);
+                    yPos += 6;
+                    
+                    // Último movimiento
+                    if (ultimoEvento) {
+                        doc.text(`Último movimiento: ${ultimoEvento.tipo} - ${formatearFecha(ultimoEvento.fecha, true)}`, margin, yPos);
+                    } else {
+                        doc.text(`Último movimiento: Sin movimientos registrados`, margin, yPos);
+                    }
+                    yPos += 8;
+                    
+                    // Estado actual
+                    doc.setFont("helvetica", "bold");
+                    const estadoLines = doc.splitTextToSize(`Situación actual: ${textoEstado}`, 170);
+                    doc.text(estadoLines, margin, yPos);
+                    yPos += estadoLines.length * 6 + 10;
+                    
+                    // Línea separadora
+                    doc.setLineWidth(0.5);
+                    doc.line(margin, yPos - 5, 190, yPos - 5);
+                    yPos += 5;
                 });
+                
+                // Pie de página
+                const totalPages = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(10);
+                    doc.setFont("helvetica", "italic");
+                    doc.text(`Página ${i} de ${totalPages} - Generado por Sistema de Gestión de Expedientes`, 105, 287, { align: "center" });
+                    doc.text(`Fecha de generación: ${fechaConsulta}`, 105, 292, { align: "center" });
+                }
+                
+                // Guardar el PDF
+                const nombreArchivo = `Resumen_${clienteSeleccionado.replace(/\s+/g, '_')}_${formatearFecha(fechaActual, false).replace(/\//g, '-')}.pdf`;
+                doc.save(nombreArchivo);
+                
+                // Mostrar mensaje de éxito
+                pdfResultado.style.display = 'block';
+                pdfResultado.innerHTML = `
+                    <div class="pdf-success">
+                        <i class="fas fa-check-circle"></i> 
+                        PDF generado exitosamente: ${nombreArchivo}
+                    </div>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">
+                        Se encontraron ${causasDelCliente.length} expediente(s) para ${clienteSeleccionado}.
+                    </p>
+                `;
+                
+                mostrarAlertaFlotante(`PDF generado exitosamente: ${nombreArchivo}`, 'success');
+                
+            } catch (error) {
+                console.error("Error al generar PDF:", error);
+                mostrarAlertaFlotante("Error al generar el PDF: " + error.message, 'danger');
+                
+                pdfResultado.style.display = 'block';
+                pdfResultado.innerHTML = `
+                    <div class="pdf-error">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        Error al generar el PDF: ${error.message}
+                    </div>
+                `;
+            } finally {
+                // Restaurar botón
+                btnGenerarPDFFinal.disabled = false;
+                btnGenerarPDFFinal.innerHTML = '<i class="fas fa-download"></i> Generar PDF';
             }
         }
         
-        function initFormEventListeners(){
-            if (selTipo) {
-                selTipo.addEventListener("change", function() {
-                    poblarJuzgadosPorTipo(this.value);
-                });
+        // ================================================================
+        // ASISTENTE IA - CON INTEGRACIÓN DE GENERACIÓN DE PDF
+        // ================================================================
+        
+        let conversacionIA = [];
+        let vozReconocimiento = null;
+        let vozReconocimientoActivo = false;
+        let textToSpeechActivo = false;
+        
+        // FUNCIÓN PARA SINTETIZAR VOZ (TEXT-TO-SPEECH)
+        function sintetizarVoz(texto, elementoBtn = null) {
+            if (!('speechSynthesis' in window)) {
+                console.warn("Text-to-speech no soportado en este navegador");
+                return;
             }
             
-            // Agregar evento de validación en tiempo real para número de expediente
-            if ($("numCausa")) {
-                let timeoutId;
-                $("numCausa").addEventListener("input", function() {
-                    clearTimeout(timeoutId);
-                    timeoutId = setTimeout(validarExistenciaExpediente, 500); // Debounce de 500ms
-                });
-                
-                // También validar al perder el foco
-                $("numCausa").addEventListener("blur", validarExistenciaExpediente);
+            // Cancelar cualquier síntesis en curso
+            speechSynthesis.cancel();
+            textToSpeechActivo = true;
+            
+            // Si hay un botón, marcarlo como activo
+            if (elementoBtn) {
+                elementoBtn.classList.add('speaking');
             }
             
-            if ($("recursos")) {
-                $("recursos").addEventListener("change", function(){
-                    const recursosOpcionales = $("recursos-opcionales");
-                    recursosOpcionales.style.display = this.value ? "block" : "none";
-                });
+            const utterance = new SpeechSynthesisUtterance(texto);
+            utterance.lang = 'es-ES';
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            utterance.volume = 0.8;
+            
+            // Seleccionar voz (intenta buscar una femenina o la predeterminada en español)
+            const voces = speechSynthesis.getVoices();
+            const vozFemenina = voces.find(voz => voz.lang === 'es-ES' && voz.name.includes('Female'));
+            const vozEspanol = voces.find(voz => voz.lang === 'es-ES');
+            
+            if (vozFemenina) {
+                utterance.voice = vozFemenina;
+            } else if (vozEspanol) {
+                utterance.voice = vozEspanol;
             }
             
-            if ($("intervencion")) {
-                $("intervencion").addEventListener("change", function(){
-                    const datosNnya = $("datosNnya"), contadorNnya = $("counterNnya");
-                    if (this.value === "Ministerio Complementario") { 
-                        datosNnya.removeAttribute("disabled"); 
-                        contadorNnya.style.display='block'; 
-                    } else { 
-                        datosNnya.value = ""; 
-                        datosNnya.setAttribute("disabled","true"); 
-                        contadorNnya.style.display='none'; 
-                    }
-                });
-            }
-            
-            const limitWords = (text, max)=>{ 
-                const words = text.trim().split(/\s+/).filter(Boolean); 
-                return words.length > max ? words.slice(0,max).join(" ") : text; 
+            utterance.onstart = function() {
+                console.log("Comenzando síntesis de voz...");
             };
             
-            if ($("datosNnya")) {
-                $("datosNnya").addEventListener("input", function(){ 
-                    this.value = limitWords(this.value, 500); 
-                    $("counterNnya").textContent = `${this.value.trim().split(/\s+/).filter(Boolean).length}/500`; 
-                });
-            }
-            
-            if ($("nnyaGesell")) {
-                $("nnyaGesell").addEventListener("input", function(){ 
-                    this.value = limitWords(this.value, 400); 
-                    $("counterNnyaGesell").textContent = `${this.value.trim().split(/\s+/).filter(Boolean).length}/400`; 
-                });
-            }
-            
-            if ($("habilitarAudienciaGesell")) {
-                $("habilitarAudienciaGesell").addEventListener("change", function(){ 
-                    toggleGesell(this.checked); 
-                });
-            }
-            
-            initEditor();
-        }
-        
-        function toggleGesell(enabled){ 
-            const ag = $("audienciaGesell"), ng = $("nnyaGesell"); 
-            if (enabled){ 
-                ag.removeAttribute("disabled"); 
-                ng.removeAttribute("disabled"); 
-                $("counterNnyaGesell").style.display='block'; 
-            } else { 
-                ag.value = ""; 
-                ng.value = ""; 
-                ag.setAttribute("disabled","true"); 
-                ng.setAttribute("disabled","true"); 
-                $("counterNnyaGesell").style.display='none'; 
-            } 
-        }
-        
-        function resetFormCausa(){ 
-            $("formCausa").reset(); 
-            $("counter").textContent = "0/1000"; 
-            $("counterNnya").textContent = "0/500"; 
-            $("counterNnyaGesell").textContent = "0/400"; 
-            selPrioridad.value = "Ninguna"; 
-            audienciasContainer.innerHTML = ""; 
-            diligenciasContainer.innerHTML = "";
-            agregarAudiencia();
-            agregarDiligencia();
-            
-            // Resetear errores
-            document.querySelectorAll('.field.error').forEach(el => el.classList.remove('error'));
-            const errorSpans = document.querySelectorAll('.error-message');
-            errorSpans.forEach(span => {
-                span.textContent = "Este campo es obligatorio.";
-                span.style.color = "";
-                span.style.fontWeight = "";
-            });
-            
-            tabButtons.forEach(btn => btn.classList.remove("active"));
-            tabContents.forEach(content => content.classList.remove("active"));
-            tabButtons[0].classList.add("active");
-            tabContents[0].classList.add("active");
-            $("recursos-opcionales").style.display = "none";
-            toggleGesell(false);
-            $("habilitarAudienciaGesell").checked = false;
-            
-            // Habilitar todos los campos
-            deshabilitarCamposFormulario(false);
-            
-            observacionesEditor.innerHTML = "";
-            observacionesHidden.value = "";
-        }
-        
-        function recolectarDatosForm(){
-            const fields = ["numCausa","caratula","tipoProceso","juzgado","fechaInicio","fechaPase","intervencion","datosNnya","vencimiento","usuarioAsignado","estado","prioridad","recursos","recursosContestacion","estadoRecursos","vencimientoRecursos","audienciaGesell","nnyaGesell","observaciones"];
-            const datos = {};
-            fields.forEach(id=>{ 
-                const el = $(id); 
-                if(!el) return; 
-                if (["date","datetime-local"].includes(el.type)) { 
-                    let fecha = el.value ? new Date(el.value) : null;
-                    datos[id] = fecha;
-                } else { 
-                    datos[id] = el.value || ""; 
-                } 
-            });
-            
-            // Observaciones del editor
-            datos.observaciones = observacionesEditor.innerHTML;
-            
-            const audiencias = [];
-            audienciasContainer.querySelectorAll('input[type="datetime-local"]').forEach(input => { 
-                if (input.value) {
-                    let fecha = new Date(input.value);
-                    audiencias.push(fecha);
+            utterance.onend = function() {
+                console.log("Síntesis de voz finalizada");
+                textToSpeechActivo = false;
+                if (elementoBtn) {
+                    elementoBtn.classList.remove('speaking');
                 }
-            });
-            datos.audiencias = audiencias.length > 0 ? audiencias : null;
+            };
             
-            const diligencias = [];
-            diligenciasContainer.querySelectorAll('.diligencia-item').forEach(item => {
-                const fechaInput = item.querySelector('input[type="datetime-local"]');
-                const detalleInput = item.querySelector('input[type="text"]');
-                if (fechaInput.value) {
-                    let fecha = new Date(fechaInput.value);
-                    diligencias.push({
-                        fecha: fecha,
-                        detalle: detalleInput.value || ''
+            utterance.onerror = function(event) {
+                console.error("Error en síntesis de voz:", event);
+                textToSpeechActivo = false;
+                if (elementoBtn) {
+                    elementoBtn.classList.remove('speaking');
+                }
+            };
+            
+            speechSynthesis.speak(utterance);
+        }
+        
+        function abrirAsistenteIA() {
+            modalIA.style.display = "flex";
+            iaPregunta.focus();
+            
+            // Limpiar conversación inicial (sin mensaje de bienvenida)
+            iaConversacion.innerHTML = "";
+            
+            // Agregar un mensaje inicial simple
+            agregarMensajeIA("asistente", 
+                `<strong>Asistente IA de Expedientes</strong><br>
+                Puedo ayudarte a buscar y analizar expedientes judiciales. ¿En qué puedo asistirte?`);
+            
+            generarChipsSugerencias();
+        }
+        
+        function cerrarAsistenteIA() {
+            modalIA.style.display = "none";
+            // Detener reconocimiento de voz si está activo
+            if (vozReconocimientoActivo) {
+                detenerVozReconocimiento();
+            }
+            // Detener síntesis de voz
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+            }
+        }
+        
+        function nuevaConsultaIA() {
+            iaConversacion.innerHTML = "";
+            iaPregunta.value = "";
+            ultimoResultadoIA = [];
+            contextoActivo = false;
+            
+            agregarMensajeIA("asistente", 
+                `<strong>Consulta Nueva</strong><br>
+                ¿Qué deseas buscar o analizar en los expedientes?`);
+                
+            generarChipsSugerencias();
+            iaPregunta.focus();
+        }
+        
+        function generarChipsSugerencias() {
+            const chips = [
+                { texto: "📅 Vencimientos esta semana", query: "vencimientos esta semana", clase: "vencimientos" },
+                { texto: "🚨 Prioridad Alta", query: "prioridad alta", clase: "prioridad-alta" },
+                { texto: "📊 Estadísticas completas", query: "estadísticas completas", clase: "estadisticas" },
+                { texto: "📄 Generar Resumen PDF", query: "generar resumen pdf", clase: "pdf" },
+                { texto: "⚖️ En trámite", query: "expedientes en trámite", clase: "" },
+                { texto: "👤 Buscar por nombre", query: "buscar expediente por nombre", clase: "" }
+            ];
+            
+            iaChipsContainer.innerHTML = chips.map(chip => `
+                <button class="ia-chip ${chip.clase}" data-query="${chip.query}">
+                    <i class="fas fa-${chip.texto.includes('Estadísticas') ? 'chart-bar' : chip.texto.includes('Prioridad') ? 'exclamation-triangle' : chip.texto.includes('Vencimientos') ? 'calendar' : chip.texto.includes('PDF') ? 'file-pdf' : chip.texto.includes('Buscar') ? 'search' : 'balance-scale'}"></i>
+                    ${chip.texto}
+                </button>
+            `).join('');
+            
+            document.querySelectorAll('.ia-chip').forEach(chip => {
+                chip.onclick = function() {
+                    iaPregunta.value = this.dataset.query;
+                    enviarPreguntaIA();
+                };
+            });
+        }
+        
+        async function enviarPreguntaIA() {
+            const pregunta = iaPregunta.value.trim();
+            if (!pregunta) return;
+            
+            iaPregunta.value = "";
+            agregarMensajeIA("usuario", pregunta);
+            
+            // Simular "pensando"
+            const mensajeCarga = agregarMensajeCarga();
+            
+            // Pequeño delay para UX
+            setTimeout(() => {
+                mensajeCarga.remove();
+                procesarConsultaInteligente(pregunta);
+            }, 800);
+        }
+        
+        // Detectar si la consulta es para generar un resumen PDF
+        function procesarConsultaInteligente(pregunta) {
+            const texto = pregunta.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            
+            // Detectar si es una solicitud de resumen PDF
+            const palabrasPDF = ["resumen pdf", "generar pdf", "imprimir resumen", "pdf por nombre", "resumen por cliente"];
+            const esSolicitudPDF = palabrasPDF.some(p => texto.includes(p));
+            
+            if (esSolicitudPDF) {
+                // Extraer nombre del cliente de la pregunta
+                const regexNombre = /(?:de|por|para)\s+([a-záéíóúñ\s]+)/i;
+                const match = pregunta.match(regexNombre);
+                
+                if (match) {
+                    const nombreCliente = match[1].trim();
+                    agregarMensajeIA("asistente", 
+                        `<strong>Generar Resumen PDF</strong><br>
+                        He detectado que quieres generar un resumen PDF para el cliente: <strong>${nombreCliente}</strong><br><br>
+                        ¿Es correcto? Si es así, te recomiendo usar la opción específica "Generar Resumen PDF" desde el menú principal.<br><br>
+                        <button class="button button-success" onclick="cerrarAsistenteIA(); setTimeout(() => abrirGeneradorPDF(), 300);">
+                            <i class="fas fa-file-pdf"></i> Ir al Generador de PDF
+                        </button>`);
+                } else {
+                    agregarMensajeIA("asistente", 
+                        `<strong>Generar Resumen PDF</strong><br>
+                        Puedo ayudarte a generar un resumen PDF de los últimos movimientos de un expediente.<br><br>
+                        Para hacerlo, necesito el <strong>nombre y apellido del cliente</strong> que figura en la carátula.<br><br>
+                        <button class="button button-success" onclick="cerrarAsistenteIA(); setTimeout(() => abrirGeneradorPDF(), 300);">
+                            <i class="fas fa-file-pdf"></i> Abrir Generador de PDF
+                        </button>`);
+                }
+                return;
+            }
+            
+            // Resto de la lógica original del asistente IA...
+            // DETECCIÓN DE REFINAMIENTO
+            const palabrasRefinamiento = ["filtrar", "solo", "solamente", "únicamente", "unicamente", "de estos", "entre estos", "dentro de"];
+            const esRefinamiento = palabrasRefinamiento.some(p => texto.includes(p)) && ultimoResultadoIA.length > 0;
+            
+            // DETECCIÓN DE NEGACIÓN
+            const tieneNegacion = texto.includes(" no ") || texto.includes(" sin ") || texto.startsWith("no ") || texto.startsWith("sin ");
+            
+            // DETECCIÓN DE FECHAS RELATIVAS
+            const rangoFechas = obtenerRangoFechasRelativas(texto);
+            
+            // PROCESAR TOKENS
+            const stopWords = ["de", "el", "la", "los", "las", "en", "y", "o", "que", "un", "una", "expediente", "expedientes", "causa", "causas", "buscar", "muestrame", "dime", "quiero", "ver", "mostrar"];
+            let tokens = texto.split(/\s+/).filter(w => w.length > 2 && !stopWords.includes(w));
+            
+            // Procesar negaciones
+            tokens = tokens.map(token => {
+                if (token.startsWith("no") && token.length > 4) {
+                    return `no_${token.substring(2)}`;
+                }
+                if (token.startsWith("sin") && token.length > 4) {
+                    return `sin_${token.substring(3)}`;
+                }
+                return token;
+            });
+            
+            if (tokens.length === 0 && !rangoFechas) {
+                agregarMensajeIA("asistente", "Por favor, sé un poco más específico con tu búsqueda.");
+                return;
+            }
+            
+            // DETECCIÓN DE ESTADÍSTICAS
+            const palabrasEstadistica = ["estadistica", "estadísticas", "resumen", "total", "cuantos", "cuántos", "cuantas", "cuántas", "grafico", "gráfico", "analisis", "análisis", "conteo"];
+            const esEstadistica = palabrasEstadistica.some(p => texto.includes(p));
+            
+            if (esEstadistica && !esRefinamiento) {
+                const respuesta = generarEstadisticasIA();
+                agregarMensajeIA("asistente", respuesta);
+                // Sintetizar voz para estadísticas
+                sintetizarVoz(`Encontré ${datosCache.length} expedientes en total. ${generarResumenEstadistico()}`);
+                return;
+            }
+            
+            // REALIZAR BÚSQUEDA
+            const datosABuscar = esRefinamiento ? ultimoResultadoIA : datosCache;
+            const resultados = buscarEnRegistrosMejorado(tokens, datosABuscar, tieneNegacion, rangoFechas);
+            
+            // Guardar en memoria de contexto si no es refinamiento
+            if (!esRefinamiento) {
+                ultimoResultadoIA = resultados;
+                contextoActivo = true;
+            }
+            
+            if (resultados.length > 0) {
+                const respuestaHTML = generarHTMLResultados(resultados, tokens, esRefinamiento, tieneNegacion, rangoFechas);
+                agregarMensajeIA("asistente", `Encontré <strong>${resultados.length}</strong> expedientes que coinciden con tu búsqueda:<br><br>${respuestaHTML}`);
+                
+                // Sintetizar voz para anunciar resultados
+                sintetizarVoz(`Encontré ${resultados.length} expedientes que coinciden con tu búsqueda.`);
+                
+                // Reactivar listeners para los botones "Ver" y "Voz"
+                setTimeout(() => {
+                    document.querySelectorAll('.ia-ver-causa').forEach(btn => {
+                        btn.onclick = (e) => {
+                            const id = e.currentTarget.dataset.id;
+                            modalIA.style.display = "none";
+                            abrirVer(id);
+                        };
+                    });
+                }, 100);
+            } else {
+                agregarMensajeIA("asistente", `No encontré expedientes que coincidan con "<em>${pregunta}</em>". Intenta con otros términos o verifica la ortografía.`);
+                sintetizarVoz("No encontré expedientes que coincidan con tu búsqueda.");
+                ultimoResultadoIA = [];
+                contextoActivo = false;
+            }
+        }
+        
+        // Resto de funciones del asistente IA (sin cambios)...
+        function obtenerRangoFechasRelativas(expresion) {
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            
+            const manana = new Date(hoy);
+            manana.setDate(manana.getDate() + 1);
+            
+            const semanaPasadaInicio = new Date(hoy);
+            semanaPasadaInicio.setDate(semanaPasadaInicio.getDate() - 7);
+            
+            const semanaProximaFin = new Date(hoy);
+            semanaProximaFin.setDate(semanaProximaFin.getDate() + 7);
+            
+            const mesPasadoInicio = new Date(hoy);
+            mesPasadoInicio.setMonth(mesPasadoInicio.getMonth() - 1);
+            
+            const mesProximoFin = new Date(hoy);
+            mesProximoFin.setMonth(mesProximoFin.getMonth() + 1);
+            
+            const expresionLower = expresion.toLowerCase();
+            
+            if (expresionLower.includes("hoy")) {
+                return { desde: formatFechaParaInput(hoy, false), hasta: formatFechaParaInput(hoy, false) };
+            }
+            if (expresionLower.includes("mañana")) {
+                return { desde: formatFechaParaInput(manana, false), hasta: formatFechaParaInput(manana, false) };
+            }
+            if (expresionLower.includes("semana") && expresionLower.includes("pasada")) {
+                return { desde: formatFechaParaInput(semanaPasadaInicio, false), hasta: formatFechaParaInput(hoy, false) };
+            }
+            if (expresionLower.includes("semana") && (expresionLower.includes("próxima") || expresionLower.includes("proxima") || expresionLower.includes("esta"))) {
+                return { desde: formatFechaParaInput(hoy, false), hasta: formatFechaParaInput(semanaProximaFin, false) };
+            }
+            if (expresionLower.includes("mes") && expresionLower.includes("pasado")) {
+                return { desde: formatFechaParaInput(mesPasadoInicio, false), hasta: formatFechaParaInput(hoy, false) };
+            }
+            if (expresionLower.includes("mes") && (expresionLower.includes("próximo") || expresionLower.includes("proximo") || expresionLower.includes("este"))) {
+                return { desde: formatFechaParaInput(hoy, false), hasta: formatFechaParaInput(mesProximoFin, false) };
+            }
+            
+            return null;
+        }
+        
+        function buscarEnRegistrosMejorado(tokens, contextoAnterior = null, tieneNegacion = false, rangoFechas = null) {
+            const datosABuscar = contextoAnterior && contextoAnterior.length > 0 ? contextoAnterior : datosCache;
+            const resultadosConPuntaje = [];
+            
+            datosABuscar.forEach(causa => {
+                let score = 0;
+                let coincidencias = [];
+                let penalizacion = 0;
+                
+                // Normalizar textos para búsqueda
+                const campos = {
+                    numCausa: (causa.numCausa || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+                    caratula: (causa.caratula || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+                    usuario: (causa.usuarioAsignado || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+                    tipo: (causa.tipoProceso || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+                    juzgado: (causa.juzgado || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+                    estado: (causa.estado || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+                    prioridad: (causa.prioridad || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+                    intervencion: (causa.intervencion || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                };
+                
+                // Verificar filtro por fechas relativas
+                if (rangoFechas) {
+                    const fechasCausa = causa.fechasFiltro || [];
+                    const tieneFechaEnRango = fechasCausa.some(fecha => {
+                        return fecha >= rangoFechas.desde && fecha <= rangoFechas.hasta;
+                    });
+                    if (!tieneFechaEnRango) {
+                        score -= 100;
+                    } else {
+                        score += 20;
+                    }
+                }
+                
+                tokens.forEach(token => {
+                    const esNegacion = token.startsWith("no_") || token.startsWith("sin_");
+                    const tokenLimpio = esNegacion ? token.substring(3) : token;
+                    
+                    // Puntos por campo
+                    if (campos.numCausa.includes(tokenLimpio)) {
+                        if (esNegacion) {
+                            penalizacion += 50;
+                        } else {
+                            score += 10;
+                            coincidencias.push(`N°: ${causa.numCausa}`);
+                        }
+                    }
+                    
+                    if (campos.caratula.includes(tokenLimpio)) {
+                        if (esNegacion) {
+                            penalizacion += 30;
+                        } else {
+                            score += 8;
+                            coincidencias.push(`Carátula: ${causa.caratula.substring(0, 50)}...`);
+                        }
+                    }
+                    
+                    if (campos.usuario.includes(tokenLimpio)) {
+                        if (esNegacion) {
+                            penalizacion += 25;
+                        } else {
+                            score += 7;
+                            coincidencias.push(`Usuario: ${causa.usuarioAsignado}`);
+                        }
+                    }
+                    
+                    if (campos.tipo.includes(tokenLimpio)) {
+                        if (esNegacion) {
+                            penalizacion += 20;
+                        } else {
+                            score += 5;
+                            coincidencias.push(`Tipo: ${causa.tipoProceso}`);
+                        }
+                    }
+                    
+                    if (campos.juzgado.includes(tokenLimpio)) {
+                        if (esNegacion) {
+                            penalizacion += 20;
+                        } else {
+                            score += 5;
+                            coincidencias.push(`Juzgado: ${causa.juzgado}`);
+                        }
+                    }
+                    
+                    if (campos.estado.includes(tokenLimpio)) {
+                        if (esNegacion) {
+                            penalizacion += 15;
+                        } else {
+                            score += 4;
+                            coincidencias.push(`Estado: ${causa.estado}`);
+                        }
+                    }
+                    
+                    if (campos.prioridad.includes(tokenLimpio)) {
+                        if (esNegacion) {
+                            penalizacion += 15;
+                        } else {
+                            score += 6;
+                            coincidencias.push(`Prioridad: ${causa.prioridad}`);
+                        }
+                    }
+                    
+                    if (campos.intervencion.includes(tokenLimpio)) {
+                        if (esNegacion) {
+                            penalizacion += 10;
+                        } else {
+                            score += 3;
+                            coincidencias.push(`Intervención: ${causa.intervencion}`);
+                        }
+                    }
+                    
+                    // Búsqueda en observaciones
+                    if (causa.observaciones && causa.observaciones.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(tokenLimpio)) {
+                        if (esNegacion) {
+                            penalizacion += 5;
+                        } else {
+                            score += 2;
+                            coincidencias.push(`Observaciones: contiene "${tokenLimpio}"`);
+                        }
+                    }
+                    
+                    // Detección especial para "Vencimientos"
+                    if (tokenLimpio === "vencimiento" || tokenLimpio === "vencimientos" || tokenLimpio === "vencer") {
+                        if (causa.vencimiento) {
+                            const hoy = new Date();
+                            const fechaVenc = toDate(causa.vencimiento);
+                            if (fechaVenc > hoy) {
+                                score += 15;
+                                coincidencias.push("Tiene vencimiento futuro");
+                            } else if (fechaVenc < hoy) {
+                                score += 5;
+                                coincidencias.push("Tiene vencimiento pasado");
+                            }
+                        }
+                    }
+                });
+                
+                // Aplicar penalización por negación
+                if (tieneNegacion) {
+                    score -= penalizacion;
+                }
+                
+                // Penalizar si no hay suficientes coincidencias
+                if (coincidencias.length < tokens.length * 0.3) {
+                    score -= 10;
+                }
+                
+                // Bonus por prioridad alta
+                if (causa.prioridad === "Alta") {
+                    score += 3;
+                }
+                
+                if (score > 0) {
+                    resultadosConPuntaje.push({
+                        causa,
+                        score,
+                        coincidencias: [...new Set(coincidencias)].slice(0, 3)
                     });
                 }
             });
-            datos.diligencias = diligencias.length > 0 ? diligencias : null;
             
-            return datos;
+            // Ordenar por puntaje
+            return resultadosConPuntaje
+                .sort((a, b) => b.score - a.score)
+                .slice(0, 15)
+                .map(item => item.causa);
         }
         
-        function cargarDatosEnForm(d) {
-            const setVal = (id, val) => {
-                const el = $(id);
-                if (!el) return;
-                if (val?.seconds) {
-                    const fecha = toDate(val);
-                    if (el.type === "date") {
-                        el.value = formatFechaParaInput(fecha, false);
-                    } else if (el.type === "datetime-local") {
-                        el.value = formatFechaParaInput(fecha, true);
-                    } else {
-                        el.value = val ?? "";
-                    }
-                } else if (val && (el.type === "date" || el.type === "datetime-local")) {
-                    const fecha = toDate(val);
-                    el.value = formatFechaParaInput(fecha, el.type === "datetime-local");
-                }
-                else {
-                    el.value = val ?? "";
-                }
-            };
+        function generarHTMLResultados(listaCausas, tokensResaltar, esRefinamiento = false, tieneNegacion = false, rangoFechas = null) {
+            let html = "";
             
-            if (d.tipoProceso) {
-                selTipo.value = d.tipoProceso;
-                poblarJuzgadosPorTipo(d.tipoProceso);
+            if (esRefinamiento) {
+                html += `<p><small><i class="fas fa-filter"></i> Filtrado sobre resultados anteriores</small></p>`;
             }
-            ["numCausa", "caratula", "tipoProceso", "juzgado", "intervencion", "datosNnya", "usuarioAsignado", "estado", "prioridad", "recursos", "recursosContestacion", "estadoRecursos", "nnyaGesell"].forEach(k => setVal(k, d[k]));
-            ["fechaInicio", "fechaPase", "vencimiento", "vencimientoRecursos", "audienciaGesell"].forEach(k => setVal(k, d[k]));
-            
-            if (d.observaciones) {
-                observacionesEditor.innerHTML = d.observaciones;
-                observacionesHidden.value = d.observaciones;
-                const text = observacionesEditor.innerText || observacionesEditor.textContent;
-                const words = text.trim().split(/\s+/).filter(Boolean);
-                $("counter").textContent = `${words.length}/1000`;
+            if (tieneNegacion) {
+                html += `<p><small><i class="fas fa-ban"></i> Excluyendo términos específicos</small></p>`;
+            }
+            if (rangoFechas) {
+                html += `<p><small><i class="fas fa-calendar"></i> Período: ${rangoFechas.desde} a ${rangoFechas.hasta}</small></p>`;
             }
             
-            const hayRecursos = !!d.recursos;
-            $("recursos-opcionales").style.display = hayRecursos ? "block" : "none";
-            audienciasContainer.innerHTML = "";
-            if (Array.isArray(d.audiencias) && d.audiencias.length > 0) {
-                d.audiencias.forEach(aud => {
-                    const fecha = toDate(aud);
-                    if (fecha) {
-                        audienciasContainer.appendChild(crearAudienciaItem(formatFechaParaInput(fecha, true)));
-                    }
-                });
-            } else {
-                agregarAudiencia();
-            }
-            diligenciasContainer.innerHTML = "";
-            if (Array.isArray(d.diligencias) && d.diligencias.length > 0) {
-                d.diligencias.forEach(dilig => {
-                    const fecha = toDate(dilig.fecha);
-                    if (fecha) {
-                        diligenciasContainer.appendChild(crearDiligenciaItem(formatFechaParaInput(fecha, true), dilig.detalle || ''));
-                    }
-                });
-            } else {
-                agregarDiligencia();
-            }
-            const habilitar = !!(d.audienciaGesell || d.nnyaGesell);
-            $("habilitarAudienciaGesell").checked = habilitar;
-            toggleGesell(habilitar);
-        }
-        
-        function crearAudienciaItem(value = "") {
-            const item = document.createElement('div');
-            item.className = 'audiencia-item';
-            item.innerHTML = `<input type="datetime-local" value="${value}"><button type="button" class="btn-eliminar-audiencia"><i class="fa fa-trash"></i></button>`;
-            const eliminarBtn = item.querySelector('.btn-eliminar-audiencia');
-            
-            eliminarBtn.onclick = function() { 
-                if (audienciasContainer.children.length > 1) {
-                    item.remove(); 
-                } else {
-                    mostrarAlertaPersonalizada("Error", "Debe haber al menos una audiencia"); 
-                }
-            };
-            return item;
-        }
-        
-        function agregarAudiencia() { 
-            audienciasContainer.appendChild(crearAudienciaItem()); 
-        }
-        
-        function crearDiligenciaItem(fechaValue = "", detalleValue = "") {
-            const item = document.createElement('div');
-            item.className = 'diligencia-item';
-            item.innerHTML = `
-                <input type="datetime-local" value="${fechaValue}">
-                <input type="text" placeholder="Detalle de la diligencia" value="${detalleValue}">
-                <button type="button" class="btn-eliminar-diligencia"><i class="fa fa-trash"></i></button>
-            `;
-            const eliminarBtn = item.querySelector('.btn-eliminar-diligencia');
-            
-            eliminarBtn.onclick = function() { 
-                if (diligenciasContainer.children.length > 1) {
-                    item.remove(); 
-                } else {
-                    mostrarAlertaPersonalizada("Error", "Debe haber al menos una diligencia"); 
-                }
-            };
-            return item;
-        }
-        
-        function agregarDiligencia() { 
-            diligenciasContainer.appendChild(crearDiligenciaItem()); 
-        }
-        
-        if (btnAgregarAudiencia) {
-            btnAgregarAudiencia.onclick = agregarAudiencia;
-        }
-        if (btnAgregarDiligencia) {
-            btnAgregarDiligencia.onclick = agregarDiligencia;
-        }
-        
-        window.addEventListener("click", e=>{ 
-            if (e.target === modal) modal.style.display="none"; 
-            if (e.target === modalVer) modalVer.style.display="none"; 
-            if (e.target === alertModal) alertModal.style.display="none";
-            if (e.target === modalEventosHoy) modalEventosHoy.style.display="none";
-        });
-        
-        // Event listeners para filtros OPTIMIZADOS
-        buscador.oninput = actualizarFiltros;
-        filtroEstado.onchange = actualizarFiltros;
-        filtroUsuario.onchange = actualizarFiltros;
-        filtroPrioridad.onchange = actualizarFiltros;
-        filtroIntervencion.onchange = actualizarFiltros;
-        filtroTipoProceso.onchange = actualizarFiltros;
-        filtroEventos.onchange = actualizarFiltros;
-        filtroFechaDesde.onchange = actualizarFiltros;
-        filtroFechaHasta.onchange = actualizarFiltros;
-        
-        $("btnEventosHoy").onclick = function() {
-            renderEventosHoy();
-            modalEventosHoy.style.display = "flex";
-        };
-        
-        async function initApp() {
-            try {
-                console.log("Inicializando aplicación optimizada...");
+            listaCausas.forEach(causa => {
+                const icono = causa.prioridad === "Alta" ? "🔴" : (causa.prioridad === "Media" ? "🟠" : "🔵");
                 
-                if (!app || !db) {
-                    mostrarAlertaFlotante("Error: No se pudo conectar con la base de datos", 'danger');
-                    tbody.innerHTML = "<tr><td colspan='10'>Error: Base de datos no disponible</td></tr>";
+                // Resaltar coincidencias en carátula
+                let caratulaHTML = causa.caratula || "Sin carátula";
+                if (tokensResaltar && tokensResaltar.length > 0) {
+                    tokensResaltar.forEach(token => {
+                        const tokenLimpio = token.replace(/^(no_|sin_)/, '');
+                        const regex = new RegExp(`(${tokenLimpio})`, 'gi');
+                        caratulaHTML = caratulaHTML.replace(regex, '<span class="ia-highlight">$1</span>');
+                    });
+                }
+                
+                html += `
+                <div class="ia-resultado-card ia-ver-causa" data-id="${causa.id}">
+                    <div class="ia-card-header">
+                        <span>${icono} ${causa.numCausa}</span>
+                        <span>${causa.estado}</span>
+                    </div>
+                    <div class="ia-card-title">${caratulaHTML}</div>
+                    <div class="ia-card-body">
+                        <small>👤 ${causa.usuarioAsignado || "Sin asignar"} | 🏛️ ${causa.juzgado || ""} | 📅 ${formatearFecha(causa.fechaRegistro, false)}</small>
+                    </div>
+                </div>`;
+            });
+            return html;
+        }
+        
+        function generarEstadisticasIA() {
+            const total = datosCache.length;
+            const porEstado = {};
+            const porUsuario = {};
+            const porPrioridad = { Alta: 0, Media: 0, Baja: 0, Ninguna: 0 };
+            const porTipo = {};
+            
+            datosCache.forEach(c => {
+                porEstado[c.estado] = (porEstado[c.estado] || 0) + 1;
+                porUsuario[c.usuarioAsignado] = (porUsuario[c.usuarioAsignado] || 0) + 1;
+                porPrioridad[c.prioridad] = (porPrioridad[c.prioridad] || 0) + 1;
+                porTipo[c.tipoProceso] = (porTipo[c.tipoProceso] || 0) + 1;
+            });
+
+            // Ordenar usuarios
+            const topUsuarios = Object.entries(porUsuario).sort((a,b) => b[1] - a[1]).slice(0,5);
+            let usuariosHTML = topUsuarios.map(u => `<li>${u[0]}: <strong>${u[1]}</strong></li>`).join("");
+            
+            // Ordenar tipos
+            const topTipos = Object.entries(porTipo).sort((a,b) => b[1] - a[1]).slice(0,5);
+            let tiposHTML = topTipos.map(t => `<li>${t[0]}: <strong>${t[1]}</strong></li>`).join("");
+
+            return `
+                <div class="ia-analisis-detallado">
+                    <h4>📊 Resumen Estadístico</h4>
+                    <p>Total expedientes: <strong>${total}</strong></p>
+                    
+                    <strong>Por Prioridad:</strong>
+                    <ul>
+                        <li>Alta: <strong>${porPrioridad.Alta}</strong></li>
+                        <li>Media: <strong>${porPrioridad.Media}</strong></li>
+                        <li>Baja: <strong>${porPrioridad.Baja}</strong></li>
+                        <li>Ninguna: <strong>${porPrioridad.Ninguna}</strong></li>
+                    </ul>
+                    
+                    <strong>Por Estado:</strong>
+                    <ul>
+                        ${Object.keys(porEstado).map(k => `<li>${k}: <strong>${porEstado[k]}</strong></li>`).join("")}
+                    </ul>
+                    
+                    <strong>Top 5 Usuarios:</strong>
+                    <ul>${usuariosHTML}</ul>
+                    
+                    <strong>Top 5 Tipos:</strong>
+                    <ul>${tiposHTML}</ul>
+                </div>
+            `;
+        }
+        
+        function generarResumenEstadistico() {
+            const total = datosCache.length;
+            const alta = datosCache.filter(c => c.prioridad === "Alta").length;
+            const enTramite = datosCache.filter(c => c.estado === "En trámite").length;
+            
+            return `Hay ${alta} expedientes con prioridad alta y ${enTramite} en trámite.`;
+        }
+        
+        function agregarMensajeIA(rol, contenido) {
+            const div = document.createElement('div');
+            div.className = `ia-mensaje ${rol}`;
+            
+            if (rol === 'asistente') {
+                // Generar un ID único para este mensaje
+                const mensajeId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                
+                div.innerHTML = `
+                    <div class="ia-mensaje-header">
+                        <strong>🤖 Asistente IA</strong>
+                        <div class="ia-mensaje-acciones">
+                            <button class="ia-btn-voz" data-mensaje-id="${mensajeId}" title="Escuchar respuesta">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="${mensajeId}" class="ia-mensaje-contenido">
+                        ${contenido}
+                    </div>
+                `;
+                
+                // Añadir evento al botón de voz
+                setTimeout(() => {
+                    const btnVoz = div.querySelector('.ia-btn-voz');
+                    if (btnVoz) {
+                        btnVoz.onclick = function() {
+                            const mensajeId = this.getAttribute('data-mensaje-id');
+                            const contenidoDiv = document.getElementById(mensajeId);
+                            if (contenidoDiv) {
+                                const texto = contenidoDiv.innerText || contenidoDiv.textContent;
+                                sintetizarVoz(texto, this);
+                            }
+                        };
+                    }
+                }, 10);
+            } else {
+                div.innerHTML = `
+                    <div class="ia-mensaje-header">
+                        <strong>👤 Tú</strong>
+                    </div>
+                    <div>${contenido}</div>
+                `;
+            }
+            
+            iaConversacion.appendChild(div);
+            iaConversacion.scrollTop = iaConversacion.scrollHeight;
+            return div;
+        }
+        
+        function agregarMensajeCarga() {
+            const div = document.createElement('div');
+            div.className = 'ia-mensaje-carga ia-pensando';
+            div.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando consulta';
+            iaConversacion.appendChild(div);
+            iaConversacion.scrollTop = iaConversacion.scrollHeight;
+            return div;
+        }
+        
+        // ================================================================
+        // INICIALIZACIÓN DE LA APLICACIÓN
+        // ================================================================
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log("Inicializando aplicación completa...");
+            
+            await cargarUsuarios();
+            await cargarJuzgados();
+            
+            poblarTiposProceso();
+            poblarSelectUsuarios();
+            poblarFiltroTiposProceso();
+            poblarFiltroIntervencion();
+            poblarFiltroUsuarios();
+            
+            suscribirCausas(true);
+            
+            // ============================================================
+            // EVENT LISTENERS ORIGINALES (SIN CAMBIOS)
+            // ============================================================
+            
+            $("btnNuevo").onclick = abrirNuevoExpediente;
+            $("btnGuardar").onclick = guardarExpediente;
+            
+            // Cerrar modal al hacer clic fuera del contenido
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = "none";
+                    resetFormCausa();
+                }
+            });
+            
+            $("btnCerrarVer").onclick = () => modalVer.style.display = "none";
+            $("btnCerrarEventosHoy").onclick = () => modalEventosHoy.style.display = "none";
+            
+            $("btnEventosHoy").onclick = () => {
+                renderEventosHoy();
+                modalEventosHoy.style.display = "flex";
+            };
+            
+            $("btnAsistenteIA").onclick = abrirAsistenteIA;
+            $("btnPrintFiltrado").onclick = () => window.print();
+            $("btnPrintRegistro").onclick = () => window.print();
+            
+            // Asistente IA - Event Listeners
+            btnNuevaConsultaIA.onclick = nuevaConsultaIA;
+            btnSalirIA.onclick = cerrarAsistenteIA;
+            iaEnviar.onclick = enviarPreguntaIA;
+            iaPregunta.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    enviarPreguntaIA();
+                }
+            });
+            
+            // Filtros
+            buscador.addEventListener('input', actualizarFiltros);
+            filtroEstado.addEventListener('change', actualizarFiltros);
+            filtroUsuario.addEventListener('change', actualizarFiltros);
+            filtroPrioridad.addEventListener('change', actualizarFiltros);
+            filtroIntervencion.addEventListener('change', actualizarFiltros);
+            filtroTipoProceso.addEventListener('change', actualizarFiltros);
+            filtroEventos.addEventListener('change', actualizarFiltros);
+            filtroFechaDesde.addEventListener('change', actualizarFiltros);
+            filtroFechaHasta.addEventListener('change', actualizarFiltros);
+            
+            // Tabs
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    button.classList.add('active');
+                    $(tabId).classList.add('active');
+                });
+            });
+            
+            // Editor de observaciones
+            btnBold.onclick = () => {
+                document.execCommand('bold', false, null);
+                btnBold.classList.toggle('active');
+            };
+            btnColorAzul.onclick = () => document.execCommand('foreColor', false, '#007bff');
+            btnColorRojo.onclick = () => document.execCommand('foreColor', false, '#dc3545');
+            btnColorVerde.onclick = () => document.execCommand('foreColor', false, '#28a745');
+            btnColorNormal.onclick = () => document.execCommand('foreColor', false, '#212529');
+            
+            // Validación de existencia de expediente
+            $("numCausa").addEventListener('blur', validarExistenciaExpediente);
+            $("numCausa").addEventListener('input', function() {
+                const field = this.closest('.field');
+                field.classList.remove('error');
+                const errorSpan = field.querySelector('.error-message');
+                errorSpan.textContent = "Este campo es obligatorio.";
+                errorSpan.style.color = "";
+                errorSpan.style.fontWeight = "";
+            });
+            
+            // Select de tipo de proceso para cargar juzgados
+            selTipo.addEventListener('change', function() {
+                poblarJuzgadosPorTipo(this.value);
+            });
+            
+            // Select de recursos para mostrar campos opcionales
+            $("recursos").addEventListener('change', function() {
+                $("recursos-opcionales").style.display = this.value ? "block" : "none";
+            });
+            
+            // Habilitar/deshabilitar Gesell
+            $("habilitarAudienciaGesell").addEventListener('change', function() {
+                $("audienciaGesell").disabled = !this.checked;
+                $("nnyaGesell").disabled = !this.checked;
+            });
+            
+            // Agregar audiencias y diligencias dinámicas
+            btnAgregarAudiencia.onclick = function() {
+                const container = audienciasContainer;
+                const div = document.createElement('div');
+                div.className = 'audiencia-item';
+                div.innerHTML = `
+                    <input type="datetime-local" class="audiencia-fecha">
+                    <button type="button" class="btn-eliminar-audiencia"><i class="fa fa-trash"></i></button>
+                `;
+                container.appendChild(div);
+                div.querySelector('.btn-eliminar-audiencia').onclick = function() {
+                    container.removeChild(div);
+                };
+            };
+            
+            btnAgregarDiligencia.onclick = function() {
+                const container = diligenciasContainer;
+                const div = document.createElement('div');
+                div.className = 'diligencia-item';
+                div.innerHTML = `
+                    <input type="datetime-local" class="diligencia-fecha">
+                    <input type="text" class="diligencia-detalle" placeholder="Detalle">
+                    <button type="button" class="btn-eliminar-diligencia"><i class="fa fa-trash"></i></button>
+                `;
+                container.appendChild(div);
+                div.querySelector('.btn-eliminar-diligencia').onclick = function() {
+                    container.removeChild(div);
+                };
+            };
+            
+            // Contadores de texto
+            function setupContadores() {
+                const editor = observacionesEditor;
+                const counter = $("counter");
+                editor.addEventListener('input', function() {
+                    const texto = editor.innerText || "";
+                    const palabras = texto.trim().split(/\s+/).filter(p => p.length > 0);
+                    counter.textContent = `${palabras.length}/1000`;
+                    if (palabras.length > 1000) {
+                        counter.style.color = 'red';
+                    } else {
+                        counter.style.color = '';
+                    }
+                    observacionesHidden.value = editor.innerHTML;
+                });
+                
+                const contadores = [
+                    { campo: $("datosNnya"), contador: $("counterNnya"), max: 500 },
+                    { campo: $("nnyaGesell"), contador: $("counterNnyaGesell"), max: 400 }
+                ];
+                contadores.forEach(item => {
+                    if (item.campo) {
+                        item.campo.addEventListener('input', function() {
+                            const palabras = this.value.trim().split(/\s+/).filter(p => p.length > 0);
+                            item.contador.textContent = `${palabras.length}/${item.max}`;
+                            if (palabras.length > item.max) {
+                                item.contador.style.color = 'red';
+                            } else {
+                                item.contador.style.color = '';
+                            }
+                        });
+                        item.contador.style.display = 'block';
+                    }
+                });
+            }
+            setupContadores();
+            
+            // ============================================================
+            // NUEVOS EVENT LISTENERS PARA GENERACIÓN DE PDF
+            // ============================================================
+            
+            // Botón para abrir generador de PDF
+            btnGenerarPDF.onclick = abrirGeneradorPDF;
+            
+            // Botón para buscar cliente en PDF
+            btnBuscarClientePDF.onclick = buscarClienteParaPDF;
+            
+            // Botón para generar PDF final
+            btnGenerarPDFFinal.onclick = generarPDF;
+            
+            // Botón para cerrar modal de PDF
+            btnCerrarPDF.onclick = () => modalPDF.style.display = "none";
+            
+            // Permitir búsqueda con Enter en el campo de nombre
+            pdfNombreCliente.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    buscarClienteParaPDF();
+                }
+            });
+            
+            // Cerrar modal de PDF al hacer clic fuera
+            modalPDF.addEventListener('click', function(e) {
+                if (e.target === modalPDF) {
+                    modalPDF.style.display = "none";
+                }
+            });
+            
+            // ============================================================
+            // FUNCIONES DE VOZ (SIN CAMBIOS)
+            // ============================================================
+            
+            // Función de reconocimiento de voz corregida
+            function startDictation(inputId) {
+                // Verificar si el navegador soporta la API
+                if (window.hasOwnProperty('webkitSpeechRecognition') || window.hasOwnProperty('SpeechRecognition')) {
+                    
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    var recognition = new SpeechRecognition();
+
+                    recognition.continuous = false;
+                    recognition.interimResults = false;
+                    recognition.lang = "es-AR"; // Configurado para español Argentina
+                    
+                    // Indicador visual: Cambiar color del ícono al empezar a escuchar
+                    const icon = document.querySelector(`i[onclick="startDictation('${inputId}')"]`);
+                    if(icon) icon.style.color = "red";
+
+                    recognition.start();
+
+                    recognition.onresult = function(event) {
+                        var transcript = event.results[0][0].transcript;
+                        var input = document.getElementById(inputId);
+                        
+                        if (input) {
+                            // 1. Detectar si es un elemento Editable (DIV contenteditable) como Observaciones
+                            if (input.isContentEditable) {
+                                // Añadir espacio si ya hay texto
+                                const textoActual = input.innerText;
+                                input.innerText = textoActual ? textoActual + " " + transcript : transcript;
+                                
+                                // Disparar evento 'input' para que se actualicen los contadores y campos ocultos
+                                input.dispatchEvent(new Event('input', { bubbles: true }));
+                            } 
+                            // 2. Detectar si es un Input o Textarea normal
+                            else {
+                                input.value = input.value ? input.value + " " + transcript : transcript;
+                                
+                                // Disparar eventos para filtros y validaciones
+                                input.dispatchEvent(new Event('input', { bubbles: true }));
+                                input.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
+                            
+                            // Si es específicamente el campo de búsqueda global, forzar el filtro
+                            if(inputId === 'buscador' && typeof actualizarFiltros === 'function'){
+                                actualizarFiltros();
+                            }
+                        }
+                        if(icon) icon.style.color = ""; // Restaurar color original
+                        recognition.stop();
+                    };
+
+                    recognition.onerror = function(event) {
+                        console.error("Error en reconocimiento de voz:", event.error);
+                        if(icon) icon.style.color = ""; // Restaurar color
+                        recognition.stop();
+                    };
+                    
+                    recognition.onend = function() {
+                         if(icon) icon.style.color = ""; // Restaurar color al terminar
+                    };
+
+                } else {
+                    alert("Tu navegador no soporta reconocimiento de voz. Por favor usa Google Chrome.");
+                }
+            }
+
+            // Configurar funciones de voz
+            function setupFuncionesVoz() {
+                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                    console.warn("El navegador no soporta reconocimiento de voz");
                     return;
                 }
                 
-                await Promise.all([cargarUsuarios(), cargarJuzgados()]);
+                // Configurar botones de voz existentes para usar startDictation
+                const botonesVoz = {
+                    'Caratula': 'btnVoiceCaratula',
+                    'DatosNnya': 'btnVoiceDatosNnya',
+                    'NnyaGesell': 'btnVoiceNnyaGesell',
+                    'Observaciones': 'btnVoiceObservaciones',
+                    'Nota': 'btnVoiceNota',
+                    'Search': 'btnVoiceSearch'
+                };
                 
-                poblarFiltroUsuarios();
-                poblarTiposProceso();
-                poblarFiltroTiposProceso();
-                poblarFiltroIntervencion();
-                poblarSelectUsuarios();
+                // Mapeo de IDs de botón a IDs de campo
+                const campoPorBoton = {
+                    'btnVoiceCaratula': 'caratula',
+                    'btnVoiceDatosNnya': 'datosNnya',
+                    'btnVoiceNnyaGesell': 'nnyaGesell',
+                    'btnVoiceObservaciones': 'observaciones-editor',
+                    'btnVoiceNota': 'notaBitacora',
+                    'btnVoiceSearch': 'buscador'
+                };
                 
-                initFormEventListeners();
-                
-                suscribirCausas();
-                
-                if ($("btnNuevo")) {
-                    $("btnNuevo").onclick = abrirNuevoExpediente;
-                }
-                if ($("btnGuardar")) {
-                    $("btnGuardar").onclick = guardarExpediente;
-                }
-                
-                console.log("Aplicación optimizada inicializada correctamente");
-            } catch (error) {
-                console.error("Error durante la inicialización:", error);
-                mostrarAlertaFlotante("Error al cargar los datos iniciales: " + error.message, 'danger');
-                tbody.innerHTML = `<tr><td colspan='10'>Error al inicializar la aplicación: ${error.message}</td></tr>`;
-            }
-        }
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            const set24HourFormat = () => {
-                const inputs = document.querySelectorAll('input[type="datetime-local"]');
-                inputs.forEach(input => {
-                    input.setAttribute('step', '3600');
+                Object.keys(botonesVoz).forEach(campo => {
+                    const btn = $(botonesVoz[campo]);
+                    if (btn) {
+                        // Obtener el ID del campo correspondiente
+                        const campoId = campoPorBoton[botonesVoz[campo]];
+                        
+                        // Configurar el botón para usar startDictation
+                        btn.onclick = () => startDictation(campoId);
+                    }
                 });
-            };
+                
+                // Configurar botón de texto a voz en modal de ver
+                const btnTextToSpeech = $('btnTextToSpeech');
+                if (btnTextToSpeech) {
+                    btnTextToSpeech.onclick = function() {
+                        const contenido = verContenido.innerText;
+                        if ('speechSynthesis' in window) {
+                            const sintesis = speechSynthesis;
+                            const utterance = new SpeechSynthesisUtterance(contenido);
+                            utterance.lang = 'es-ES';
+                            utterance.rate = 1.0;
+                            utterance.pitch = 1.0;
+                            
+                            this.classList.toggle('speaking');
+                            if (sintesis.speaking) {
+                                sintesis.cancel();
+                                this.classList.remove('speaking');
+                            } else {
+                                sintesis.speak(utterance);
+                                utterance.onend = () => {
+                                    this.classList.remove('speaking');
+                                };
+                            }
+                        }
+                    };
+                }
+            }
             
-            set24HourFormat();
+            setupFuncionesVoz();
             
-            const observer = new MutationObserver(set24HourFormat);
-            observer.observe(document.body, { childList: true, subtree: true });
+            console.log("Aplicación completa inicializada correctamente.");
         });
+
+        // ================================================================
+        // FUNCIÓN PARA MIGRAR DATOS CORREGIDA (SIN CAMBIOS)
+        // ================================================================
         
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initApp);
-        } else {
-            initApp();
-        }
-
-        // FUNCIÓN DE MIGRACIÓN (COPIADA DE REDUCE.html)
         window.migrarDatosParaBusqueda = async function() {
-            if (!confirm("¿Migrar todos los datos para búsqueda optimizada? Esto actualizará todos los expedientes con campos keywords y fechasFiltro. Puede tardar varios minutos.")) return;
+            if (!db) {
+                alert("Firebase no está inicializado");
+                return;
+            }
             
-            const btn = document.createElement("button");
-            btn.textContent = "Migrando...";
-            btn.disabled = true;
-            document.body.appendChild(btn);
-
+            const confirmar = confirm("Esta operación actualizará todos los registros para habilitar búsquedas avanzadas. ¿Continuar?");
+            if (!confirmar) return;
+            
             try {
                 const snapshot = await db.collection("causas").get();
                 const batch = db.batch();
-                let count = 0;
+                let contador = 0;
+                
                 snapshot.forEach(doc => {
-                    const d = doc.data();
+                    const data = doc.data();
+                    
                     // Generar keywords
-                    const texto = [d.numCausa, d.caratula, d.usuarioAsignado].join(' ');
-                    const keywords = texto.toLowerCase()
-                        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                        .replace(/[^\w\s]/gi, '')
-                        .split(/\s+/)
-                        .filter(palabra => palabra.length > 0);
-
+                    const textoParaKeywords = [
+                        data.numCausa || '',
+                        data.caratula || '', 
+                        data.usuarioAsignado || '',
+                        data.observaciones || ''
+                    ]
+                    .filter(Boolean)
+                    .join(' ')
+                    .toLowerCase()
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    .replace(/[^\w\s]/gi, '')
+                    .split(/\s+/)
+                    .filter(palabra => palabra.length > 0);
+                    
                     // Generar fechasFiltro
                     const fechasSet = new Set();
                     const agregarFecha = (fecha) => {
                         if (!fecha) return;
-                        const date = toDate(fecha);
-                        if (date && !isNaN(date)) {
-                            fechasSet.add(formatFechaParaInput(date, false));
+                        const d = toDate(fecha);
+                        if (d && !isNaN(d)) {
+                            fechasSet.add(formatFechaParaInput(d, false));
                         }
                     };
-                    agregarFecha(d.vencimiento);
-                    agregarFecha(d.vencimientoRecursos);
-                    agregarFecha(d.audienciaGesell);
-                    if (Array.isArray(d.audiencias)) d.audiencias.forEach(agregarFecha);
-                    if (Array.isArray(d.diligencias)) d.diligencias.forEach(dilig => agregarFecha(dilig.fecha));
-
-                    batch.update(doc.ref, {
-                        keywords: keywords,
+                    
+                    agregarFecha(data.vencimiento);
+                    agregarFecha(data.vencimientoRecursos);
+                    agregarFecha(data.audienciaGesell);
+                    if (Array.isArray(data.audiencias)) {
+                        data.audiencias.forEach(agregarFecha);
+                    }
+                    if (Array.isArray(data.diligencias)) {
+                        data.diligencias.forEach(dilig => agregarFecha(dilig.fecha));
+                    }
+                    
+                    // Actualizar documento
+                    const ref = db.collection("causas").doc(doc.id);
+                    batch.update(ref, {
+                        keywords: textoParaKeywords,
                         fechasFiltro: Array.from(fechasSet)
                     });
-                    count++;
-                    if (count % 500 === 0) {
-                        console.log(`Procesados ${count} documentos`);
-                    }
+                    
+                    contador++;
                 });
+                
                 await batch.commit();
-                alert(`Migración completada. ${count} documentos actualizados.`);
-                // Recargar datos después de migración
-                suscribirCausas(true);
-            } catch (e) {
-                console.error("Error en migración:", e);
-                alert("Error en migración: " + e.message);
-            } finally {
-                btn.remove();
+                alert(`Se actualizaron ${contador} registros correctamente.`);
+                location.reload();
+            } catch (error) {
+                console.error("Error en migración:", error);
+                alert("Error durante la migración: " + error.message);
             }
         };
     </script>
