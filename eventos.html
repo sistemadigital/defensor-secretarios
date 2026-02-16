@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos</title>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== VARIABLES MINIMALISTAS (coherentes con tabla.html) ===== */
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-soft: #eff6ff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-lg: 0.75rem;
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        /* ===== RESET ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background-color: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-refresh {
+            background-color: var(--white);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.15s, border-color 0.15s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-refresh:hover {
+            background-color: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        /* ===== LAYOUT PRINCIPAL ===== */
+        .main-layout {
+            display: flex;
+            flex: 1;
+            padding: 1.5rem;
+            gap: 1.5rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ===== PANEL IZQUIERDO ===== */
+        .left-panel {
+            flex: 0 0 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: sticky;
+            top: 1.5rem;
+            height: fit-content;
+        }
+
+        .time-panel {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem 1rem;
+            color: var(--gray-800);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .month-year {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+            color: var(--gray-500);
+            margin-bottom: 0.75rem;
+        }
+
+        .day-number {
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--gray-800);
+            margin-bottom: 0.25rem;
+        }
+
+        .weekday {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+        }
+
+        .time {
+            font-size: 1.75rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            background-color: var(--gray-100);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            color: var(--gray-800);
+            width: 100%;
+            border: 1px solid var(--gray-200);
+        }
+
+        .date-separator {
+            width: 60px;
+            height: 2px;
+            background-color: var(--gray-200);
+            margin: 1rem 0;
+        }
+
+        /* Panel de eventos de hoy */
+        .today-panel {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+
+        .today-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .today-title i {
+            color: var(--primary);
+        }
+
+        .today-list {
+            list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .today-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.75rem;
+            background-color: var(--gray-50);
+            border-radius: var(--radius-sm);
+            transition: all 0.15s;
+            border: 1px solid var(--gray-200);
+            cursor: pointer;
+        }
+
+        .today-item:hover {
+            background-color: var(--primary-soft);
+            border-color: var(--primary);
+        }
+
+        .today-item.pasado {
+            opacity: 0.6;
+            background-color: var(--gray-100);
+        }
+
+        .today-expediente {
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .today-expediente span {
+            font-size: 0.75rem;
+            font-weight: normal;
+            color: var(--gray-500);
+        }
+
+        .today-hora {
+            font-size: 0.75rem;
+            background-color: var(--primary-soft);
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            color: var(--gray-700);
+        }
+
+        .today-empty {
+            color: var(--gray-500);
+            font-style: italic;
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+
+        /* ===== PANEL DERECHO ===== */
+        .events-panel {
+            flex: 1;
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .panel-header h2 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-right: auto;
+        }
+
+        .filters-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: var(--white);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            padding: 0.25rem 0.25rem 0.25rem 1rem;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        .search-box i {
+            color: var(--gray-400);
+            font-size: 0.875rem;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            width: 200px;
+            outline: none;
+            color: var(--gray-800);
+        }
+
+        .search-box input::placeholder {
+            color: var(--gray-400);
+        }
+
+        .search-box button {
+            background-color: var(--primary);
+            border: none;
+            color: white;
+            border-radius: var(--radius-sm);
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .search-box button:hover {
+            background-color: var(--primary-light);
+        }
+
+        .date-filter {
+            display: flex;
+            align-items: center;
+            background-color: var(--white);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            padding: 0.25rem 0.25rem 0.25rem 1rem;
+        }
+
+        .date-filter:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        .date-filter i {
+            color: var(--gray-400);
+            font-size: 0.875rem;
+        }
+
+        .date-filter input[type="date"] {
+            border: none;
+            background: transparent;
+            padding: 0.5rem 0.5rem;
+            font-size: 0.875rem;
+            width: 150px;
+            outline: none;
+            color: var(--gray-800);
+        }
+
+        .date-filter input[type="date"]::-webkit-calendar-picker-indicator {
+            opacity: 0.5;
+            cursor: pointer;
+        }
+
+        .date-filter button {
+            background-color: transparent;
+            border: none;
+            color: var(--gray-500);
+            border-radius: var(--radius-sm);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: background-color 0.15s, color 0.15s;
+        }
+
+        .date-filter button:hover {
+            background-color: var(--gray-100);
+            color: var(--danger);
+        }
+
+        /* Nuevo filtro por tipo */
+        .type-filter {
+            display: flex;
+            align-items: center;
+            background-color: var(--white);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            padding: 0.25rem 0.25rem 0.25rem 1rem;
+        }
+
+        .type-filter:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        .type-filter i {
+            color: var(--gray-400);
+            font-size: 0.875rem;
+        }
+
+        .type-filter select {
+            border: none;
+            background: transparent;
+            padding: 0.5rem 0.5rem;
+            font-size: 0.875rem;
+            width: 150px;
+            outline: none;
+            color: var(--gray-800);
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .type-filter button {
+            background-color: transparent;
+            border: none;
+            color: var(--gray-500);
+            border-radius: var(--radius-sm);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: background-color 0.15s, color 0.15s;
+        }
+
+        .type-filter button:hover {
+            background-color: var(--gray-100);
+            color: var(--danger);
+        }
+
+        /* ===== TABLA ===== */
+        .table-responsive {
+            overflow-x: auto;
+            flex: 1;
+        }
+
+        .events-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+            font-size: 0.875rem;
+        }
+
+        .events-table th {
+            text-align: left;
+            padding: 1rem 1rem;
+            background-color: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-600);
+            border-bottom: 1px solid var(--gray-200);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .events-table td {
+            padding: 1rem 1rem;
+            border-bottom: 1px solid var(--gray-100);
+            color: var(--gray-700);
+            vertical-align: middle;
+        }
+
+        .events-table tbody tr:hover td {
+            background-color: var(--gray-50);
+        }
+
+        .event-type-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: white;
+        }
+
+        .type-audiencia { background-color: var(--primary); }
+        .type-gesell { background-color: var(--success); }
+        .type-vencimiento { background-color: var(--danger); }
+        .type-recurso { background-color: var(--warning); }
+        .type-diligencia { background-color: #8b5cf6; }
+
+        /* ===== PAGINACIÓN ===== */
+        .pagination {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--white);
+        }
+
+        .pagination-info {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        .pagination-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .page-btn {
+            background-color: var(--white);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .page-btn:not(:disabled):hover {
+            background-color: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading-row td {
+            text-align: center;
+            padding: 3rem !important;
+            color: var(--gray-500);
+            font-style: italic;
+        }
+
+        /* ===== ALERTA FLOTANTE ===== */
+        .floating-alert {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--gray-800);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .floating-alert.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .floating-alert.success {
+            background-color: var(--success);
+        }
+
+        .floating-alert i {
+            font-size: 1.25rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1000px) {
+            .main-layout {
+                flex-direction: column;
+            }
+            .left-panel {
+                position: static;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="">
+            <i class=""></i> 
+            <span></span>
+        </div>
+        <button class="btn-refresh" id="btnRefresh">
+            <i class="fas fa-sync-alt"></i> Actualizar
+        </button>
+    </header>
+
+    <div class="main-layout">
+        <!-- Panel izquierdo: fecha + eventos de hoy -->
+        <div class="left-panel">
+            <aside class="time-panel" id="timePanel">
+                <div class="month-year" id="currentMonthYear">MAYO 2026</div>
+                <div class="day-number" id="currentDay">13</div>
+                <div class="weekday" id="currentWeekday">MIÉRCOLES</div>
+                <div class="date-separator"></div>
+                <div class="time" id="currentTime">14:30:45</div>
+            </aside>
+
+            <div class="today-panel">
+                <div class="today-title">
+                    <i class="fas fa-calendar-check"></i> Eventos de hoy
+                </div>
+                <div id="todayListContainer">
+                    <!-- Se llena con JS -->
+                    <div class="today-empty">Cargando...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel derecho: tabla de eventos (sin columna detalle) -->
+        <section class="events-panel">
+            <div class="panel-header">
+                <h2><i class="fas fa-calendar-alt" style="color:#2563eb;"></i> Todos los eventos</h2>
+                <div class="filters-row">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Buscar N° o carátula...">
+                        <button id="btnSearch"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                    <div class="date-filter">
+                        <i class="fas fa-calendar-day"></i>
+                        <input type="date" id="filterDate">
+                        <button id="btnClearDate" title="Limpiar filtro de fecha"><i class="fas fa-times"></i></button>
+                    </div>
+                    <!-- NUEVO FILTRO POR TIPO -->
+                    <div class="type-filter">
+                        <i class="fas fa-tag"></i>
+                        <select id="filterType">
+                            <option value="">Todos los tipos</option>
+                            <option value="audiencia">Audiencias</option>
+                            <option value="gesell">C. Gesell</option>
+                            <option value="vencimiento">Vencimientos</option>
+                            <option value="recurso">Recursos</option>
+                            <option value="diligencia">Diligencias</option>
+                        </select>
+                        <button id="btnClearType" title="Limpiar filtro de tipo"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="events-table">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Fecha y hora</th>
+                            <th>Expediente</th>
+                            <th>Carátula</th>
+                            <th>Juzgado</th>
+                            <!-- Columna Detalle eliminada -->
+                        </tr>
+                    </thead>
+                    <tbody id="tablaEventos">
+                        <tr class="loading-row">
+                            <td colspan="5"><i class="fas fa-spinner fa-pulse"></i> Cargando eventos...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination" id="paginacionContainer">
+                <!-- se llena con JS -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Alerta flotante -->
+    <div class="floating-alert" id="floatingAlert">
+        <i class="fas fa-check-circle"></i>
+        <span id="alertMessage">Eventos actualizados</span>
+    </div>
+
+    <script>
+        // ====================================================
+        // Configuración Firebase
+        // ====================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
+            authDomain: "causas-defensoria.firebaseapp.com",
+            projectId: "causas-defensoria",
+            storageBucket: "causas-defensoria.appspot.com",
+            messagingSenderId: "186064671470",
+            appId: "1:186064671470:web:b58bae5eadbe6e469f19ff"
+        };
+
+        let db;
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            db = firebase.firestore();
+            db.enablePersistence().catch(err => console.warn("Persistencia no disponible:", err));
+        } catch (e) {
+            console.error("Error Firebase:", e);
+        }
+
+        // ====================================================
+        // Variables globales
+        // ====================================================
+        let eventosPlanos = [];
+        let eventosFiltrados = [];
+        let paginaActual = 1;
+        const EVENTOS_POR_PAGINA = 15;
+
+        // Elementos DOM
+        const $ = id => document.getElementById(id);
+        const tablaBody = $("tablaEventos");
+        const paginacionDiv = $("paginacionContainer");
+        const searchInput = $("searchInput");
+        const btnSearch = $("btnSearch");
+        const btnRefresh = $("btnRefresh");
+        const floatingAlert = $("floatingAlert");
+        const alertMessage = $("alertMessage");
+        const todayListContainer = $("todayListContainer");
+        const filterDate = $("filterDate");
+        const btnClearDate = $("btnClearDate");
+        // Nuevos elementos para filtro de tipo
+        const filterType = $("filterType");
+        const btnClearType = $("btnClearType");
+
+        // ====================================================
+        // Utilidades de fecha
+        // ====================================================
+        function toDate(val) {
+            if (!val) return null;
+            if (val.toDate) return val.toDate();
+            if (val.seconds) return new Date(val.seconds * 1000);
+            if (val instanceof Date) return val;
+            return new Date(val);
+        }
+
+        function formatearFecha(fecha, conHora = true) {
+            if (!fecha) return "";
+            const d = toDate(fecha);
+            if (!d || isNaN(d)) return "";
+            const dia = String(d.getDate()).padStart(2, '0');
+            const mes = String(d.getMonth() + 1).padStart(2, '0');
+            const año = d.getFullYear();
+            if (!conHora) return `${dia}/${mes}/${año}`;
+            const horas = String(d.getHours()).padStart(2, '0');
+            const minutos = String(d.getMinutes()).padStart(2, '0');
+            return `${dia}/${mes}/${año} ${horas}:${minutos}`;
+        }
+
+        function formatearHora(fecha) {
+            const d = toDate(fecha);
+            if (!d || isNaN(d)) return "";
+            const horas = String(d.getHours()).padStart(2, '0');
+            const minutos = String(d.getMinutes()).padStart(2, '0');
+            return `${horas}:${minutos}`;
+        }
+
+        // ====================================================
+        // Panel de fecha/hora en tiempo real
+        // ====================================================
+        function updateDateTimePanel() {
+            const now = new Date();
+            const meses = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+            const diasSemana = ["DOMINGO", "LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SÁBADO"];
+            
+            $("currentMonthYear").textContent = `${meses[now.getMonth()]} ${now.getFullYear()}`;
+            $("currentDay").textContent = now.getDate();
+            $("currentWeekday").textContent = diasSemana[now.getDay()];
+            
+            const horas = String(now.getHours()).padStart(2, '0');
+            const minutos = String(now.getMinutes()).padStart(2, '0');
+            const segundos = String(now.getSeconds()).padStart(2, '0');
+            $("currentTime").textContent = `${horas}:${minutos}:${segundos}`;
+        }
+        setInterval(updateDateTimePanel, 1000);
+        updateDateTimePanel();
+
+        // ====================================================
+        // Cargar eventos desde Firebase
+        // ====================================================
+        async function cargarEventos() {
+            try {
+                const snapshot = await db.collection("causas").get();
+                const eventos = [];
+
+                snapshot.forEach(doc => {
+                    const causa = { id: doc.id, ...doc.data() };
+
+                    // Audiencias
+                    if (Array.isArray(causa.audiencias)) {
+                        causa.audiencias.forEach(fecha => {
+                            const fechaObj = toDate(fecha);
+                            if (fechaObj) {
+                                eventos.push({
+                                    tipo: 'audiencia',
+                                    tipoLabel: 'Audiencia',
+                                    fecha: fechaObj,
+                                    fechaStr: formatearFecha(fechaObj, true),
+                                    numCausa: causa.numCausa || 'S/N',
+                                    caratula: causa.caratula || '',
+                                    juzgado: causa.juzgado || '',
+                                });
+                            }
+                        });
+                    }
+
+                    // Cámara Gesell
+                    if (causa.audienciaGesell) {
+                        const fechaObj = toDate(causa.audienciaGesell);
+                        if (fechaObj) {
+                            eventos.push({
+                                tipo: 'gesell',
+                                tipoLabel: 'C. Gesell',
+                                fecha: fechaObj,
+                                fechaStr: formatearFecha(fechaObj, true),
+                                numCausa: causa.numCausa || 'S/N',
+                                caratula: causa.caratula || '',
+                                juzgado: causa.juzgado || '',
+                            });
+                        }
+                    }
+
+                    // Vencimiento
+                    if (causa.vencimiento) {
+                        const fechaObj = toDate(causa.vencimiento);
+                        if (fechaObj) {
+                            eventos.push({
+                                tipo: 'vencimiento',
+                                tipoLabel: 'Vencimiento',
+                                fecha: fechaObj,
+                                fechaStr: formatearFecha(fechaObj, true),
+                                numCausa: causa.numCausa || 'S/N',
+                                caratula: causa.caratula || '',
+                                juzgado: causa.juzgado || '',
+                            });
+                        }
+                    }
+
+                    // Vencimiento de Recursos
+                    if (causa.vencimientoRecursos) {
+                        const fechaObj = toDate(causa.vencimientoRecursos);
+                        if (fechaObj) {
+                            eventos.push({
+                                tipo: 'recurso',
+                                tipoLabel: 'Recurso',
+                                fecha: fechaObj,
+                                fechaStr: formatearFecha(fechaObj, true),
+                                numCausa: causa.numCausa || 'S/N',
+                                caratula: causa.caratula || '',
+                                juzgado: causa.juzgado || '',
+                            });
+                        }
+                    }
+
+                    // Diligencias
+                    if (Array.isArray(causa.diligencias)) {
+                        causa.diligencias.forEach(d => {
+                            const fechaObj = toDate(d.fecha);
+                            if (fechaObj) {
+                                eventos.push({
+                                    tipo: 'diligencia',
+                                    tipoLabel: 'Diligencia',
+                                    fecha: fechaObj,
+                                    fechaStr: formatearFecha(fechaObj, true),
+                                    numCausa: causa.numCausa || 'S/N',
+                                    caratula: causa.caratula || '',
+                                    juzgado: causa.juzgado || '',
+                                });
+                            }
+                        });
+                    }
+                });
+
+                eventos.sort((a, b) => b.fecha - a.fecha);
+                return eventos;
+            } catch (error) {
+                console.error("Error al cargar eventos:", error);
+                mostrarAlerta("Error al cargar eventos", 'danger');
+                return [];
+            }
+        }
+
+        // ====================================================
+        // Filtros: texto, fecha y tipo
+        // ====================================================
+        function filtrarEventos() {
+            let resultados = eventosPlanos;
+
+            // Filtro por texto
+            const texto = searchInput.value.trim();
+            if (texto) {
+                const busqueda = texto.toLowerCase();
+                resultados = resultados.filter(ev => 
+                    ev.numCausa.toLowerCase().includes(busqueda) || 
+                    ev.caratula.toLowerCase().includes(busqueda)
+                );
+            }
+
+            // Filtro por fecha
+            const fechaSeleccionada = filterDate.value;
+            if (fechaSeleccionada) {
+                const fechaInicio = new Date(fechaSeleccionada + "T00:00:00");
+                const fechaFin = new Date(fechaSeleccionada + "T23:59:59");
+                resultados = resultados.filter(ev => {
+                    const fechaEv = toDate(ev.fecha);
+                    return fechaEv >= fechaInicio && fechaEv <= fechaFin;
+                });
+            }
+
+            // NUEVO FILTRO POR TIPO
+            const tipoSeleccionado = filterType.value;
+            if (tipoSeleccionado) {
+                resultados = resultados.filter(ev => ev.tipo === tipoSeleccionado);
+            }
+
+            return resultados;
+        }
+
+        // ====================================================
+        // Obtener eventos de hoy (fecha actual)
+        // ====================================================
+        function getEventosHoy() {
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            const manana = new Date(hoy);
+            manana.setDate(manana.getDate() + 1);
+
+            return eventosPlanos.filter(ev => {
+                const fechaEv = toDate(ev.fecha);
+                return fechaEv && fechaEv >= hoy && fechaEv < manana;
+            });
+        }
+
+        // ====================================================
+        // Renderizar lista de eventos de hoy (individual)
+        // ====================================================
+        function renderEventosHoy() {
+            const eventosHoy = getEventosHoy();
+            const ahora = new Date();
+
+            if (eventosHoy.length === 0) {
+                todayListContainer.innerHTML = '<div class="today-empty">No hay eventos para hoy</div>';
+                return;
+            }
+
+            // Ordenar por hora
+            eventosHoy.sort((a, b) => a.fecha - b.fecha);
+
+            let html = '<ul class="today-list">';
+            eventosHoy.forEach(ev => {
+                const hora = formatearHora(ev.fecha);
+                const pasado = ev.fecha < ahora;
+                const clasePasado = pasado ? 'pasado' : '';
+                html += `
+                    <li class="today-item ${clasePasado}" data-expediente="${ev.numCausa}">
+                        <span class="today-expediente">
+                            ${ev.numCausa}
+                            <span>${ev.tipoLabel}</span>
+                        </span>
+                        <span class="today-hora">${hora}</span>
+                    </li>
+                `;
+            });
+            html += '</ul>';
+            todayListContainer.innerHTML = html;
+
+            // Agregar evento click a cada item
+            document.querySelectorAll('.today-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const exp = item.dataset.expediente;
+                    searchInput.value = exp;
+                    filterDate.value = ''; // Limpiar filtro de fecha
+                    filterType.value = ''; // También limpiar filtro de tipo (opcional, pero consistente)
+                    aplicarFiltros();
+                });
+            });
+        }
+
+        // ====================================================
+        // Renderizar tabla
+        // ====================================================
+        function renderTabla() {
+            const inicio = (paginaActual - 1) * EVENTOS_POR_PAGINA;
+            const fin = inicio + EVENTOS_POR_PAGINA;
+            const eventosPagina = eventosFiltrados.slice(inicio, fin);
+
+            if (eventosFiltrados.length === 0) {
+                tablaBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:50px; color: var(--gray-500);">No se encontraron eventos</td></tr>`;
+            } else {
+                tablaBody.innerHTML = eventosPagina.map(ev => {
+                    let claseTipo = 'type-audiencia';
+                    if (ev.tipo === 'gesell') claseTipo = 'type-gesell';
+                    else if (ev.tipo === 'vencimiento') claseTipo = 'type-vencimiento';
+                    else if (ev.tipo === 'recurso') claseTipo = 'type-recurso';
+                    else if (ev.tipo === 'diligencia') claseTipo = 'type-diligencia';
+
+                    return `<tr>
+                        <td><span class="event-type-badge ${claseTipo}">${ev.tipoLabel}</span></td>
+                        <td>${ev.fechaStr}</td>
+                        <td><strong>${ev.numCausa}</strong></td>
+                        <td>${ev.caratula.substring(0, 80)}${ev.caratula.length > 80 ? '…' : ''}</td>
+                        <td>${ev.juzgado}</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            renderPaginacion();
+        }
+
+        function renderPaginacion() {
+            const totalPaginas = Math.ceil(eventosFiltrados.length / EVENTOS_POR_PAGINA);
+            if (totalPaginas <= 1) {
+                paginacionDiv.innerHTML = '';
+                return;
+            }
+
+            paginacionDiv.innerHTML = `
+                <span class="pagination-info">Página ${paginaActual} de ${totalPaginas} (${eventosFiltrados.length} eventos)</span>
+                <div class="pagination-buttons">
+                    <button class="page-btn" id="btnPrevPage" ${paginaActual === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i> Anterior</button>
+                    <button class="page-btn" id="btnNextPage" ${paginaActual === totalPaginas ? 'disabled' : ''}>Siguiente <i class="fas fa-chevron-right"></i></button>
+                </div>
+            `;
+
+            $("btnPrevPage")?.addEventListener('click', () => {
+                if (paginaActual > 1) {
+                    paginaActual--;
+                    renderTabla();
+                }
+            });
+
+            $("btnNextPage")?.addEventListener('click', () => {
+                if (paginaActual < totalPaginas) {
+                    paginaActual++;
+                    renderTabla();
+                }
+            });
+        }
+
+        // ====================================================
+        // Actualizar eventos y filtros
+        // ====================================================
+        async function refreshEventos() {
+            tablaBody.innerHTML = `<tr class="loading-row"><td colspan="5"><i class="fas fa-spinner fa-pulse"></i> Cargando eventos...</td></tr>`;
+            eventosPlanos = await cargarEventos();
+            aplicarFiltros();
+            renderEventosHoy();
+            mostrarAlerta("Eventos actualizados", 'success');
+        }
+
+        function aplicarFiltros() {
+            eventosFiltrados = filtrarEventos();
+            paginaActual = 1;
+            renderTabla();
+        }
+
+        function mostrarAlerta(mensaje, tipo = 'success') {
+            alertMessage.textContent = mensaje;
+            floatingAlert.classList.remove('success');
+            if (tipo === 'success') floatingAlert.classList.add('success');
+            floatingAlert.classList.add('show');
+            setTimeout(() => {
+                floatingAlert.classList.remove('show');
+            }, 3000);
+        }
+
+        // ====================================================
+        // Event listeners
+        // ====================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshEventos();
+
+            btnSearch.addEventListener('click', aplicarFiltros);
+            searchInput.addEventListener('keypress', e => {
+                if (e.key === 'Enter') aplicarFiltros();
+            });
+            btnRefresh.addEventListener('click', refreshEventos);
+            filterDate.addEventListener('change', aplicarFiltros);
+            btnClearDate.addEventListener('click', () => {
+                filterDate.value = '';
+                aplicarFiltros();
+            });
+
+            // Nuevos listeners para filtro de tipo
+            filterType.addEventListener('change', aplicarFiltros);
+            btnClearType.addEventListener('click', () => {
+                filterType.value = '';
+                aplicarFiltros();
+            });
+        });
+    </script>
+</body>
+</html>
