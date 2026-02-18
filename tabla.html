@@ -722,7 +722,7 @@
 
     <header class="header">
         <div class="header-content">
-            <span class="logo">Total de Causas: 0</span> <!-- Se actualizará dinámicamente -->
+            <span class="logo">Total de Causas(7 días): 0</span> <!-- Se actualizará dinámicamente -->
             <div class="header-actions">
                 <!-- Botón para búsqueda inteligente -->
                 <button id="btnBuscar" class="button button-secondary">
@@ -1235,7 +1235,7 @@
         function actualizarContadorTotal() {
             const total = datosCache.length;
             const logo = document.querySelector('.logo');
-            if (logo) logo.textContent = `Total de Causas: ${total}`;
+            if (logo) logo.textContent = `Total de Causas(7 días): ${total}`;
         }
 
         // Cargar datos auxiliares (sin cambios)
@@ -1305,22 +1305,101 @@
                 usuariosCache.map(u => `<option value="${u}">${u}</option>`).join('');
         }
 
-        // Suscripción a cambios en Firestore (modificada para actualizar contador)
+        // ========== FUNCIONES MODIFICADAS ==========
+
+        // Suscripción optimizada: solo trae "En trámite" de los últimos 7 días
         function suscribirCausas() {
             if (unsubCausas) unsubCausas();
-            const query = db.collection("causas").orderBy("fechaRegistro", "desc");
+
+            // Calcular fecha de hace 7 días
+            const hace7Dias = new Date();
+            hace7Dias.setDate(hace7Dias.getDate() - 7);
+
+            // Consulta filtrada por estado y fecha
+            const query = db.collection("causas")
+                .where("estado", "==", "En trámite")
+                .where("fechaRegistro", ">=", hace7Dias)
+                .orderBy("fechaRegistro", "desc");
+
             unsubCausas = query.onSnapshot(snap => {
                 datosCache = [];
-                snap.forEach(d => datosCache.push({ id: d.id, ...d.data() }));
+                snap.forEach(doc => {
+                    datosCache.push({ id: doc.id, ...doc.data() });
+                });
+                
                 datosFiltrados = [...datosCache];
                 paginaActual = 1;
-                actualizarContadorTotal(); // <-- Actualiza el header
+                actualizarContadorTotal();
                 renderTablaPaginada();
-            }, err => {
-                console.error("Error en snapshot:", err);
-                $("tbodyCausas").innerHTML = `<tr><td colspan="10">Error al cargar datos: ${err.message}</td></tr>`;
+            }, error => {
+                console.error("Error en suscripción inicial:", error);
+                // Si Firestore requiere un índice compuesto, se mostrará un enlace en la consola
             });
         }
+
+        // Búsqueda global en Firestore (incluye todos los estados)
+        async function aplicarFiltros() {
+            const busqueda = $("busquedaGeneral").value.trim().toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Quitar tildes
+            const estadoFiltro = $("filtroEstado").value;
+
+            mostrarAlertaFlotante("Buscando en toda la base de datos...", "success");
+
+            try {
+                let query = db.collection("causas");
+
+                // Si hay una palabra clave, usamos el array de keywords para eficiencia
+                if (busqueda) {
+                    const palabras = busqueda.split(/\s+/);
+                    // Buscamos la primera palabra en el array 'keywords' de Firestore
+                    query = query.where("keywords", "array-contains", palabras[0]);
+                }
+
+                // Si el usuario seleccionó un estado (incluyendo Finalizado/Archivado)
+                if (estadoFiltro) {
+                    query = query.where("estado", "==", estadoFiltro);
+                }
+
+                const snap = await query.get();
+                let resultados = [];
+
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    // Refinamos la búsqueda si hay más de una palabra
+                    const contenido = JSON.stringify(data).toLowerCase();
+                    if (!busqueda || contenido.includes(busqueda)) {
+                        resultados.push({ id: doc.id, ...data });
+                    }
+                });
+
+                // Cargamos los resultados en la tabla
+                datosFiltrados = resultados;
+                paginaActual = 1;
+                renderTablaPaginada();
+                
+                // Si no hay resultados, avisar
+                if (resultados.length === 0) {
+                    mostrarAlertaFlotante("No se encontraron coincidencias", "info");
+                }
+
+                cerrarBuscadorInteligente();
+
+            } catch (error) {
+                console.error("Error en búsqueda global:", error);
+                mostrarAlertaFlotante("Error al conectar con Firestore", "error");
+            }
+        }
+
+        // Limpiar filtros: restablece la vista inicial (últimos 7 días / En trámite)
+        function limpiarFiltros() {
+            $("busquedaGeneral").value = "";
+            $("filtroEstado").value = "";
+            // Re-ejecutamos la suscripción inicial
+            suscribirCausas();
+            cerrarBuscadorInteligente();
+        }
+
+        // ===== FUNCIONES SIN CAMBIOS (render, formulario, etc.) =====
 
         function renderTablaPaginada() {
             const start = (paginaActual - 1) * recordsPerPage;
@@ -1410,7 +1489,6 @@
             return eventos;
         }
 
-        // Funciones del formulario (sin cambios lógicos)
         function resetFormCausa() {
             $("formCausa").reset();
             $("observaciones-editor").innerHTML = '';
@@ -1472,7 +1550,6 @@
 
         function validateForm() {
             let isValid = true;
-            // Se agregó "intervencion" a la lista de campos obligatorios
             ["numCausa","caratula","tipoProceso","juzgado","prioridad","usuarioAsignado","intervencion"].forEach(id => {
                 const field = $(id);
                 const parent = field.closest('.field');
@@ -1700,7 +1777,6 @@
             }
         }
 
-        // Funciones para el buscador inteligente
         function abrirBuscadorInteligente() {
             poblarFiltroTiposProceso();
             poblarFiltroIntervencion();
@@ -1710,58 +1786,6 @@
 
         function cerrarBuscadorInteligente() {
             $("modalBusqueda").style.display = "none";
-        }
-
-        function aplicarFiltros() {
-            const busqueda = $("busquedaGeneral").value.toLowerCase().trim();
-            const tipo = $("filtroTipoProceso").value;
-            const intervencion = $("filtroIntervencion").value;
-            const estado = $("filtroEstado").value;
-            const usuario = $("filtroUsuario").value;
-            const prioridad = $("filtroPrioridad").value;
-
-            datosFiltrados = datosCache.filter(c => {
-                let cumpleTexto = true;
-                if (busqueda) {
-                    const textoCompleto = [
-                        c.numCausa || '',
-                        c.caratula || '',
-                        c.tipoProceso || '',
-                        c.juzgado || '',
-                        c.usuarioAsignado || '',
-                        c.estado || '',
-                        c.intervencion || '',
-                        c.datosNnya || '',
-                        c.observaciones || ''
-                    ].join(' ').toLowerCase();
-                    cumpleTexto = textoCompleto.includes(busqueda);
-                }
-
-                const cumpleTipo = !tipo || c.tipoProceso === tipo;
-                const cumpleIntervencion = !intervencion || c.intervencion === intervencion;
-                const cumpleEstado = !estado || c.estado === estado;
-                const cumpleUsuario = !usuario || c.usuarioAsignado === usuario;
-                const cumplePrioridad = !prioridad || c.prioridad === prioridad;
-
-                return cumpleTexto && cumpleTipo && cumpleIntervencion && cumpleEstado && cumpleUsuario && cumplePrioridad;
-            });
-
-            paginaActual = 1;
-            renderTablaPaginada();
-            cerrarBuscadorInteligente();
-        }
-
-        function limpiarFiltros() {
-            $("busquedaGeneral").value = '';
-            $("filtroTipoProceso").value = '';
-            $("filtroIntervencion").value = '';
-            $("filtroEstado").value = '';
-            $("filtroUsuario").value = '';
-            $("filtroPrioridad").value = '';
-            datosFiltrados = [...datosCache];
-            paginaActual = 1;
-            renderTablaPaginada();
-            cerrarBuscadorInteligente();
         }
 
         // Event listeners
@@ -1775,9 +1799,8 @@
             // Botones del header
             $("btnNuevo").onclick = abrirNuevoExpediente;
             $("btnBuscar").onclick = abrirBuscadorInteligente;
-            // Botón Eventos
             $("btnEventos").onclick = () => {
-                $("iframeEventos").src = "eventos.html"; // Cargar la página de eventos en el iframe
+                $("iframeEventos").src = "eventos.html";
                 $("modalEventos").style.display = "flex";
             };
 
@@ -1862,7 +1885,7 @@
                 $("counterNnyaGesell").textContent = `${palabras.length}/400`;
             });
 
-            // Botones del editor de observaciones (nuevos)
+            // Botones del editor de observaciones
             const btnBold = $("btnBold");
             const btnColorAzul = $("btnColorAzul");
             const btnColorRojo = $("btnColorRojo");
@@ -1884,11 +1907,6 @@
                     if (e.target === modal) {
                         modal.style.display = 'none';
                         if (modal.id === 'modal') resetFormCausa();
-                        // Si es el modal de eventos, opcionalmente limpiar src para detener carga
-                        if (modal.id === 'modalEventos') {
-                            // No limpiamos src para que al reabrir sea rápido, pero se puede hacer:
-                            // $("iframeEventos").src = "";
-                        }
                     }
                 });
             });
@@ -1905,7 +1923,7 @@
                 }
             });
 
-            // Eventos para el buscador inteligente (mantenemos clic derecho como alternativa)
+            // Eventos para el buscador inteligente
             document.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
                 abrirBuscadorInteligente();
