@@ -337,7 +337,6 @@
 
         .fade-in { animation: fadeIn 0.5s ease forwards; }
 
-        /* AJUSTES PARA MÓVIL CORREGIDOS */
         @media (max-width: 1024px) {
             body {
                 align-items: flex-start;
@@ -377,7 +376,7 @@
 </head>
 <body>
     <div class="login-container fade-in">
-        <div class="intro-panel">
+        <div class="intro-panel" data-tilt>
             <img src="https://github.com/sistemadigital/iconos/blob/main/computadora-3d.png?raw=true" 
                  alt="Computadora 3D" 
                  class="intro-image">
@@ -479,7 +478,7 @@
                 <div class="card-footer">
                     <div>Diseño y programación de:</div>
                     <div style="font-weight: 600;">Rómulo Fioravante - Año 2025</div>
-                    <div class="developer">Versión 2.5-IA(Defensor-Secretarios)</div>
+                    <div class="developer">Versión 3.0-IA 2026(Defensor-Secretarios)</div>
                 </div>
             </div>
         </div>
@@ -501,6 +500,9 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
+        // Bandera para evitar la redirección antes de guardar el nombre
+        let isRegistering = false;
+
         window.loginUser = async function() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
@@ -515,11 +517,20 @@
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
             if (!name || !email || !password) return showMessage('Completa los campos', 'error');
+            
+            isRegistering = true; // Activamos la bandera
+
             try {
                 const cred = await createUserWithEmailAndPassword(auth, email, password);
+                // Esperamos a que el perfil se actualice con el nombre
                 await updateProfile(cred.user, { displayName: name });
                 showMessage('Cuenta creada', 'success');
-            } catch (error) { showMessage('Error al crear cuenta', 'error'); }
+                // Redirigimos manualmente después de guardar
+                window.location.href = 'app.html';
+            } catch (error) { 
+                isRegistering = false;
+                showMessage('Error al crear cuenta', 'error'); 
+            }
         };
 
         function showMessage(msg, type) {
@@ -530,7 +541,12 @@
             setTimeout(() => div.style.display = 'none', 4000);
         }
 
-        onAuthStateChanged(auth, user => { if(user) window.location.href = 'app.html'; });
+        onAuthStateChanged(auth, user => { 
+            // Solo redirige automáticamente si NO estamos en proceso de registro
+            if(user && !isRegistering) {
+                window.location.href = 'app.html'; 
+            }
+        });
     </script>
 
     <script>
