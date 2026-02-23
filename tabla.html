@@ -1439,7 +1439,8 @@
 
     <script>
         // ================================================================
-        // CÓDIGO ORIGINAL MODIFICADO SEGÚN SOLICITUDES
+        // CÓDIGO ORIGINAL MODIFICADO PARA COMPATIBILIDAD CON CHROME
+        // SE ELIMINARON TODAS LAS REFERENCIAS A LOS BOTONES ASISTENTE IA Y GENERAR PDF
         // ================================================================
         
         const firebaseConfig = {
@@ -2105,47 +2106,26 @@
         }
 
         // ================================================================
-        // NUEVA FUNCIÓN PARA GENERAR KEYWORDS
-        // ================================================================
-        function generarKeywords(texto) {
-            if (!texto) return [];
-            // Limpiamos el texto: minúsculas, sin acentos y quitamos caracteres raros
-            const limpio = texto.toLowerCase()
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .replace(/[^a-z0-9 ]/g, "");
-            
-            const palabras = limpio.split(/\s+/);
-            const prefijos = new Set();
-
-            palabras.forEach(palabra => {
-                if (palabra.length < 2) return; 
-                // Agregamos la palabra completa
-                prefijos.add(palabra);
-                // Opcional: Agregar prefijos (ej: si escriben "per" que encuentre "perez")
-                // for (let i = 1; i <= palabra.length; i++) {
-                //    prefijos.add(palabra.substring(0, i));
-                // }
-            });
-            return Array.from(prefijos);
-        }
-
-        // ================================================================
-        // NUEVA FUNCIÓN cargarCausas (optimizada con array-contains-any y límite 150)
+        // NUEVA FUNCIÓN cargarCausas (según solicitud, adaptada)
         // ================================================================
         async function cargarCausas(reset = true) {
-            if (reset) paginaActual = 1;
-            if (!db) return tbody.innerHTML = "<tr><td colspan='10'>Error: Base de datos no disponible</td></tr>";
+            if (reset) {
+                paginaActual = 1;
+            }
+            if (!db) {
+                console.error("Firestore no está inicializado");
+                tbody.innerHTML = "<tr><td colspan='10'>Error: Base de datos no disponible</td></tr>";
+                return;
+            }
 
+            // Mostrar indicador de carga
             tbody.innerHTML = "<tr><td colspan='10'><i class='fas fa-spinner fa-spin'></i> Cargando expedientes...</td></tr>";
 
             try {
                 let query = db.collection("causas");
 
-                // Normalizamos la búsqueda (igual que al guardar)
-                const busquedaCruda = buscador.value.trim();
-                const busquedaNormalizada = busquedaCruda.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
+                // Capturamos los valores de los filtros
+                const busqueda = buscador.value.trim().toLowerCase();
                 const fUsuario = filtroUsuario.value;
                 const fEstado = filtroEstado.value;
                 const fPrioridad = filtroPrioridad.value;
@@ -2153,37 +2133,24 @@
                 const fTipoProceso = filtroTipoProceso.value;
                 const fEvento = filtroEventos.value;
 
-                const sinFiltros = !busquedaCruda && !fUsuario && !fEstado && !fPrioridad && !fIntervencion && !fTipoProceso && !fEvento;
+                // OPTIMIZACIÓN DE CUOTA Y LÓGICA DE 5 DÍAS
+                // Si NO hay búsqueda ni filtros, cargamos solo lo reciente
+                const sinFiltros = !busqueda && !fUsuario && !fEstado && !fPrioridad && !fIntervencion && !fTipoProceso && !fEvento;
 
-                // 1. LÓGICA DE DÍA POR DEFECTO
                 if (sinFiltros) {
                     const hace5Dias = new Date();
                     hace5Dias.setDate(hace5Dias.getDate() - 5);
+                    // Solo descargamos documentos modificados en la última semana
+                    // Usamos fechaRegistro como campo de fecha (si tuvieras ultimaModificacion, lo cambiarías)
                     query = query.where("fechaRegistro", ">=", hace5Dias);
-                    query = query.orderBy("fechaRegistro", "desc");
-                } 
-                // 2. LÓGICA DE BÚSQUEDA DE TEXTO (Ahora sí busca en toda la colección)
-                else if (busquedaNormalizada) {
-                    const palabras = busquedaNormalizada.split(' ').filter(p => p.length > 2);
-                    if (palabras.length > 0) {
-                        // Usamos array-contains-any para que Firebase busque en toda la base
-                        // cualquier documento que coincida con tus palabras clave.
-                        const palabrasClave = palabras.slice(0, 10); 
-                        query = query.where("keywords", "array-contains-any", palabrasClave);
-                    }
-                    // Nota: Al buscar texto, quitamos el orderBy para evitar errores de índices
-                } else {
-                    // Si no hay búsqueda de texto, mantenemos el orden por fecha
-                    query = query.orderBy("fechaRegistro", "desc");
                 }
 
-                // 3. APLICAR FILTROS EXACTOS EN EL SERVIDOR
+                // Aplicamos filtros en el SERVIDOR (ahorra lecturas)
                 if (fUsuario) query = query.where("usuarioAsignado", "==", fUsuario);
                 if (fEstado) query = query.where("estado", "==", fEstado);
                 if (fPrioridad) query = query.where("prioridad", "==", fPrioridad);
                 if (fIntervencion) query = query.where("intervencion", "==", fIntervencion);
                 if (fTipoProceso) query = query.where("tipoProceso", "==", fTipoProceso);
-                
                 if (fEvento) {
                     switch(fEvento) {
                         case 'audiencias': query = query.where("audiencias", "!=", null); break;
@@ -2194,57 +2161,63 @@
                     }
                 }
 
-                // Si no hemos puesto límite aún (por ejemplo, solo filtros exactos sin búsqueda), ponemos límite de 150
-                if (!busquedaNormalizada) {
-                    query = query.limit(150);
-                }
-
+                // Ejecutamos la consulta
+                query = query.orderBy("fechaRegistro", "desc");
                 const snapshot = await query.get();
 
                 let causasTemp = [];
-                snapshot.forEach(doc => causasTemp.push({ id: doc.id, ...doc.data() }));
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    causasTemp.push({ id: doc.id, ...data });
+                });
 
-                // 4. FILTRADO CLIENTE (Refinamiento final)
+                // Filtros de rango de fechas (en cliente)
                 const fDesde = filtroFechaDesde.value;
                 const fHasta = filtroFechaHasta.value;
 
                 let causasFiltradas = causasTemp.filter(d => {
-                    // Filtro de fechas
+                    // Filtro de rango de fechas
                     if (fDesde && fHasta) {
                         const fechasCausa = d.fechasFiltro || [];
-                        const tieneFechaEnRango = fechasCausa.some(fecha => fecha >= fDesde && fecha <= fHasta);
+                        const tieneFechaEnRango = fechasCausa.some(fecha => {
+                            return fecha >= fDesde && fecha <= fHasta;
+                        });
                         if (!tieneFechaEnRango) return false;
                     }
 
-                    // Si la búsqueda tenía más de una palabra, refinamos en local
-                    // para asegurar que el documento contenga TODAS las palabras.
-                    if (busquedaNormalizada && busquedaNormalizada.includes(' ')) {
+                    // Filtro de búsqueda por texto (cliente)
+                    if (busqueda) {
                         const textoAcumulado = [
-                            d.numCausa, d.caratula, d.usuarioAsignado, d.juzgado,
-                            d.tipoProceso, d.estado, d.observaciones, d.datosNnya,
-                            d.intervencion
+                            d.numCausa,
+                            d.caratula,
+                            d.usuarioAsignado,
+                            d.juzgado,
+                            d.tipoProceso,
+                            d.estado,
+                            d.observaciones,
+                            d.datosNnya,
+                            d.nnyaGesell,
+                            d.intervencion,
+                            (d.diligencias || []).map(dil => dil.detalle).join(' ')
                         ].join(' ').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                        
-                        // Dividimos la búsqueda en palabras y verificamos que todas estén presentes
-                        const palabrasBusqueda = busquedaNormalizada.split(' ').filter(p => p.length > 0);
-                        const todasPresentes = palabrasBusqueda.every(palabra => textoAcumulado.includes(palabra));
-                        if (!todasPresentes) return false;
+
+                        const busquedaNormalizada = busqueda.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                        if (!textoAcumulado.includes(busquedaNormalizada)) {
+                            return false;
+                        }
                     }
                     return true;
                 });
 
+                // Asignamos a las variables globales y renderizamos
                 datosCache = causasFiltradas;
                 datosFiltrados = datosCache;
                 renderTablaPaginada();
 
-                // Alerta si se llegó al límite
-                if (snapshot.docs.length === 150 && fUsuario === "") {
-                    mostrarAlertaFlotante("Se muestran los primeros 150 resultados. Sé más específico en la búsqueda.", "warning");
-                }
-
             } catch (error) {
                 console.error("Error cargando causas:", error);
                 tbody.innerHTML = `<tr><td colspan='10'>Error al cargar los datos: ${error.message}</td></tr>`;
+                mostrarAlertaFlotante("Error al cargar los expedientes: " + error.message, 'danger');
             }
         }
 
@@ -2382,7 +2355,7 @@
             alertModal.style.display = "none";
         };
         
-        // FUNCIÓN MODIFICADA PARA GUARDAR EXPEDIENTE (usa generarKeywords)
+        // FUNCIÓN MODIFICADA PARA GUARDAR EXPEDIENTE (COMPATIBLE CON CHROME)
         const guardarExpediente = async () => {
             if (!validateForm()) {
                 return;
@@ -2420,22 +2393,21 @@
             btnGuardar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
             
             try {
-                // NUEVA GENERACIÓN DE KEYWORDS: concatenamos los campos importantes
-                const textoParaBusqueda = [
-                    datos.numCausa,
-                    datos.caratula,
-                    datos.juzgado,
-                    datos.datosNnya,
-                    datos.observaciones,
-                    datos.usuarioAsignado
-                ].join(' ');
+                // Generar keywords para búsqueda
+                const textoParaKeywords = [datos.numCausa, datos.caratula, datos.usuarioAsignado]
+                    .join(' ')
+                    .toLowerCase()
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    .replace(/[^\w\s]/gi, '')
+                    .split(/\s+/)
+                    .filter(palabra => palabra.length > 0);
+                datos.keywords = textoParaKeywords;
                 
-                datos.keywords = generarKeywords(textoParaBusqueda);
-                
-                // Generar fechasFiltro para filtrado por fechas (se mantiene igual)
+                // Generar fechasFiltro para filtrado por fechas
                 const fechasSet = new Set();
                 const agregarFecha = (fecha) => {
                     if (!fecha) return;
+                    // fecha ya es un Timestamp de Firebase
                     const d = toDate(fecha);
                     if (d && !isNaN(d.getTime())) {
                         fechasSet.add(formatFechaParaInput(d, false));
@@ -2667,20 +2639,7 @@
             $("btnPrintRegistro").onclick = () => window.print();
             
             // Filtros
-            // CAMBIO 1: Eliminar input y usar Enter y botón de voz
-            buscador.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    actualizarFiltros();
-                }
-            });
-            
-            // Botón de voz también dispara la búsqueda
-            const btnVoiceSearch = document.getElementById("btnVoiceSearch");
-            if (btnVoiceSearch) {
-                btnVoiceSearch.addEventListener('click', actualizarFiltros);
-            }
-            
+            buscador.addEventListener('input', actualizarFiltros);
             filtroEstado.addEventListener('change', actualizarFiltros);
             filtroUsuario.addEventListener('change', actualizarFiltros);
             filtroPrioridad.addEventListener('change', actualizarFiltros);
