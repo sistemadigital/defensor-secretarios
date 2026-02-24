@@ -2133,16 +2133,16 @@
                 const fTipoProceso = filtroTipoProceso.value;
                 const fEvento = filtroEventos.value;
 
-                // OPTIMIZACIÓN DE CUOTA Y LÓGICA DE 5 DÍAS
+                // OPTIMIZACIÓN DE CUOTA Y LÓGICA DE 3 DÍAS
                 // Si NO hay búsqueda ni filtros, cargamos solo lo reciente
                 const sinFiltros = !busqueda && !fUsuario && !fEstado && !fPrioridad && !fIntervencion && !fTipoProceso && !fEvento;
 
                 if (sinFiltros) {
-                    const hace5Dias = new Date();
-                    hace5Dias.setDate(hace5Dias.getDate() - 5);
+                    const hace3Dias = new Date();
+                    hace3Dias.setDate(hace3Dias.getDate() - 3);
                     // Solo descargamos documentos modificados en la última semana
                     // Usamos fechaRegistro como campo de fecha (si tuvieras ultimaModificacion, lo cambiarías)
-                    query = query.where("fechaRegistro", ">=", hace5Dias);
+                    query = query.where("fechaRegistro", ">=", hace3Dias);
                 }
 
                 // Aplicamos filtros en el SERVIDOR (ahorra lecturas)
