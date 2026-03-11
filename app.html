@@ -314,30 +314,103 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Ajustes Mobile */
+        /* ===== AJUSTES PARA MÓVIL: FOOTER SIMPLIFICADO ===== */
         @media (max-width: 768px) {
-            .welcome-message { font-size: 1.4rem; }
-            .sistema-digital-text { display: none; }
+            /* Reducimos tamaños generales */
+            .welcome-message { font-size: 1.2rem; }
+            .sistema-digital-text { font-size: 1.2rem; display: inline; }
             .left-group { gap: 0.5rem; }
-            .image-large { max-height: 60vh; }
-            .info-modal { width: 300px; }
-            .left-info-image { width: 300px; }
-            footer { padding: 0 15px; }
-            
-            /* Ocultar texto "Salir", dejar el ícono */
-            .logout-button span:last-child { display: none; }
-            
-            /* Ocultar elementos específicos en móvil para el footer */
-            .click-text { display: none; }
-            .footer-defensoria { display: none; }
-            .datetime-weather-container { display: none; }
-            
-            /* Ajustar márgenes ya que no hay texto acompañando el hamburguesa */
-            .hamburger-menu { margin-right: 0; }
-            
-            .footer-left { flex-wrap: nowrap; }
-            .footer-right { gap: 10px; }
-            .sistema-info-text { font-size: 0.8rem; }
+            .image-large { max-height: 50vh; }
+            .info-modal { width: 280px; }
+            .left-info-image { width: 280px; }
+
+            /* Footer: solo hamburguesa, texto "Sistema Digital6" y botón salir */
+            footer {
+                height: auto;
+                min-height: 60px;
+                padding: 8px 15px;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: nowrap;
+                gap: 8px;
+            }
+
+            .footer-left {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex: 1;
+                justify-content: flex-start;
+                flex-wrap: nowrap;
+                width: auto;
+            }
+
+            .footer-content {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            .click-text {
+                display: none; /* Ocultar texto "Haz clic para acceder" */
+            }
+
+            .footer-defensoria {
+                display: none; /* Ocultar información de la defensoría */
+            }
+
+            .datetime-weather-container {
+                display: none; /* Ocultar fecha y clima */
+            }
+
+            .footer-right {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: nowrap;
+                width: auto;
+                justify-content: flex-end;
+            }
+
+            .sistema-info-text-container {
+                display: flex;
+                align-items: center;
+            }
+
+            .sistema-info-text {
+                font-size: 0.9rem;
+                white-space: nowrap;
+            }
+
+            .logout-button {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+
+            .logout-button span:last-child {
+                display: inline; /* Aseguramos que se vea el texto "Salir" */
+            }
+
+            /* Ajustar menús emergentes para que no se desborden */
+            .menu-popup {
+                width: 200px;
+                left: 0;
+                right: auto;
+            }
+
+            .calendar-popup {
+                width: 240px;
+                left: 0;
+                right: auto;
+            }
+
+            .sistema-info-modal {
+                width: 200px;
+                right: 0;
+                left: auto;
+            }
         }
     </style>
 </head>
@@ -372,7 +445,7 @@
                 <p><strong>Secretarios:</strong> Dra. Patricia Soledad Riveros, Dra. Alicia Mariela Corrales, Dr. Enzo Luciano Magnani</p>
                 <p><strong>Teléfono Oficial:</strong> +54 376 4446700 interno 1188.</p>
                 <p><strong>Whatsapp Oficial:</strong> +54 376 4889359</p>
-<p><strong>Correo Zimbra:</strong> defensoriacivil6.posadas@mpmisiones.gob.ar</p>
+                <p><strong>Correo Zimbra:</strong> defensoriacivil6.posadas@mpmisiones.gob.ar</p>
             </div>
 
             <div id="leftInfoImage" class="left-info-image">
