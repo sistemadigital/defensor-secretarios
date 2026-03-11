@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>⚖️Sistema Defensor</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -30,6 +30,8 @@
             flex-direction: column;
             position: relative;
             overflow-y: auto;
+            /* Pequeño padding inferior para que el contenido no quede pegado al footer */
+            padding-bottom: 2px;
         }
 
         /* Iframe para contenido interno */
@@ -63,9 +65,9 @@
             justify-content: space-between;
             padding: 0 30px;
             box-shadow: 0 -4px 12px rgba(0,31,63,0.2);
-            border-top: 2px solid #00BFFF;
+            border-top: 3px solid #00BFFF; /* Borde más grueso para destacar */
             z-index: 3000;
-            cursor: pointer; /* Indica que la zona vacía se puede cliquear */
+            cursor: pointer;
         }
 
         /* Evitar cursor pointer general en el contenido interno del footer */
@@ -77,8 +79,8 @@
             display: flex;
             align-items: center;
             gap: 20px;
-            cursor: pointer; /* Área clickeable para volver a home */
-            height: 100%; /* Facilita el clic en la zona vacía */
+            cursor: pointer;
+            height: 100%;
         }
 
         .footer-content {
@@ -91,7 +93,7 @@
 
         .footer-content:hover { opacity: 0.8; }
 
-        /* MENÚ DESPLEGABLE (Sin desplazamiento forzado) */
+        /* MENÚ DESPLEGABLE */
         .menu-popup {
             display: none;
             position: absolute;
@@ -150,12 +152,12 @@
         /* Menú Hamburguesa Resaltado Celeste Glass */
         .hamburger-menu { 
             display: flex; flex-direction: column; gap: 5px; margin-right: 15px; 
-            background: rgba(0, 191, 255, 0.15); /* Celeste background */
-            backdrop-filter: blur(8px); /* Glass effect */
-            border: 1px solid rgba(0, 191, 255, 0.6); /* Borde glass celeste */
+            background: rgba(0, 191, 255, 0.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 191, 255, 0.6);
             padding: 8px 10px; 
             border-radius: 8px; 
-            box-shadow: 0 0 12px rgba(0, 191, 255, 0.5); /* Resaltado */
+            box-shadow: 0 0 12px rgba(0, 191, 255, 0.5);
             transition: all 0.3s ease;
         }
         .hamburger-menu:hover {
@@ -314,7 +316,7 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ===== AJUSTES PARA MÓVIL: FOOTER SIMPLIFICADO ===== */
+        /* ===== AJUSTES PARA MÓVIL: FOOTER SIMPLIFICADO Y VISIBLE EN PANTALLAS PEQUEÑAS ===== */
         @media (max-width: 768px) {
             /* Reducimos tamaños generales */
             .welcome-message { font-size: 1.2rem; }
@@ -327,30 +329,40 @@
             /* Footer: solo hamburguesa, texto "Sistema Digital6" y botón salir */
             footer {
                 height: auto;
-                min-height: 60px;
-                padding: 8px 15px;
+                min-height: 56px; /* Altura mínima suficiente */
+                padding: 6px 12px;
                 display: flex;
                 flex-direction: row;
                 align-items: center;
                 justify-content: space-between;
                 flex-wrap: nowrap;
-                gap: 8px;
+                gap: 6px;
+                border-top-width: 3px; /* Mantener borde visible */
             }
 
             .footer-left {
                 display: flex;
                 align-items: center;
-                gap: 8px;
-                flex: 1;
+                gap: 6px;
+                flex: 1 1 auto;
                 justify-content: flex-start;
                 flex-wrap: nowrap;
                 width: auto;
+                min-width: 0; /* Permitir reducción */
             }
 
             .footer-content {
                 display: flex;
                 align-items: center;
-                gap: 5px;
+                gap: 4px;
+                flex-shrink: 1;
+                min-width: 0;
+            }
+
+            .hamburger-menu {
+                margin-right: 0;
+                padding: 6px 8px;
+                flex-shrink: 0;
             }
 
             .click-text {
@@ -358,35 +370,43 @@
             }
 
             .footer-defensoria {
-                display: none; /* Ocultar información de la defensoría */
+                display: none;
             }
 
             .datetime-weather-container {
-                display: none; /* Ocultar fecha y clima */
+                display: none;
             }
 
             .footer-right {
                 display: flex;
                 align-items: center;
-                gap: 8px;
+                gap: 6px;
                 flex-wrap: nowrap;
                 width: auto;
                 justify-content: flex-end;
+                flex-shrink: 0;
             }
 
             .sistema-info-text-container {
                 display: flex;
                 align-items: center;
+                flex-shrink: 1;
+                min-width: 0;
             }
 
             .sistema-info-text {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
                 white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 110px; /* Evita que se desborde en pantallas muy pequeñas */
             }
 
             .logout-button {
-                padding: 6px 12px;
-                font-size: 0.9rem;
+                padding: 5px 10px;
+                font-size: 0.85rem;
+                gap: 4px;
+                flex-shrink: 0;
             }
 
             .logout-button span:last-child {
@@ -410,6 +430,21 @@
                 width: 200px;
                 right: 0;
                 left: auto;
+            }
+        }
+
+        /* Ajuste adicional para pantallas extremadamente pequeñas (menos de 360px) */
+        @media (max-width: 360px) {
+            .sistema-info-text {
+                font-size: 0.75rem;
+                max-width: 90px;
+            }
+            .logout-button {
+                padding: 4px 8px;
+                font-size: 0.75rem;
+            }
+            .hamburger-menu {
+                padding: 5px 6px;
             }
         }
     </style>
@@ -603,7 +638,7 @@
 
         // Menú Principal
         document.getElementById('btnMainMenu').addEventListener('click', (e) => {
-            // Si el clic viene de un link del menú, no ejecutar la lógica de toggle (evita reapertura accidental)
+            // Si el clic viene de un link del menú, no ejecutar la lógica de toggle
             if (e.target.closest('a')) return;
             
             e.stopPropagation();
@@ -867,7 +902,6 @@
             let dropdownHeaderHtml = photoURL ? `<div style="font-weight:600; font-size:1.2rem; margin-bottom:1rem; color:#1e293b;">Detalle de Usuario</div>` : `<div class="dropdown-avatar-placeholder">${inicial}</div><div style="font-weight:600; color:#1e293b; text-align:center;">Elige un avatar</div>`;
             let avatarOptionsHtml = photoURL ? '' : `<div class="avatar-options"><img src="${AVATAR_HOMBRE}" class="avatar-option" id="avatarHombre"><img src="${AVATAR_MUJER}" class="avatar-option" id="avatarMujer"></div>`;
 
-            // ESTA ESTRUCTURA REEMPLAZARÁ INSTANTÁNEAMENTE EL PLACEHOLDER AL CARGAR
             dynamicContent.innerHTML = `
                 <div class="welcome-container" id="welcomeContainer">
                     <div class="welcome-bar" id="welcomeBar">
@@ -912,7 +946,6 @@
 
             if (esCumpleanos && typeof confetti !== 'undefined') launchConfetti();
 
-            // Lógica de UI para los botones y modales generados
             const bar = document.getElementById('welcomeBar');
             const dropdown = document.getElementById('userDropdown');
 
@@ -923,13 +956,11 @@
                 if(!isShow) dropdown.classList.add('show');
             });
 
-            // Evitar que el clic DENTRO del dropdown dispare otras cosas
             dropdown.addEventListener('click', (e) => e.stopPropagation());
 
             document.getElementById('avatarHombre')?.addEventListener('click', () => updateUserAvatar(AVATAR_HOMBRE));
             document.getElementById('avatarMujer')?.addEventListener('click', () => updateUserAvatar(AVATAR_MUJER));
 
-            // Nombre Edit
             document.getElementById('editNameIcon')?.addEventListener('click', () => { document.getElementById('nameDisplayRow').style.display='none'; document.getElementById('nameEditRow').style.display='flex'; document.getElementById('nameInput').focus(); });
             document.getElementById('cancelNameBtn')?.addEventListener('click', () => { document.getElementById('nameDisplayRow').style.display='flex'; document.getElementById('nameEditRow').style.display='none'; document.getElementById('nameInput').value = displayName; });
             document.getElementById('saveNameBtn')?.addEventListener('click', async () => {
@@ -938,7 +969,6 @@
                 else { document.getElementById('nameDisplayRow').style.display='flex'; document.getElementById('nameEditRow').style.display='none'; }
             });
 
-            // Fecha Edit
             document.getElementById('editFechaIcon')?.addEventListener('click', () => { document.getElementById('fechaDisplayRow').style.display='none'; document.getElementById('fechaEditRow').style.display='flex'; document.getElementById('fechaInput').focus(); });
             document.getElementById('cancelFechaBtn')?.addEventListener('click', () => { document.getElementById('fechaDisplayRow').style.display='flex'; document.getElementById('fechaEditRow').style.display='none'; document.getElementById('fechaInput').value = fechaNacimiento; });
             document.getElementById('saveFechaBtn')?.addEventListener('click', async () => {
@@ -960,7 +990,6 @@
                 currentUser = user;
                 userDataCache.displayName = user.displayName;
                 userDataCache.photoURL = user.photoURL;
-                // Al resolver Firebase, reemplaza el Placeholder
                 showWelcomeMessage(currentUser);
             } else {
                 window.location.href = 'index.html';
