@@ -153,32 +153,17 @@
         @media (max-width: 1024px) { .container { max-width: 100%; padding: var(--spacing-s); } }
         @media (max-width: 768px) {
             .header-content, .filter-row, #paginacion-container, .action-buttons, .controls-form, .filter-row-1, .filter-row-2, .voice-controls { flex-direction: column; }
-            /* Aseguramos que el grupo de búsqueda sea completamente visible y ocupe todo el ancho */
-            .filter-group:first-child {
-                width: 100%;
-                margin-bottom: var(--spacing-s);
-            }
-            .filter-group:first-child .voice-input-container {
-                flex: 1;
-            }
-            .filter-group:first-child button#btnBuscar {
-                width: auto;
-                white-space: nowrap;
-            }
+            .filter-group:first-child { width: 100%; margin-bottom: var(--spacing-s); }
+            .filter-group:first-child .voice-input-container { flex: 1; }
+            .filter-group:first-child button#btnBuscar { width: auto; white-space: nowrap; }
             .tabs-nav { flex-wrap: wrap; } .tab-button { flex-grow: 1; text-align: center; }
             #modal .content { height: 100%; max-height: 95vh; margin: 10px; } .data-table { min-width: 600px; }
         }
         @media (max-width: 576px) {
             #modal .content, #modalVer .content { max-width: 100%; max-height: 100vh; margin: 0; border-radius: 0; }
             .filter-group, .button { width: 100%; } 
-            /* En móviles muy pequeños, el botón de búsqueda también ocupa todo el ancho si es necesario */
-            .filter-group:first-child button#btnBuscar {
-                width: 100%;
-                margin-top: 5px;
-            }
-            .filter-group:first-child div[style*="display: flex"] {
-                flex-wrap: wrap;
-            }
+            .filter-group:first-child button#btnBuscar { width: 100%; margin-top: 5px; }
+            .filter-group:first-child div[style*="display: flex"] { flex-wrap: wrap; }
             .data-table { min-width: 100%; }
         }
     </style>
@@ -251,9 +236,7 @@
             <div class="table-wrap">
                 <table class="data-table">
                     <thead>
-                        <tr>
-                            <th>N°</th><th>Carátula</th><th>Tipo</th><th>Juzgado</th><th>Usuario</th><th>Estado</th><th>Prioridad</th><th>Registro</th><th>Eventos</th><th class="no-print">Acciones</th>
-                        </tr>
+                        <tr><th>N°</th><th>Carátula</th><th>Tipo</th><th>Juzgado</th><th>Usuario</th><th>Estado</th><th>Prioridad</th><th>Registro</th><th>Eventos</th><th class="no-print">Acciones</th></tr>
                     </thead>
                     <tbody id="tbodyCausas">
                         <tr><td colspan="10">Cargando expedientes...</td></tr>
@@ -766,6 +749,34 @@
         const mostrarAlertaPersonalizada = (t, m) => { alertTitle.textContent = t; alertMessage.textContent = m; alertModal.style.display = "flex"; };
 
         // ========================================================
+        // NUEVAS FUNCIONES PARA AGREGAR AUDIENCIAS Y DILIGENCIAS (CORRECCIÓN)
+        // ========================================================
+        function agregarAudiencia() {
+            const container = $("audiencias-container");
+            const div = document.createElement('div');
+            div.className = 'audiencia-item';
+            div.innerHTML = `
+                <input type="datetime-local" class="audiencia-fecha" value="">
+                <button type="button" class="btn-eliminar-audiencia"><i class="fa fa-trash"></i></button>
+            `;
+            container.appendChild(div);
+            div.querySelector('.btn-eliminar-audiencia').onclick = () => div.remove();
+        }
+
+        function agregarDiligencia() {
+            const container = $("diligencias-container");
+            const div = document.createElement('div');
+            div.className = 'diligencia-item';
+            div.innerHTML = `
+                <input type="datetime-local" class="diligencia-fecha" value="">
+                <input type="text" class="diligencia-detalle" placeholder="Detalle de la diligencia">
+                <button type="button" class="btn-eliminar-diligencia"><i class="fa fa-trash"></i></button>
+            `;
+            container.appendChild(div);
+            div.querySelector('.btn-eliminar-diligencia').onclick = () => div.remove();
+        }
+
+        // ========================================================
         // INICIALIZACIÓN Y EVENTOS DOM
         // ========================================================
         document.addEventListener('DOMContentLoaded', async function() {
@@ -779,6 +790,10 @@
             $("btnAgregarNota").onclick = agregarNota;
             modal.addEventListener('click', e => { if (e.target === modal) { modal.style.display = "none"; resetFormCausa(); } });
 
+            // Asignar eventos para los botones de agregar audiencia y diligencia (CORRECCIÓN)
+            $("btnAgregarAudiencia").onclick = agregarAudiencia;
+            $("btnAgregarDiligencia").onclick = agregarDiligencia;
+
             $("btnBuscar").onclick = () => cargarCausas(true);
             buscador.addEventListener('keypress', e => { if (e.key === 'Enter') cargarCausas(true); });
             filtroEstado.addEventListener('change', actualizarFiltros); filtroUsuario.addEventListener('change', actualizarFiltros); filtroPrioridad.addEventListener('change', actualizarFiltros); filtroIntervencion.addEventListener('change', actualizarFiltros); filtroTipoProceso.addEventListener('change', actualizarFiltros);
@@ -790,7 +805,16 @@
             
             tabButtons.forEach(btn => { btn.addEventListener('click', () => { tabButtons.forEach(b => b.classList.remove('active')); tabContents.forEach(c => c.classList.remove('active')); btn.classList.add('active'); $(btn.getAttribute('data-tab')).classList.add('active'); }); });
             
-            btnBold.onclick = () => { document.execCommand('bold', false, null); btnBold.classList.toggle('active'); }; btnColorAzul.onclick = () => document.execCommand('foreColor', false, '#007bff'); btnColorRojo.onclick = () => document.execCommand('foreColor', false, '#dc3545'); btnColorVerde.onclick = () => document.execCommand('foreColor', false, '#28a745'); btnColorNormal.onclick = () => document.execCommand('foreColor', false, '#212529');
+            const btnBold = $("btnBold");
+            const btnColorAzul = $("btnColorAzul");
+            const btnColorRojo = $("btnColorRojo");
+            const btnColorVerde = $("btnColorVerde");
+            const btnColorNormal = $("btnColorNormal");
+            if(btnBold) btnBold.onclick = () => { document.execCommand('bold', false, null); btnBold.classList.toggle('active'); };
+            if(btnColorAzul) btnColorAzul.onclick = () => document.execCommand('foreColor', false, '#007bff');
+            if(btnColorRojo) btnColorRojo.onclick = () => document.execCommand('foreColor', false, '#dc3545');
+            if(btnColorVerde) btnColorVerde.onclick = () => document.execCommand('foreColor', false, '#28a745');
+            if(btnColorNormal) btnColorNormal.onclick = () => document.execCommand('foreColor', false, '#212529');
             observacionesEditor.addEventListener('input', () => observacionesHidden.value = observacionesEditor.innerHTML);
 
             $("btnPrintFiltrado").onclick = () => window.print(); $("btnPrintRegistro").onclick = () => window.print();
