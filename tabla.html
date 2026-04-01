@@ -201,7 +201,7 @@
             <div class="filter-row">
                 <div class="filter-row-1">
                     <div class="filter-group">
-                        <label class="filter-label" for="buscador">Búsqueda (Carátula, N°, etc.)</label>
+                        <label class="filter-label" for="buscador">Búsqueda (Carátula, NNyA, etc.)</label>
                         <div style="display: flex; gap: 5px;">
                             <div class="voice-input-container" style="position: relative; flex: 1;">
                                 <input type="text" id="buscador" class="input" placeholder="🔍 Buscar...">
@@ -251,9 +251,13 @@
             <div class="table-wrap">
                 <table class="data-table">
                     <thead>
-                        <tr><th>N°</th><th>Carátula</th><th>Tipo</th><th>Juzgado</th><th>Usuario</th><th>Estado</th><th>Prioridad</th><th>Registro</th><th>Eventos</th><th class="no-print">Acciones</th>cabecera
+                        <tr>
+                            <th>N°</th><th>Carátula</th><th>Tipo</th><th>Juzgado</th><th>Usuario</th><th>Estado</th><th>Prioridad</th><th>Registro</th><th>Eventos</th><th class="no-print">Acciones</th>
+                        </tr>
                     </thead>
-                    <tbody id="tbodyCausas"><tr><td colspan="10">Cargando expedientes...</td> </tbody>
+                    <tbody id="tbodyCausas">
+                        <tr><td colspan="10">Cargando expedientes...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </section>
@@ -388,11 +392,12 @@
                         }
                     }
                     
-                    // Filtramos localmente: la carátula debe contener la frase exacta (case-insensitive)
+                    // Filtramos localmente: la carátula O los datos de NNyA deben contener la frase exacta (case-insensitive)
                     const lowerPhrase = busqueda.toLowerCase();
                     const filteredDocs = allDocs.filter(d => {
                         const caratula = d.caratula ? d.caratula.toLowerCase() : "";
-                        return caratula.includes(lowerPhrase);
+                        const datosNnya = d.datosNnya ? d.datosNnya.toLowerCase() : "";
+                        return caratula.includes(lowerPhrase) || datosNnya.includes(lowerPhrase);
                     });
                     
                     // Almacenamos todos los filtrados para paginación client-side
@@ -522,7 +527,11 @@
         // RENDERIZADO
         // ========================================================
         function renderTablas(data){
-            tbody.innerHTML = data.length ? "" : "<tr><td colspan='10'>No hay registros que coincidan con los filtros</td></tr>";
+            if (data.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='10'>No hay registros que coincidan con los filtros</td></tr>";
+                return;
+            }
+            tbody.innerHTML = "";
             data.forEach(d=>{
                 const todosEventos = obtenerTodosEventos(d);
                 let eventosHTML = "—";
