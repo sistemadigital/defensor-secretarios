@@ -17,13 +17,12 @@
         body {
             display: flex;
             flex-direction: column;
-            height: 100vh; /* Respaldo para navegadores antiguos */
-            height: 100dvh; /* Solución dinámica para móviles */
+            height: 100vh;
+            height: 100dvh;
             background-color: #ffffff;
-            overflow: hidden; /* Evita scroll global */
+            overflow: hidden;
         }
 
-        /* Pantalla Central */
         main {
             flex: 1;
             background: radial-gradient(circle at 10% 30%, #f0faff 0%, #ffffff 100%);
@@ -31,11 +30,9 @@
             flex-direction: column;
             position: relative;
             overflow-y: auto;
-            /* Pequeño padding inferior para que el contenido no quede pegado al footer */
             padding-bottom: 2px;
         }
 
-        /* Iframe para contenido interno */
         #appIframe {
             width: 100%;
             height: 100%;
@@ -56,7 +53,6 @@
             flex-shrink: 0;
         }
 
-        /* Pie de Página */
         footer {
             height: 70px;
             background-color: #001f3f;
@@ -66,12 +62,11 @@
             justify-content: space-between;
             padding: 0 30px;
             box-shadow: 0 -4px 12px rgba(0,31,63,0.2);
-            border-top: 3px solid #00BFFF; /* Borde más grueso para destacar */
+            border-top: 3px solid #00BFFF;
             z-index: 3000;
             cursor: pointer;
         }
 
-        /* Evitar cursor pointer general en el contenido interno del footer */
         footer > div, footer > .logout-button {
             cursor: default;
         }
@@ -94,7 +89,6 @@
 
         .footer-content:hover { opacity: 0.8; }
 
-        /* MENÚ DESPLEGABLE */
         .menu-popup {
             display: none;
             position: absolute;
@@ -123,12 +117,10 @@
         }
         .menu-popup li a:hover { background-color: #f0faff; color: #00BFFF; }
 
-        /* Botón de salida y sección derecha */
         .footer-right {
             display: flex; align-items: center; gap: 20px; z-index: 10; height: 100%; cursor: pointer;
         }
         
-        /* Text y Modal del Desarrollador */
         .sistema-info-text-container { position: relative; display: flex; align-items: center; height: 100%; }
         .sistema-info-text { color: white; font-weight: bold; cursor: pointer; font-size: 0.95rem; transition: color 0.2s; }
         .sistema-info-text:hover { color: #00BFFF; }
@@ -150,7 +142,6 @@
         }
         .logout-button:hover { background-color: rgba(0,191,255,0.2); border-color: #00BFFF; }
 
-        /* Menú Hamburguesa Resaltado Celeste Glass */
         .hamburger-menu { 
             display: flex; flex-direction: column; gap: 5px; margin-right: 15px; 
             background: rgba(0, 191, 255, 0.15);
@@ -202,7 +193,6 @@
         .calendar-day.current { background-color: #22c55e; color: white; font-weight: bold; box-shadow: 0 2px 6px rgba(34, 197, 94, 0.4); }
         .calendar-day.empty { color: transparent; pointer-events: none; }
 
-        /* MODAL DE CONFIRMACIÓN DE SALIDA */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
@@ -226,7 +216,6 @@
         .btn-modal.cancelar { background-color: #94a3b8; color: white; box-shadow: none; }
         .btn-modal.cancelar:hover { background-color: #64748b; }
 
-        /* ===== ESTILOS DE BIENVENIDA Y PERFIL COMPLETOS ===== */
         .welcome-container {
             display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;
             animation: fadeIn 1s ease; background: transparent; padding: 20px 20px 0 20px; width: 100%; position: relative;
@@ -317,9 +306,7 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ===== AJUSTES PARA MÓVIL: FOOTER SIMPLIFICADO Y VISIBLE EN PANTALLAS PEQUEÑAS ===== */
         @media (max-width: 768px) {
-            /* Reducimos tamaños generales */
             .welcome-message { font-size: 1.4rem; }
             .sistema-digital-text { display: none; }
             .left-group { gap: 0.5rem; }
@@ -327,10 +314,9 @@
             .info-modal { width: 280px; }
             .left-info-image { width: 280px; }
 
-            /* Footer: solo hamburguesa, texto "Sistema Digital6" y botón salir */
             footer {
                 height: auto;
-                min-height: 56px; /* Altura mínima suficiente */
+                min-height: 56px;
                 padding: 6px 12px;
                 display: flex;
                 flex-direction: row;
@@ -338,7 +324,7 @@
                 justify-content: space-between;
                 flex-wrap: nowrap;
                 gap: 6px;
-                border-top-width: 3px; /* Mantener borde visible */
+                border-top-width: 3px;
             }
 
             .footer-left {
@@ -349,7 +335,7 @@
                 justify-content: flex-start;
                 flex-wrap: nowrap;
                 width: auto;
-                min-width: 0; /* Permitir reducción */
+                min-width: 0;
             }
 
             .footer-content {
@@ -367,7 +353,7 @@
             }
 
             .click-text {
-                display: none; /* Ocultar texto "Haz clic para acceder" */
+                display: none;
             }
 
             .footer-defensoria {
@@ -400,7 +386,7 @@
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                max-width: 110px; /* Evita que se desborde en pantallas muy pequeñas */
+                max-width: 110px;
             }
 
             .logout-button {
@@ -411,10 +397,9 @@
             }
 
             .logout-button span:last-child {
-                display: inline; /* Aseguramos que se vea el texto "Salir" */
+                display: inline;
             }
 
-            /* Ajustar menús emergentes para que no se desborden */
             .menu-popup {
                 width: 200px;
                 left: 0;
@@ -434,7 +419,6 @@
             }
         }
 
-        /* Ajuste adicional para pantallas extremadamente pequeñas (menos de 360px) */
         @media (max-width: 360px) {
             .sistema-info-text {
                 font-size: 0.75rem;
@@ -586,7 +570,6 @@
     </div>
 
     <script>
-        // --- CONTROL DE PÁGINAS (IFRAME Y HOME) ---
         function loadPage(url) {
             const iframe = document.getElementById('appIframe');
             const home = document.getElementById('homeContent');
@@ -603,7 +586,6 @@
             closeAllModals();
         };
 
-        // --- CIERRE GLOBAL DE MODALES ---
         function closeAllModals() {
             document.getElementById('mainMenuPopup')?.classList.remove('show');
             document.getElementById('calendarPopup')?.classList.remove('show');
@@ -614,7 +596,6 @@
             if(dropdown) dropdown.classList.remove('show');
         }
 
-        // --- CLIC GLOBAL PARA CERRAR ---
         document.addEventListener('click', (e) => {
             const isClickInsideMenu = document.getElementById('btnMainMenu')?.contains(e.target);
             const isClickInsideCalendar = document.getElementById('dateTimeWeatherBtn')?.contains(e.target);
@@ -629,19 +610,14 @@
             }
         });
 
-        // --- CLIC EN EL FOOTER PARA VOLVER A HOME ---
         document.getElementById('mainFooter').addEventListener('click', function(e) {
-            // Si hacen clic en los contenedores vacíos del footer, retorna a la bienvenida
             if (e.target === this || e.target.id === 'footerLeftArea' || e.target.id === 'footerRightArea') {
                 window.mostrarHome();
             }
         });
 
-        // Menú Principal
         document.getElementById('btnMainMenu').addEventListener('click', (e) => {
-            // Si el clic viene de un link del menú, no ejecutar la lógica de toggle
             if (e.target.closest('a')) return;
-            
             e.stopPropagation();
             const menu = document.getElementById('mainMenuPopup');
             const isShow = menu.classList.contains('show');
@@ -649,7 +625,6 @@
             if(!isShow) menu.classList.add('show');
         });
 
-        // Info Desarrollador Modal
         document.getElementById('btnSistemaInfoText')?.addEventListener('click', (e) => {
             e.stopPropagation();
             const modal = document.getElementById('sistemaInfoModal');
@@ -658,7 +633,6 @@
             if(!isShow) modal.classList.add('show');
         });
 
-        // Calendario y Clima
         const dtwBtn = document.getElementById('dateTimeWeatherBtn');
         const calPopup = document.getElementById('calendarPopup');
 
@@ -672,7 +646,6 @@
             }
         });
 
-        // ===== LÓGICA DE FECHA, HORA Y CALENDARIO =====
         function updateDateTime() {
             const now = new Date();
             const day = String(now.getDate()).padStart(2, '0');
@@ -709,7 +682,6 @@
         document.getElementById('prevMonth').addEventListener('click', (e) => { e.stopPropagation(); currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; } renderCalendar(currentMonth, currentYear); });
         document.getElementById('nextMonth').addEventListener('click', (e) => { e.stopPropagation(); currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; } renderCalendar(currentMonth, currentYear); });
 
-        // ===== LÓGICA DE CLIMA =====
         async function fetchWeather() {
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-27.3671&longitude=-55.8961&current_weather=true');
@@ -719,12 +691,10 @@
         }
         fetchWeather();
 
-        // Modales de Salida
         const modalSalida = document.getElementById('modalSalida');
         document.getElementById('btnSalir').addEventListener('click', () => { modalSalida.classList.add('active'); });
         document.getElementById('cancelarSalida').addEventListener('click', () => { modalSalida.classList.remove('active'); });
 
-        // Posicionamiento de InfoModal
         const infoModal = document.getElementById('infoModal');
         const leftImage = document.getElementById('leftInfoImage');
         const footerDefensoria = document.getElementById('footerDefensoria');
@@ -768,7 +738,8 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, signOut, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-        import confetti from 'https://cdn.skypack.dev/canvas-confetti';
+        
+        // ELIMINADA la importación estática de confetti que causaba el bloqueo general
 
         const firebaseConfig = {
             apiKey: "AIzaSyBDXZYAxWsvMiMGCrPRp3EBVuU0dzuWF4M",
@@ -808,8 +779,9 @@
         async function updateDisplayName(newName) {
             if (!currentUser || !newName.trim()) return;
             try {
+                const safeEmail = currentUser.email || 'anonimo';
                 await updateProfile(currentUser, { displayName: newName.trim() });
-                await setDoc(doc(dbPerfil, "usuarios", currentUser.email), { nombreCompleto: newName.trim() }, { merge: true });
+                await setDoc(doc(dbPerfil, "usuarios", safeEmail), { nombreCompleto: newName.trim() }, { merge: true });
                 userDataCache.displayName = newName.trim();
                 showWelcomeMessage(currentUser, true);
             } catch (error) { console.error('Error al actualizar nombre:', error); }
@@ -818,24 +790,33 @@
         async function updateFechaNacimiento(newFecha) {
             if (!currentUser) return;
             try {
-                await setDoc(doc(dbPerfil, "usuarios", currentUser.email), { fechaNacimiento: newFecha }, { merge: true });
+                const safeEmail = currentUser.email || 'anonimo';
+                await setDoc(doc(dbPerfil, "usuarios", safeEmail), { fechaNacimiento: newFecha }, { merge: true });
                 userDataCache.fechaNacimiento = newFecha;
                 showWelcomeMessage(currentUser, true);
             } catch (error) { console.error('Error al actualizar fecha:', error); }
         }
 
-        function launchConfetti() {
-            var duration = 3 * 1000;
-            var animationEnd = Date.now() + duration;
-            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-            function randomInRange(min, max) { return Math.random() * (max - min) + min; }
-            var interval = setInterval(function() {
-                var timeLeft = animationEnd - Date.now();
-                if (timeLeft <= 0) return clearInterval(interval);
-                var particleCount = 50 * (timeLeft / duration);
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-            }, 250);
+        // CARGA DINÁMICA DEL CONFETI PARA EVITAR BLOQUEOS
+        async function launchConfetti() {
+            try {
+                const module = await import('https://cdn.skypack.dev/canvas-confetti');
+                const confetti = module.default;
+                
+                var duration = 3 * 1000;
+                var animationEnd = Date.now() + duration;
+                var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+                function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+                var interval = setInterval(function() {
+                    var timeLeft = animationEnd - Date.now();
+                    if (timeLeft <= 0) return clearInterval(interval);
+                    var particleCount = 50 * (timeLeft / duration);
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+                }, 250);
+            } catch (e) {
+                console.warn("No se pudo cargar la animación de confeti. Ejecución continuada.");
+            }
         }
 
         async function checkBirthdays(isCurrentUserBirthday) {
@@ -846,7 +827,7 @@
                 const q = query(collection(dbPerfil, "usuarios"), where("fechaNacimiento", "==", hoy));
                 const querySnapshot = await getDocs(q);
                 const birthdayUsers = [];
-                querySnapshot.forEach(doc => { if (doc.data().email !== currentUser.email) birthdayUsers.push(doc.data().nombreCompleto); });
+                querySnapshot.forEach(doc => { if (doc.data().email !== (currentUser?.email || '')) birthdayUsers.push(doc.data().nombreCompleto); });
 
                 if (birthdayUsers.length > 0 && !birthdayModalShown) {
                     const list = document.getElementById('birthdayList');
@@ -864,8 +845,10 @@
 
         async function showWelcomeMessage(user, useCache = false) {
             const dynamicContent = document.getElementById('dynamicContent');
-            const displayName = user.displayName || user.email.split('@')[0] || 'Usuario';
-            const email = user.email;
+            
+            // PROTECCIÓN CONTRA CORREOS NULOS
+            const email = user.email || ""; 
+            const displayName = user.displayName || (email ? email.split('@')[0] : 'Usuario');
             const photoURL = user.photoURL;
             const inicial = displayName.charAt(0).toUpperCase();
 
@@ -874,7 +857,8 @@
             let esCumpleanos = false;
             let mensajeBienvenida = `¡Hola ${displayName}!`;
 
-            if (!useCache && !userDataCache.fechaNacimiento) {
+            // SOLO CONSULTAR FIRESTORE SI EL USUARIO TIENE UN EMAIL VALIDO
+            if (!useCache && !userDataCache.fechaNacimiento && email) {
                 try {
                     const docRef = doc(dbPerfil, "usuarios", email);
                     const docSnap = await getDoc(docRef);
@@ -882,7 +866,7 @@
                         fechaNacimiento = docSnap.data().fechaNacimiento || '';
                         userDataCache.fechaNacimiento = fechaNacimiento;
                     }
-                } catch (error) {}
+                } catch (error) { console.warn("No se pudo obtener el perfil de usuario:", error); }
             }
 
             if (fechaNacimiento) {
@@ -936,7 +920,7 @@
                             <button id="saveFechaBtn" class="save-btn"><i class="fas fa-check"></i></button>
                             <button id="cancelFechaBtn" class="cancel-btn"><i class="fas fa-times"></i></button>
                         </div>
-                        <div class="info-item"><strong>Correo:</strong> ${email}</div>
+                        <div class="info-item"><strong>Correo:</strong> ${email || 'No asignado'}</div>
                         <div class="info-item"><strong>Último acceso:</strong> ${lastLoginStr}</div>
                         <div class="info-item"><strong>Registro:</strong> ${creationStr}</div>
                         <div class="version-badge">Versión 3.1.2026</div>
@@ -945,7 +929,7 @@
                 </div>
             `;
 
-            if (esCumpleanos && typeof confetti !== 'undefined') launchConfetti();
+            if (esCumpleanos) launchConfetti();
 
             const bar = document.getElementById('welcomeBar');
             const dropdown = document.getElementById('userDropdown');
