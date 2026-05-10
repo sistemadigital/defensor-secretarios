@@ -637,11 +637,16 @@
         const calPopup = document.getElementById('calendarPopup');
 
         dtwBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
+           e.stopPropagation();
             const isShow = calPopup.classList.contains('show');
             closeAllModals();
             if(!isShow) {
                 calPopup.classList.add('show');
+                // Se restablece la fecha al mes y año actuales cada vez que se abre
+                const today = new Date();
+                currentMonth = today.getMonth();
+                currentYear = today.getFullYear();
+                
                 renderCalendar(currentMonth, currentYear);
             }
         });
