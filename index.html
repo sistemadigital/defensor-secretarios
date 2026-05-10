@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>⚖️Sistema Defensor</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -114,25 +114,25 @@
 
         .info-institucional p:first-child { font-weight: 700; color: #000; }
 
-        /* --- IMAGEN 3D CON ANIMACIÓN MODERNA (RING ROTATORIO Y GLOW) --- */
+        /* --- CONTENEDOR IMAGEN + ANILLOS + PROTOCOLO (UNA SOLA LÍNEA) --- */
         .img-container {
             flex: 1;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 1;
-            position: relative; /* Necesario para el anillo pseudo-elemento */
+            position: relative;
         }
 
-        /* Contenedor adicional para la imagen y el efecto de anillo */
         .img-wrapper {
             position: relative;
             display: inline-block;
             border-radius: 50%;
             animation: float 6s ease-in-out infinite;
+            margin-bottom: 0;
         }
 
-        /* Anillo giratorio con gradiente cónico (neón moderno) */
         .img-wrapper::before {
             content: '';
             position: absolute;
@@ -154,7 +154,6 @@
             box-shadow: 0 0 20px rgba(0, 191, 255, 0.5);
         }
 
-        /* Segundo anillo más externo, más sutil */
         .img-wrapper::after {
             content: '';
             position: absolute;
@@ -175,7 +174,6 @@
             filter: blur(8px);
         }
 
-        /* Animación de rotación del anillo */
         @keyframes rotateRing {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -186,7 +184,6 @@
             100% { transform: rotate(-360deg); }
         }
 
-        /* La imagen permanece igual, solo se le da un sutil brillo */
         .img-3d {
             width: 100%;
             max-width: 420px;
@@ -201,15 +198,14 @@
             transform: scale(1.02);
         }
 
-        /* Efecto de "pulso" suave en el contenedor general (opcional) */
+        .img-wrapper {
+            animation: float 6s ease-in-out infinite, softPulse 3s ease-in-out infinite;
+        }
+
         @keyframes softPulse {
             0% { filter: drop-shadow(0 0 5px rgba(0,191,255,0.3)); }
             50% { filter: drop-shadow(0 0 20px rgba(0,191,255,0.6)); }
             100% { filter: drop-shadow(0 0 5px rgba(0,191,255,0.3)); }
-        }
-
-        .img-wrapper {
-            animation: float 6s ease-in-out infinite, softPulse 3s ease-in-out infinite;
         }
 
         @keyframes float {
@@ -217,7 +213,97 @@
             50% { transform: translateY(-15px); }
         }
 
-        /* --- CINTAS --- */
+        /* ----- PROTOCOLO DE ACTUACIÓN: UNA SOLA LÍNEA FORZADA ----- */
+        .protocolo-link {
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 1.75rem;
+            transition: transform 0.2s ease, opacity 0.2s;
+            border-radius: 60px;
+        }
+
+        .protocolo-link:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .protocolo-row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 0.9rem;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(2px);
+            padding: 0.6rem 1.2rem;
+            border-radius: 60px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: all 0.2s ease;
+            width: auto;
+            max-width: 100%;
+            cursor: pointer;
+            flex-wrap: nowrap;          /* Evita que los elementos salten a otra línea */
+            white-space: nowrap;        /* Fuerza que el texto no se divida */
+        }
+
+        .protocolo-texto {
+            font-weight: 800;
+            font-size: clamp(0.85rem, 3.2vw, 1.25rem);
+            letter-spacing: -0.01em;
+            background: linear-gradient(135deg, #001f3f 0%, #004b8f 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            white-space: nowrap;        /* texto en una sola línea */
+        }
+
+        .protocolo-icono {
+            height: clamp(32px, 6vw, 48px);
+            width: auto;
+            display: inline-block;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            transition: transform 0.2s ease;
+            flex-shrink: 0;            /* evita que el icono se encoja y rompa la línea */
+        }
+
+        .protocolo-icono:hover {
+            transform: scale(1.05);
+        }
+
+        /* Ajuste para móviles: reducimos padding y fuente para que quepa en una línea */
+        @media (max-width: 640px) {
+            .protocolo-row {
+                gap: 0.6rem;
+                padding: 0.4rem 0.9rem;
+            }
+            .protocolo-texto {
+                font-size: 0.75rem;     /* más pequeño pero legible, asegura una línea */
+                letter-spacing: -0.01em;
+            }
+            .protocolo-icono {
+                height: 28px;
+            }
+            .protocolo-link {
+                margin-top: 1.2rem;
+            }
+        }
+
+        /* Para pantallas muy estrechas (menos de 400px) reducimos aún más el texto */
+        @media (max-width: 420px) {
+            .protocolo-texto {
+                font-size: 0.7rem;
+            }
+            .protocolo-row {
+                gap: 0.5rem;
+                padding: 0.35rem 0.8rem;
+            }
+            .protocolo-icono {
+                height: 26px;
+            }
+        }
+
+        /* --- CINTAS DECORATIVAS --- */
         .panel-izquierdo::before, .panel-izquierdo::after {
             content: "";
             position: absolute;
@@ -284,7 +370,6 @@
             box-shadow: 0 0 0 4px rgba(0, 191, 255, 0.1);
         }
 
-        /* Estilo para la casilla de mostrar clave */
         .mostrar-clave {
             display: flex;
             align-items: center;
@@ -379,16 +464,50 @@
             display: none;
         }
 
-        /* --- RESPONSIVE / MODO MÓVIL --- */
+        /* --- RESPONSIVE GENERAL --- */
         @media (max-width: 1024px) {
-            .contenedor-principal { flex-direction: column; height: auto; overflow-y: auto; }
-            .panel-izquierdo { flex: none; padding: 60px 20px; text-align: center; flex-direction: column; }
-            .brand-container { align-items: center; max-width: 100%; margin-bottom: 30px; }
-            .info-institucional { border-left: none; border-top: 3px solid #00BFFF; padding: 15px 0 0 0; }
-            .img-3d { max-width: 250px; margin-bottom: 20px; }
-            .panel-derecho { flex: none; padding: 40px 20px 80px 20px; }
-            .formulario-login h2 { text-align: center; }
-            /* Ajuste del anillo en móvil */
+            .contenedor-principal { 
+                flex-direction: column; 
+                height: auto; 
+                overflow-y: auto; 
+            }
+            .panel-izquierdo { 
+                flex: none; 
+                padding: 40px 20px 40px 20px; 
+                text-align: center; 
+                flex-direction: column; 
+                justify-content: center;
+            }
+            .brand-container { 
+                align-items: center; 
+                max-width: 100%; 
+                margin-bottom: 30px; 
+                text-align: center;
+            }
+            .info-institucional { 
+                border-left: none; 
+                border-top: 3px solid #00BFFF; 
+                padding: 15px 0 0 0; 
+                text-align: center;
+            }
+            .img-3d { 
+                max-width: 250px; 
+                margin-bottom: 0;
+            }
+            .img-container {
+                width: 100%;
+                margin: 0 auto;
+            }
+            .protocolo-link {
+                margin-top: 1.5rem;
+            }
+            .panel-derecho { 
+                flex: none; 
+                padding: 30px 20px 70px 20px; 
+            }
+            .formulario-login h2 { 
+                text-align: center; 
+            }
             .img-wrapper::before {
                 top: -10px;
                 left: -10px;
@@ -426,12 +545,25 @@
             </div>
 
             <div class="img-container">
-                <!-- Se añade un wrapper para el anillo animado -->
                 <div class="img-wrapper">
                     <img src="https://github.com/sistema-secretarios/imagenes-sistema/blob/main/pc.png?raw=true" 
-                         alt="Sistema Digital 3D" 
+                         alt="Sistema Digital 3D - Defensoría" 
                          class="img-3d">
                 </div>
+
+                <!-- ENLACE EXTERNO: Protocolo de Actuación Judicial (siempre en una línea) -->
+                <a href="https://defensorialocal-seis.github.io/protocolo/" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="protocolo-link">
+                    <div class="protocolo-row">
+                        <span class="protocolo-texto">📋 Protocolo de Actuación Judicial</span>
+                        <img src="https://github.com/defensorialocal-seis/protocolo/blob/main/icono1.png?raw=true" 
+                             alt="Icono Protocolo Judicial" 
+                             class="protocolo-icono"
+                             loading="eager">
+                    </div>
+                </a>
             </div>
         </div>
 
@@ -551,7 +683,6 @@
                 isLoggingIn = true;
                 await signInWithEmailAndPassword(auth, email, password);
                 
-                // Animación del icono a verde negrita
                 const icon = document.getElementById('powerIcon');
                 if (icon) {
                     icon.setAttribute('stroke', '#28a745');
