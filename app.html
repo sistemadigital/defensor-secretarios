@@ -89,6 +89,7 @@
 
         .footer-content:hover { opacity: 0.8; }
 
+        /* Menú desplegable igual que antes */
         .menu-popup {
             display: none;
             position: absolute;
@@ -177,22 +178,17 @@
         }
         .logout-button:hover { background-color: rgba(0,191,255,0.2); border-color: #00BFFF; }
 
-        .hamburger-menu { 
-            display: flex; flex-direction: column; gap: 5px; margin-right: 15px; 
-            background: rgba(0, 191, 255, 0.15);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(0, 191, 255, 0.6);
-            padding: 8px 10px; 
-            border-radius: 8px; 
-            box-shadow: 0 0 12px rgba(0, 191, 255, 0.5);
-            transition: all 0.3s ease;
+        /* Nuevo ícono de menú: GIF animado */
+        .menu-icon-img {
+            width: 32px;
+            height: auto;
+            display: block;
+            cursor: pointer;
+            transition: transform 0.2s ease;
         }
-        .hamburger-menu:hover {
-            background: rgba(0, 191, 255, 0.25); 
-            box-shadow: 0 0 16px rgba(0, 191, 255, 0.7);
+        .menu-icon-img:hover {
+            transform: scale(1.05);
         }
-        .bar { width: 22px; height: 2px; background-color: white; border-radius: 10px; }
-        .click-text { font-weight: 400; font-size: 0.95rem; letter-spacing: 0.01em; }
 
         .footer-defensoria {
             text-align: left; font-size: 0.85rem; color: white;
@@ -381,14 +377,9 @@
                 min-width: 0;
             }
 
-            .hamburger-menu {
-                margin-right: 0;
-                padding: 6px 8px;
-                flex-shrink: 0;
-            }
-
-            .click-text {
-                display: none;
+            /* Ajuste para el nuevo ícono de menú en móvil */
+            .menu-icon-img {
+                width: 28px;
             }
 
             .footer-defensoria {
@@ -399,7 +390,6 @@
                 display: none;
             }
 
-            /* ocultar el texto de acceso defensor en móvil */
             .acceso-defensor-text {
                 display: none;
             }
@@ -480,8 +470,8 @@
                 padding: 4px 8px;
                 font-size: 0.75rem;
             }
-            .hamburger-menu {
-                padding: 5px 6px;
+            .menu-icon-img {
+                width: 26px;
             }
             .event-banner {
                 max-width: 120px;
@@ -536,10 +526,9 @@
     <footer id="mainFooter">
         <div class="footer-left" id="footerLeftArea">
             <div class="footer-content" id="btnMainMenu">
-                <div class="hamburger-menu">
-                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                </div>
-                <span class="click-text">Haz clic para acceder</span>
+                <!-- Nuevo ícono de menú: GIF animado en lugar del antiguo ícono hamburguesa + texto -->
+                <img src="https://github.com/sistemadigital/ingreso-sistema/blob/main/menu.gif?raw=true" alt="Menú" class="menu-icon-img">
+                <!-- Se ha eliminado el texto "Haz clic para acceder" -->
 
                 <div class="menu-popup" id="mainMenuPopup">
                     <ul>
