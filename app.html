@@ -121,6 +121,41 @@
             display: flex; align-items: center; gap: 20px; z-index: 10; height: 100%; cursor: pointer;
         }
         
+        /* BANNER FIJO CON CAMBIO DE COLOR SEGÚN EVENTOS Y CLICKABLE */
+        .event-banner {
+            border-radius: 40px;
+            padding: 6px 18px;
+            background-color: #1e40af;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 0 12px rgba(0,0,0,0.3);
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .event-banner.hay-eventos {
+            background-color: #ea580c;
+            box-shadow: 0 0 14px rgba(234,88,12,0.6);
+        }
+        .event-banner p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: white;
+            letter-spacing: 0.3px;
+        }
+
+        /* Texto de acceso defensor oficial */
+        .acceso-defensor-text {
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-left: 10px;
+            white-space: nowrap;
+            z-index: 10;
+            border-left: 1px solid rgba(255,255,255,0.3);
+            padding-left: 15px;
+        }
+
         .sistema-info-text-container { position: relative; display: flex; align-items: center; height: 100%; }
         .sistema-info-text { color: white; font-weight: bold; cursor: pointer; font-size: 0.95rem; transition: color 0.2s; }
         .sistema-info-text:hover { color: #00BFFF; }
@@ -364,6 +399,11 @@
                 display: none;
             }
 
+            /* ocultar el texto de acceso defensor en móvil */
+            .acceso-defensor-text {
+                display: none;
+            }
+
             .footer-right {
                 display: flex;
                 align-items: center;
@@ -372,6 +412,18 @@
                 width: auto;
                 justify-content: flex-end;
                 flex-shrink: 0;
+            }
+
+            .event-banner {
+                padding: 4px 12px;
+                white-space: normal;
+                text-align: center;
+                max-width: 140px;
+            }
+            .event-banner p {
+                font-size: 0.7rem;
+                white-space: normal;
+                line-height: 1.2;
             }
 
             .sistema-info-text-container {
@@ -430,6 +482,13 @@
             }
             .hamburger-menu {
                 padding: 5px 6px;
+            }
+            .event-banner {
+                max-width: 120px;
+                padding: 3px 8px;
+            }
+            .event-banner p {
+                font-size: 0.65rem;
             }
         }
     </style>
@@ -527,9 +586,16 @@
                     <div class="calendar-grid" id="calendarGrid"></div>
                 </div>
             </div>
+
+            <!-- Texto agregado a la derecha del calendario -->
+            <span class="acceso-defensor-text">Acceso Defensor Oficial</span>
         </div>
 
         <div class="footer-right" id="footerRightArea">
+            <div class="event-banner" id="eventBanner">
+                <p id="bannerText">Cargando eventos...</p>
+            </div>
+
             <div class="sistema-info-text-container" id="btnSistemaInfoContainer">
                 <span class="sistema-info-text" id="btnSistemaInfoText">Sistema Digital 6</span>
                 <div class="sistema-info-modal" id="sistemaInfoModal">
@@ -604,13 +670,15 @@
             const isClickInsideUser = document.getElementById('welcomeBar')?.contains(e.target) || document.getElementById('userDropdown')?.contains(e.target);
             const isClickInsideFooter = document.getElementById('mainFooter')?.contains(e.target);
             const isClickInsideDevInfo = document.getElementById('btnSistemaInfoContainer')?.contains(e.target);
+            const isClickInsideBanner = document.getElementById('eventBanner')?.contains(e.target);
 
-            if (!isClickInsideMenu && !isClickInsideCalendar && !isClickInsideInfoDefensoria && !isClickInsideInfoCentral && !isClickInsideUser && !isClickInsideFooter && !isClickInsideDevInfo) {
+            if (!isClickInsideMenu && !isClickInsideCalendar && !isClickInsideInfoDefensoria && !isClickInsideInfoCentral && !isClickInsideUser && !isClickInsideFooter && !isClickInsideDevInfo && !isClickInsideBanner) {
                 closeAllModals();
             }
         });
 
         document.getElementById('mainFooter').addEventListener('click', function(e) {
+            if (e.target.closest('#eventBanner')) return;
             if (e.target === this || e.target.id === 'footerLeftArea' || e.target.id === 'footerRightArea') {
                 window.mostrarHome();
             }
@@ -642,7 +710,6 @@
             closeAllModals();
             if(!isShow) {
                 calPopup.classList.add('show');
-                // Se restablece la fecha al mes y año actuales cada vez que se abre
                 const today = new Date();
                 currentMonth = today.getMonth();
                 currentYear = today.getFullYear();
@@ -737,6 +804,11 @@
         function cerrarBirthdayModal() { birthdayModal.style.display = 'none'; }
         document.getElementById('closeBirthdayBtn').addEventListener('click', cerrarBirthdayModal);
         document.querySelector('.close-birthday').addEventListener('click', cerrarBirthdayModal);
+        
+        document.getElementById('eventBanner')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            loadPage('https://sistemadigital.github.io/defensor-secretarios/eventos.html');
+        });
     </script>
 
     <script type="module">
@@ -744,8 +816,6 @@
         import { getAuth, signOut, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
         
-        // ELIMINADA la importación estática de confetti que causaba el bloqueo general
-
         const firebaseConfig = {
             apiKey: "AIzaSyBDXZYAxWsvMiMGCrPRp3EBVuU0dzuWF4M",
             authDomain: "sistemadefensoria6.firebaseapp.com",
@@ -758,6 +828,89 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const dbPerfil = getFirestore(app);
+        
+        const causasConfig = {
+            apiKey: "AIzaSyBDXZYAxWsvMiMGCrPRp3EBVuU0dzuWF4M",
+            authDomain: "sistemadefensoria6.firebaseapp.com",
+            projectId: "sistemadefensoria6",
+            storageBucket: "sistemadefensoria6.firebasestorage.app",
+            messagingSenderId: "1024631392849",
+            appId: "1:1024631392849:web:1dc13292e690e2ed100670"
+        };
+        const causasApp = initializeApp(causasConfig, "causas");
+        const dbEventos = getFirestore(causasApp);
+        
+        function toDate(val) {
+            if (!val) return null;
+            if (val.toDate) return val.toDate();
+            if (val.seconds) return new Date(val.seconds * 1000);
+            if (val instanceof Date) return val;
+            return new Date(val);
+        }
+        
+        async function hayEventosHoy() {
+            try {
+                const snapshot = await getDocs(collection(dbEventos, "causas"));
+                const hoy = new Date();
+                hoy.setHours(0, 0, 0, 0);
+                const manana = new Date(hoy);
+                manana.setDate(manana.getDate() + 1);
+        
+                for (const docSnap of snapshot.docs) {
+                    const causa = docSnap.data();
+                    if (Array.isArray(causa.audiencias)) {
+                        for (const fecha of causa.audiencias) {
+                            const fechaObj = toDate(fecha);
+                            if (fechaObj && fechaObj >= hoy && fechaObj < manana) return true;
+                        }
+                    }
+                    if (causa.audienciaGesell) {
+                        const fechaObj = toDate(causa.audienciaGesell);
+                        if (fechaObj && fechaObj >= hoy && fechaObj < manana) return true;
+                    }
+                    if (causa.vencimiento) {
+                        const fechaObj = toDate(causa.vencimiento);
+                        if (fechaObj && fechaObj >= hoy && fechaObj < manana) return true;
+                    }
+                    if (causa.vencimientoRecursos) {
+                        const fechaObj = toDate(causa.vencimientoRecursos);
+                        if (fechaObj && fechaObj >= hoy && fechaObj < manana) return true;
+                    }
+                    if (Array.isArray(causa.diligencias)) {
+                        for (const d of causa.diligencias) {
+                            const fechaObj = toDate(d.fecha);
+                            if (fechaObj && fechaObj >= hoy && fechaObj < manana) return true;
+                        }
+                    }
+                }
+                return false;
+            } catch (error) {
+                console.error("Error al consultar eventos:", error);
+                return false;
+            }
+        }
+        
+        async function actualizarBannerEventos() {
+            const bannerDiv = document.getElementById('eventBanner');
+            const bannerText = document.getElementById('bannerText');
+            if (!bannerDiv || !bannerText) return;
+            try {
+                const hayEventos = await hayEventosHoy();
+                if (hayEventos) {
+                    bannerText.textContent = "📅 Recuerda, hoy tenemos eventos agendados";
+                    bannerDiv.classList.add('hay-eventos');
+                } else {
+                    bannerText.textContent = "📅 Hoy no tenemos nada agendado";
+                    bannerDiv.classList.remove('hay-eventos');
+                }
+            } catch (err) {
+                bannerText.textContent = "📅 No se pudo verificar eventos";
+                bannerDiv.classList.remove('hay-eventos');
+            }
+        }
+        
+        actualizarBannerEventos();
+        setInterval(actualizarBannerEventos, 30 * 60 * 1000);
 
         const AVATAR_HOMBRE = 'https://github.com/sistemadigital/iconos/blob/main/hombre.png?raw=true';
         const AVATAR_MUJER = 'https://github.com/sistemadigital/iconos/blob/main/mujer.png?raw=true';
@@ -802,7 +955,6 @@
             } catch (error) { console.error('Error al actualizar fecha:', error); }
         }
 
-        // CARGA DINÁMICA DEL CONFETI PARA EVITAR BLOQUEOS
         async function launchConfetti() {
             try {
                 const module = await import('https://cdn.skypack.dev/canvas-confetti');
@@ -851,7 +1003,6 @@
         async function showWelcomeMessage(user, useCache = false) {
             const dynamicContent = document.getElementById('dynamicContent');
             
-            // PROTECCIÓN CONTRA CORREOS NULOS
             const email = user.email || ""; 
             const displayName = user.displayName || (email ? email.split('@')[0] : 'Usuario');
             const photoURL = user.photoURL;
@@ -862,7 +1013,6 @@
             let esCumpleanos = false;
             let mensajeBienvenida = `¡Hola ${displayName}!`;
 
-            // SOLO CONSULTAR FIRESTORE SI EL USUARIO TIENE UN EMAIL VALIDO
             if (!useCache && !userDataCache.fechaNacimiento && email) {
                 try {
                     const docRef = doc(dbPerfil, "usuarios", email);
