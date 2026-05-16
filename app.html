@@ -370,6 +370,106 @@
         .btn-cerrar { background-color: #003366; color: white; border: none; padding: 0.6rem 2rem; border-radius: 2rem; cursor: pointer; font-weight: 600; transition: background 0.2s; margin-top: 1rem; }
         .btn-cerrar:hover { background-color: #002244; }
 
+        /* ----- MODAL SEMANA DE MAYO (flotante, destacado, responsivo) ----- */
+        .modal-mayo-app {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 31, 63, 0.4);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 15000;
+            animation: fadeInModal 0.25s ease-out;
+        }
+        .modal-mayo-contenido-app {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+            border-radius: 48px;
+            padding: 2rem 2rem 2rem 2rem;
+            text-align: center;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 191, 255, 0.5);
+            width: 90%;
+            max-width: 520px;
+            border: 1px solid rgba(0, 191, 255, 0.6);
+            transition: transform 0.2s ease;
+            position: relative;
+            animation: scaleUp 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        @keyframes scaleUp {
+            from { transform: scale(0.92); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .modal-mayo-titulo-app {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #001f3f;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #001f3f, #0077cc);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .modal-mayo-imagen-app {
+            width: 100%;
+            max-width: 240px;
+            margin: 0 auto 1.2rem auto;
+            border-radius: 28px;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+            display: block;
+            object-fit: cover;
+        }
+        .modal-mayo-fecha-app {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #004b8f;
+            margin-top: 0.2rem;
+            letter-spacing: 0.8px;
+            background: rgba(0, 191, 255, 0.15);
+            display: inline-block;
+            padding: 0.3rem 1.2rem;
+            border-radius: 60px;
+        }
+        .modal-mayo-boton-cerrar-app {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            background: transparent;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #003366;
+            transition: transform 0.2s, color 0.2s;
+            line-height: 1;
+            font-weight: 300;
+            padding: 0 6px;
+        }
+        .modal-mayo-boton-cerrar-app:hover {
+            transform: scale(1.2);
+            color: #00BFFF;
+        }
+        @media (max-width: 640px) {
+            .modal-mayo-titulo-app { font-size: 1.8rem; }
+            .modal-mayo-fecha-app { font-size: 1.3rem; padding: 0.2rem 1rem; }
+            .modal-mayo-contenido-app { padding: 1.5rem 1.5rem 1.8rem; border-radius: 36px; max-width: 92%; }
+            .modal-mayo-imagen-app { max-width: 180px; }
+        }
+        @media (max-width: 480px) {
+            .modal-mayo-titulo-app { font-size: 1.5rem; }
+            .modal-mayo-fecha-app { font-size: 1.1rem; }
+            .modal-mayo-contenido-app { padding: 1.2rem 1.2rem 1.5rem; }
+            .modal-mayo-boton-cerrar-app { top: 10px; right: 12px; font-size: 1.8rem; }
+        }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 768px) {
@@ -425,7 +525,7 @@
             }
 
             .acceso-defensor-text {
-                display: none; /* se oculta en móvil por espacio, pero el código sigue presente */
+                display: none;
             }
 
             .footer-right {
@@ -560,9 +660,7 @@
     <footer id="mainFooter">
         <div class="footer-left" id="footerLeftArea">
             <div class="footer-content" id="btnMainMenu">
-                <!-- Nuevo ícono de menú: GIF animado -->
                 <img src="https://github.com/sistemadigital/ingreso-sistema/blob/main/menu.gif?raw=true" alt="Menú" class="menu-icon-img">
-
                 <div class="menu-popup" id="mainMenuPopup">
                     <ul>
                         <li><a onclick="loadPage('https://sistemadigital.github.io/defensor-secretarios/tabla.html')">Expedientes</a></li>
@@ -598,7 +696,6 @@
                     <span style="color:rgba(255,255,255,0.3)">|</span> 
                     <span id="currentWeather"><i class="fas fa-spinner fa-spin"></i> Clima</span>
                 </div>
-
                 <div class="calendar-popup" id="calendarPopup">
                     <div class="calendar-header">
                         <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
@@ -612,7 +709,6 @@
                 </div>
             </div>
 
-            <!-- Texto "Acceso Defensor Oficial" con ícono de audio de ingreso a la derecha -->
             <span class="acceso-defensor-text">
                 Acceso Defensor Oficial
                 <i class="fas fa-play-circle" id="audioIngresoIcon" style="font-size: 1.1rem; cursor: pointer;"></i>
@@ -666,6 +762,70 @@
             <button id="closeBirthdayBtn" class="btn-cerrar">Cerrar</button>
         </div>
     </div>
+
+    <script>
+        // ---------- MODAL FLOTANTE SEMANA DE MAYO (automático, 5 segundos, responsivo) ----------
+        function isMayoWeek() {
+            const hoy = new Date();
+            const mes = hoy.getMonth(); // 0-index: 4 = Mayo
+            const dia = hoy.getDate();
+            return (mes === 4 && dia >= 18 && dia <= 25);
+        }
+
+        function mostrarModalSemanaMayo() {
+            // Evitar duplicados
+            if (document.querySelector('.modal-mayo-app')) return;
+
+            const modalDiv = document.createElement('div');
+            modalDiv.className = 'modal-mayo-app';
+            modalDiv.setAttribute('aria-modal', 'true');
+            modalDiv.setAttribute('role', 'dialog');
+            modalDiv.innerHTML = `
+                <div class="modal-mayo-contenido-app">
+                    <button class="modal-mayo-boton-cerrar-app" aria-label="Cerrar modal" id="cerrarMayoAppBtn">&times;</button>
+                    <div class="modal-mayo-titulo-app">Semana de Mayo</div>
+                    <img src="https://github.com/sistemadigital/iconos/blob/main/argentina.jpg?raw=true" 
+                         alt="Argentina" 
+                         class="modal-mayo-imagen-app"
+                         loading="eager">
+                    <div class="modal-mayo-fecha-app">18 al 25 de Mayo</div>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; font-weight: 500; color: #2c5282;"></p>
+                </div>
+            `;
+            document.body.appendChild(modalDiv);
+
+            let timeoutId = null;
+            const cerrarModal = () => {
+                if (modalDiv && modalDiv.parentNode) {
+                    if (timeoutId) clearTimeout(timeoutId);
+                    modalDiv.remove();
+                }
+            };
+
+            // Botón de cierre manual
+            const closeBtn = modalDiv.querySelector('#cerrarMayoAppBtn');
+            if (closeBtn) closeBtn.addEventListener('click', cerrarModal);
+            // Clic en fondo también cierra (mejor experiencia)
+            modalDiv.addEventListener('click', (e) => {
+                if (e.target === modalDiv) cerrarModal();
+            });
+
+            // Cierre automático después de 5 segundos
+            timeoutId = setTimeout(() => {
+                cerrarModal();
+            }, 5000);
+        }
+
+        // Verificar condición y ejecutar al cargar la app (solo si es semana de mayo)
+        document.addEventListener('DOMContentLoaded', () => {
+            if (isMayoWeek()) {
+                // Pequeño delay para no interferir con renderizado inicial, pero se muestra rápido
+                setTimeout(() => {
+                    mostrarModalSemanaMayo();
+                }, 200);
+            }
+        });
+    </script>
 
     <script>
         function loadPage(url) {
@@ -829,7 +989,6 @@
                 setTimeout(posicionarModales, 10);
             }
         }
-        // Aseguramos que el clic en el ícono de audio dentro del footer no dispare el modal
         const audioTituloIcon = document.getElementById('audioTituloIcon');
         if (audioTituloIcon) {
             audioTituloIcon.addEventListener('click', (e) => e.stopPropagation());
@@ -843,7 +1002,6 @@
         document.querySelector('.close-birthday').addEventListener('click', cerrarBirthdayModal);
         
         document.getElementById('eventBanner')?.addEventListener('click', (e) => {
-            // Si el clic fue en el ícono de audio, no navegar
             if (e.target.closest('.audio-icon-banner')) return;
             loadPage('https://sistemadigital.github.io/defensor-secretarios/eventos.html');
         });
@@ -905,7 +1063,6 @@
         const auth = getAuth(app);
         const dbPerfil = getFirestore(app);
         
-        // CORRECCIÓN: Usar la misma base de datos que eventos.html (causas-defensoria)
         const causasConfig = {
             apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
             authDomain: "causas-defensoria.firebaseapp.com",
@@ -1037,7 +1194,6 @@
             try {
                 const module = await import('https://cdn.skypack.dev/canvas-confetti');
                 const confetti = module.default;
-                
                 var duration = 3 * 1000;
                 var animationEnd = Date.now() + duration;
                 var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
@@ -1080,7 +1236,6 @@
 
         async function showWelcomeMessage(user, useCache = false) {
             const dynamicContent = document.getElementById('dynamicContent');
-            
             const email = user.email || ""; 
             const displayName = user.displayName || (email ? email.split('@')[0] : 'Usuario');
             const photoURL = user.photoURL;
@@ -1218,7 +1373,6 @@
             document.getElementById('modalSalida').classList.remove('active');
             try { await signOut(auth); } catch (error) { console.error('Error al salir:', error); }
         });
-
     </script>
 </body>
 </html>
