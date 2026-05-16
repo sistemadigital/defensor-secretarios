@@ -133,6 +133,9 @@
             text-align: center;
             white-space: nowrap;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
         .event-banner.hay-eventos {
             background-color: #ea580c;
@@ -143,6 +146,15 @@
             font-size: 0.85rem;
             color: white;
             letter-spacing: 0.3px;
+        }
+        .event-banner .audio-icon-banner {
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: transform 0.2s;
+            color: white;
+        }
+        .event-banner .audio-icon-banner:hover {
+            transform: scale(1.1);
         }
 
         /* Texto de acceso defensor oficial */
@@ -155,6 +167,9 @@
             z-index: 10;
             border-left: 1px solid rgba(255,255,255,0.3);
             padding-left: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .sistema-info-text-container { position: relative; display: flex; align-items: center; height: 100%; }
@@ -193,8 +208,21 @@
         .footer-defensoria {
             text-align: left; font-size: 0.85rem; color: white;
             line-height: 1.4; cursor: pointer; z-index: 10;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
         .footer-defensoria strong { color: #00BFFF; font-weight: 700; }
+        .footer-defensoria .audio-icon-footer {
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+            color: white;
+        }
+        .footer-defensoria .audio-icon-footer:hover {
+            transform: scale(1.1);
+            color: #00BFFF;
+        }
 
         .datetime-weather-container {
             position: relative; color: white; font-size: 0.85rem;
@@ -236,7 +264,7 @@
             transform: scale(0.9); transition: transform 0.3s; border: 2px solid #d32f2f;
         }
         .modal-overlay.active .modal-alerta { transform: scale(1); }
-        .modal-alerta h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 12px; color: #d32f2f; }
+        .modal-alerta h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 12px; color: #d32f2f; display: flex; align-items: center; justify-content: center; gap: 12px; }
         .modal-alerta p { font-size: 1rem; margin-bottom: 25px; font-weight: 700; color: #d32f2f; }
         .modal-botones { display: flex; gap: 15px; justify-content: center; }
         .btn-modal {
@@ -246,6 +274,13 @@
         .btn-modal:hover { background-color: #b71c1c; transform: translateY(-2px); }
         .btn-modal.cancelar { background-color: #94a3b8; color: white; box-shadow: none; }
         .btn-modal.cancelar:hover { background-color: #64748b; }
+        .audio-icon-modal {
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+            color: #d32f2f;
+        }
+        .audio-icon-modal:hover { transform: scale(1.1); }
 
         .welcome-container {
             display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;
@@ -377,7 +412,6 @@
                 min-width: 0;
             }
 
-            /* Ajuste para el nuevo ícono de menú en móvil */
             .menu-icon-img {
                 width: 28px;
             }
@@ -391,7 +425,7 @@
             }
 
             .acceso-defensor-text {
-                display: none;
+                display: none; /* se oculta en móvil por espacio, pero el código sigue presente */
             }
 
             .footer-right {
@@ -551,8 +585,11 @@
             </div>
 
             <div class="footer-defensoria" id="footerDefensoria">
-                Defensoria Civil y Comercial 6<br>
-                <strong>Ministerio Público de Misiones</strong>
+                <div>
+                    Defensoria Civil y Comercial 6<br>
+                    <strong>Ministerio Público de Misiones</strong>
+                </div>
+                <i class="fas fa-play-circle audio-icon-footer" id="audioTituloIcon"></i>
             </div>
 
             <div class="datetime-weather-container" id="dateTimeWeatherBtn">
@@ -575,13 +612,17 @@
                 </div>
             </div>
 
-            <!-- Texto agregado a la derecha del calendario -->
-            <span class="acceso-defensor-text">Acceso Defensor Oficial</span>
+            <!-- Texto "Acceso Defensor Oficial" con ícono de audio de ingreso a la derecha -->
+            <span class="acceso-defensor-text">
+                Acceso Defensor Oficial
+                <i class="fas fa-play-circle" id="audioIngresoIcon" style="font-size: 1.1rem; cursor: pointer;"></i>
+            </span>
         </div>
 
         <div class="footer-right" id="footerRightArea">
             <div class="event-banner" id="eventBanner">
                 <p id="bannerText">Cargando eventos...</p>
+                <i class="fas fa-volume-up audio-icon-banner" id="bannerAudioIcon"></i>
             </div>
 
             <div class="sistema-info-text-container" id="btnSistemaInfoContainer">
@@ -604,7 +645,10 @@
 
     <div class="modal-overlay" id="modalSalida">
         <div class="modal-alerta">
-            <h3>Cerrar sesión</h3>
+            <h3>
+                Cerrar sesión
+                <i class="fas fa-play-circle audio-icon-modal" id="audioSalidaIcon"></i>
+            </h3>
             <p>¿Estás seguro de que deseas salir del sistema?</p>
             <div class="modal-botones">
                 <button class="btn-modal" id="confirmarSalida">Sí, salir</button>
@@ -785,6 +829,11 @@
                 setTimeout(posicionarModales, 10);
             }
         }
+        // Aseguramos que el clic en el ícono de audio dentro del footer no dispare el modal
+        const audioTituloIcon = document.getElementById('audioTituloIcon');
+        if (audioTituloIcon) {
+            audioTituloIcon.addEventListener('click', (e) => e.stopPropagation());
+        }
         footerDefensoria.addEventListener('click', toggleInfoModal);
         imagenContainer.addEventListener('click', toggleInfoModal);
 
@@ -794,8 +843,47 @@
         document.querySelector('.close-birthday').addEventListener('click', cerrarBirthdayModal);
         
         document.getElementById('eventBanner')?.addEventListener('click', (e) => {
-            e.stopPropagation();
+            // Si el clic fue en el ícono de audio, no navegar
+            if (e.target.closest('.audio-icon-banner')) return;
             loadPage('https://sistemadigital.github.io/defensor-secretarios/eventos.html');
+        });
+
+        // ==================== AUDIOS ====================
+        const audioIngreso = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/ingreso.mp3');
+        const audioSalida = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/salida.mp3');
+        const audioTitulo = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/titulo.mp3');
+        const audioNoAgenda = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/noagenda.mp3');
+        const audioSiAgenda = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/siagenda.mp3');
+
+        document.getElementById('audioIngresoIcon').addEventListener('click', (e) => {
+            e.stopPropagation();
+            audioIngreso.play().catch(err => console.warn('Audio ingreso no pudo reproducirse:', err));
+        });
+
+        document.getElementById('audioSalidaIcon').addEventListener('click', (e) => {
+            e.stopPropagation();
+            audioSalida.play().catch(err => console.warn('Audio salida no pudo reproducirse:', err));
+        });
+
+        document.getElementById('audioTituloIcon').addEventListener('click', (e) => {
+            e.stopPropagation();
+            audioTitulo.play().catch(err => console.warn('Audio título no pudo reproducirse:', err));
+        });
+
+        const bannerDiv = document.getElementById('eventBanner');
+        const bannerAudioIcon = document.getElementById('bannerAudioIcon');
+        
+        function playBannerAudio() {
+            if (bannerDiv.classList.contains('hay-eventos')) {
+                audioSiAgenda.play().catch(err => console.warn('Audio si agenda no pudo reproducirse:', err));
+            } else {
+                audioNoAgenda.play().catch(err => console.warn('Audio no agenda no pudo reproducirse:', err));
+            }
+        }
+        
+        bannerAudioIcon?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playBannerAudio();
         });
     </script>
 

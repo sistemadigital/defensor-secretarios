@@ -114,7 +114,7 @@
 
         .info-institucional p:first-child { font-weight: 700; color: #000; }
 
-        /* --- CONTENEDOR IMAGEN + ANILLOS + PROTOCOLO (UNA SOLA LÍNEA) --- */
+        /* --- CONTENEDOR IMAGEN + ANILLOS + PROTOCOLO --- */
         .img-container {
             flex: 1;
             display: flex;
@@ -129,8 +129,15 @@
             position: relative;
             display: inline-block;
             border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
+            animation: float 6s ease-in-out infinite, softPulse 3s ease-in-out infinite;
             margin-bottom: 0;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* Accesibilidad: Indicador visual claro cuando se navega con Tabulador */
+        .img-wrapper:focus-visible {
+            box-shadow: 0 0 0 4px #00BFFF;
         }
 
         .img-wrapper::before {
@@ -152,6 +159,7 @@
             z-index: -1;
             animation: rotateRing 4s linear infinite;
             box-shadow: 0 0 20px rgba(0, 191, 255, 0.5);
+            transition: all 0.4s ease;
         }
 
         .img-wrapper::after {
@@ -174,6 +182,55 @@
             filter: blur(8px);
         }
 
+        /* [UX] Dinamismo según estado del Audio */
+        .img-wrapper.cargando::before {
+            animation: rotateRing 1s linear infinite; /* Anillo gira rápido procesando */
+            filter: saturate(1.5);
+        }
+
+        .img-wrapper.reproduciendo::before {
+            animation: rotateRing 2s linear infinite;
+            box-shadow: 0 0 35px rgba(40, 167, 69, 0.7); /* Brillo verde de actividad */
+            background: conic-gradient(from 0deg, #00ffff, #28a745, #00ffff);
+        }
+
+        /* [UX] Indicador de Audio Flotante (Discoverability) */
+        .audio-badge {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background-color: #001f3f;
+            color: #ffffff;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+            z-index: 10;
+            font-size: 1.1rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid #00BFFF;
+        }
+
+        .img-wrapper:hover .audio-badge {
+            transform: scale(1.15);
+            background-color: #003366;
+        }
+
+        .img-wrapper.reproduciendo .audio-badge {
+            background-color: #28a745;
+            border-color: #ffffff;
+            animation: pulseBadge 1.5s infinite;
+        }
+
+        @keyframes pulseBadge {
+            0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+        }
+
         @keyframes rotateRing {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -192,14 +249,16 @@
             border-radius: 50%;
             box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
             transition: transform 0.3s ease;
+            pointer-events: none;
         }
 
         .img-3d:hover {
             transform: scale(1.02);
         }
 
-        .img-wrapper {
-            animation: float 6s ease-in-out infinite, softPulse 3s ease-in-out infinite;
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
 
         @keyframes softPulse {
@@ -208,12 +267,7 @@
             100% { filter: drop-shadow(0 0 5px rgba(0,191,255,0.3)); }
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        /* ----- PROTOCOLO DE ACTUACIÓN: UNA SOLA LÍNEA FORZADA ----- */
+        /* --- PROTOCOLO DE ACTUACIÓN --- */
         .protocolo-link {
             text-decoration: none;
             display: inline-block;
@@ -242,8 +296,8 @@
             width: auto;
             max-width: 100%;
             cursor: pointer;
-            flex-wrap: nowrap;          /* Evita que los elementos salten a otra línea */
-            white-space: nowrap;        /* Fuerza que el texto no se divida */
+            flex-wrap: nowrap;
+            white-space: nowrap;
         }
 
         .protocolo-texto {
@@ -255,7 +309,7 @@
             -webkit-background-clip: text;
             color: transparent;
             text-shadow: 0 1px 2px rgba(0,0,0,0.02);
-            white-space: nowrap;        /* texto en una sola línea */
+            white-space: nowrap;
         }
 
         .protocolo-icono {
@@ -264,22 +318,20 @@
             display: inline-block;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
             transition: transform 0.2s ease;
-            flex-shrink: 0;            /* evita que el icono se encoja y rompa la línea */
+            flex-shrink: 0;
         }
 
         .protocolo-icono:hover {
             transform: scale(1.05);
         }
 
-        /* Ajuste para móviles: reducimos padding y fuente para que quepa en una línea */
         @media (max-width: 640px) {
             .protocolo-row {
                 gap: 0.6rem;
                 padding: 0.4rem 0.9rem;
             }
             .protocolo-texto {
-                font-size: 0.75rem;     /* más pequeño pero legible, asegura una línea */
-                letter-spacing: -0.01em;
+                font-size: 0.75rem;
             }
             .protocolo-icono {
                 height: 28px;
@@ -289,7 +341,6 @@
             }
         }
 
-        /* Para pantallas muy estrechas (menos de 400px) reducimos aún más el texto */
         @media (max-width: 420px) {
             .protocolo-texto {
                 font-size: 0.7rem;
@@ -464,7 +515,6 @@
             display: none;
         }
 
-        /* --- RESPONSIVE GENERAL --- */
         @media (max-width: 1024px) {
             .contenedor-principal { 
                 flex-direction: column; 
@@ -520,6 +570,13 @@
                 right: -18px;
                 bottom: -18px;
             }
+            .audio-badge {
+                bottom: 5px;
+                right: 5px;
+                width: 38px;
+                height: 38px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -527,7 +584,7 @@
 
     <div id="creditos-flotante">
         <span class="texto-autor">Diseño y programación: Rómulo Fioravante</span>
-        <span class="texto-version">Versión 3.1.2026</span>
+        <span class="texto-version">Versión 3.2.2026 - Audio optimizado</span>
     </div>
 
     <div class="contenedor-principal">
@@ -545,13 +602,19 @@
             </div>
 
             <div class="img-container">
-                <div class="img-wrapper">
+                <div class="img-wrapper" id="imagenClickAudio" 
+                     role="button" 
+                     tabindex="0" 
+                     aria-label="Escuchar saludo institucional interactivo" 
+                     title="Haga clic para escuchar o pausar el saludo institucional">
+                    
                     <img src="https://github.com/sistema-secretarios/imagenes-sistema/blob/main/pc.png?raw=true" 
                          alt="Sistema Digital 3D - Defensoría" 
                          class="img-3d">
+                    
+                    <div class="audio-badge" id="audioBadgeState" aria-hidden="true">🔊</div>
                 </div>
 
-                <!-- ENLACE EXTERNO: Protocolo de Actuación Judicial (siempre en una línea) -->
                 <a href="https://defensorialocal-seis.github.io/protocolo/" 
                    target="_blank" 
                    rel="noopener noreferrer" 
@@ -651,9 +714,11 @@
         const auth = getAuth(app);
 
         const DEFAULT_DOMAIN = "@mpmisiones.gob.ar";
-
         let isRegistering = false;
         let isLoggingIn = false;
+
+        // Instancia global para controlar el audio de manera fluida
+        let currentAudio = null;
 
         function formatEmail(input) {
             let email = input.trim();
@@ -671,6 +736,89 @@
             setTimeout(() => div.style.display = 'none', 4000);
         };
 
+        // [UX & CONTROL] Sistema avanzado de reproducción e interacción del Saludo
+        function toggleSaludo() {
+            const imgWrapper = document.getElementById('imagenClickAudio');
+            const audioBadge = document.getElementById('audioBadgeState');
+            const audioUrl = 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/saludo.mp3';
+
+            // Si el audio está sonando, el clic del usuario lo pausa inmediatamente
+            if (currentAudio && !currentAudio.paused) {
+                currentAudio.pause();
+                return;
+            }
+
+            // Inicialización única de la instancia con escuchadores de estados nativos de HTML5
+            if (!currentAudio) {
+                currentAudio = new Audio(audioUrl);
+                currentAudio.preload = 'auto';
+                
+                // Mientras descarga del repositorio externo (Buffer/Streaming delay)
+                currentAudio.addEventListener('waiting', () => {
+                    imgWrapper.classList.add('cargando');
+                    audioBadge.textContent = '⏳';
+                });
+                
+                // Ejecutando la reproducción activa
+                currentAudio.addEventListener('playing', () => {
+                    imgWrapper.classList.remove('cargando');
+                    imgWrapper.classList.add('reproduciendo');
+                    audioBadge.textContent = '⏸️';
+                });
+                
+                // Al pausar de forma directa o externa
+                currentAudio.addEventListener('pause', () => {
+                    imgWrapper.classList.remove('reproduciendo', 'cargando');
+                    audioBadge.textContent = '🔊';
+                });
+                
+                // Finalización normal de la pista
+                currentAudio.addEventListener('ended', () => {
+                    imgWrapper.classList.remove('reproduciendo', 'cargando');
+                    audioBadge.textContent = '🔊';
+                    currentAudio.currentTime = 0; 
+                });
+
+                // Control preventivo de fallos de red
+                currentAudio.addEventListener('error', (e) => {
+                    imgWrapper.classList.remove('reproduciendo', 'cargando');
+                    audioBadge.textContent = '⚠️';
+                    console.error('Error de carga en la pista:', e);
+                });
+            }
+            
+            // Disparador principal asíncrono seguro
+            imgWrapper.classList.add('cargando');
+            audioBadge.textContent = '⏳';
+            
+            currentAudio.play().catch(error => {
+                imgWrapper.classList.remove('cargando');
+                audioBadge.textContent = '🔊';
+                console.warn('La reproducción automática o directa fue bloqueada por el navegador:', error);
+            });
+        }
+
+        // Asignación estructurada de eventos al inicializar el DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            const imgWrapper = document.getElementById('imagenClickAudio');
+            if (imgWrapper) {
+                // Clic común de ratón
+                imgWrapper.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleSaludo();
+                });
+
+                // [A11y] Soporte total de disparo con teclado usando Enter o la Barra Espaciadora
+                imgWrapper.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault(); 
+                        e.stopPropagation();
+                        toggleSaludo();
+                    }
+                });
+            }
+        });
+
         window.loginUser = async function() {
             const rawEmail = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
@@ -679,6 +827,7 @@
             if (!email || !password) {
                 return showMessage('Completa todos los campos', 'error');
             }
+
             try {
                 isLoggingIn = true;
                 await signInWithEmailAndPassword(auth, email, password);
@@ -690,11 +839,9 @@
                 }
                 
                 showMessage('Acceso concedido. Iniciando sistema...', 'success');
-
                 setTimeout(() => {
                     window.location.href = 'app.html';
                 }, 3000);
-
             } catch (error) {
                 isLoggingIn = false;
                 showMessage('Credenciales inválidas', 'error');
@@ -751,6 +898,9 @@
 
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
+                // Previene conflictos si el usuario está pulsando Enter sobre la imagen
+                if (document.activeElement === document.getElementById('imagenClickAudio')) return;
+                
                 const loginHidden = document.getElementById('loginForm').classList.contains('hidden');
                 if (!loginHidden) {
                     loginUser();
@@ -762,6 +912,7 @@
     </script>
 
     <script>
+        // Desvanecer créditos de manera fluida
         window.addEventListener('DOMContentLoaded', () => {
             const flotante = document.getElementById('creditos-flotante');
             setTimeout(() => {
@@ -770,6 +921,5 @@
             }, 5000);
         });
     </script>
-
 </body>
 </html>
