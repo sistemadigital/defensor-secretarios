@@ -1023,7 +1023,13 @@
         fetchWeather();
 
         const modalSalida = document.getElementById('modalSalida');
-        document.getElementById('btnSalir').addEventListener('click', () => { modalSalida.classList.add('active'); });
+        // MODIFICACIÓN: al hacer clic en Salir, se abre el modal y se reproduce automáticamente el audio salida.mp3
+        const audioSalida = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/salida.mp3');
+        document.getElementById('btnSalir').addEventListener('click', () => {
+            modalSalida.classList.add('active');
+            // Reproducción automática del audio de salida al mostrar el modal
+            audioSalida.play().catch(err => console.warn('Audio salida no pudo reproducirse automáticamente:', err));
+        });
         document.getElementById('cancelarSalida').addEventListener('click', () => { modalSalida.classList.remove('active'); });
 
         const infoModal = document.getElementById('infoModal');
@@ -1075,7 +1081,6 @@
 
         // ==================== AUDIOS ====================
         const audioIngreso = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/ingreso.mp3');
-        const audioSalida = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/salida.mp3');
         const audioTitulo = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/titulo.mp3');
         const audioNoAgenda = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/noagenda.mp3');
         const audioSiAgenda = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/siagenda.mp3');
@@ -1085,6 +1090,7 @@
             audioIngreso.play().catch(err => console.warn('Audio ingreso no pudo reproducirse:', err));
         });
 
+        // El ícono de audio dentro del modal sigue funcionando manualmente (además de la reproducción automática)
         document.getElementById('audioSalidaIcon').addEventListener('click', (e) => {
             e.stopPropagation();
             audioSalida.play().catch(err => console.warn('Audio salida no pudo reproducirse:', err));
