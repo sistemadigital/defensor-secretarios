@@ -756,7 +756,7 @@
         // ---------- MODALES FLOTANTES: SEMANA DE MAYO + 9 JULIO + 20 JUNIO + FIESTAS FIN DE AÑO ----------
         function isMayoWeek() {
             const hoy = new Date();
-            const mes = hoy.getMonth(); // 4 = Mayo
+            const mes = hoy.getMonth();
             const dia = hoy.getDate();
             return (mes === 4 && dia >= 18 && dia <= 25);
         }
@@ -775,9 +775,7 @@
             const hoy = new Date();
             const mes = hoy.getMonth();
             const dia = hoy.getDate();
-            // Desde 8 diciembre (mes 11, día >=8) hasta 31 diciembre
             if (mes === 11 && dia >= 8) return true;
-            // Hasta 6 enero (mes 0, día <=6)
             if (mes === 0 && dia <= 6) return true;
             return false;
         }
@@ -1023,11 +1021,9 @@
         fetchWeather();
 
         const modalSalida = document.getElementById('modalSalida');
-        // MODIFICACIÓN: al hacer clic en Salir, se abre el modal y se reproduce automáticamente el audio salida.mp3
         const audioSalida = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/salida.mp3');
         document.getElementById('btnSalir').addEventListener('click', () => {
             modalSalida.classList.add('active');
-            // Reproducción automática del audio de salida al mostrar el modal
             audioSalida.play().catch(err => console.warn('Audio salida no pudo reproducirse automáticamente:', err));
         });
         document.getElementById('cancelarSalida').addEventListener('click', () => { modalSalida.classList.remove('active'); });
@@ -1090,7 +1086,6 @@
             audioIngreso.play().catch(err => console.warn('Audio ingreso no pudo reproducirse:', err));
         });
 
-        // El ícono de audio dentro del modal sigue funcionando manualmente (además de la reproducción automática)
         document.getElementById('audioSalidaIcon').addEventListener('click', (e) => {
             e.stopPropagation();
             audioSalida.play().catch(err => console.warn('Audio salida no pudo reproducirse:', err));
@@ -1116,6 +1111,62 @@
             e.stopPropagation();
             playBannerAudio();
         });
+
+        // ==================== AUDIOS PARA MENÚ: SOLO CLICK (sin hover) ====================
+        (function agregarAudiosMenuSoloClick() {
+            const ultimaReproduccion = new Map();
+
+            function playAudioWithCooldown(url) {
+                if (!url) return;
+                const ahora = Date.now();
+                const ultima = ultimaReproduccion.get(url) || 0;
+                if (ahora - ultima < 10000) return;
+                ultimaReproduccion.set(url, ahora);
+                const audio = new Audio(url);
+                audio.play().catch(err => console.warn(`No se pudo reproducir audio: ${url}`, err));
+            }
+
+            const audioMap = new Map([
+                ['Expedientes', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/expedientes.mp3'],
+                ['Eventos agendados', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/eventos.mp3'],
+                ['Libros', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/libros.mp3'],
+                ['Protección', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/proteccion.mp3'],
+                ['Clientes', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/clientes.mp3'],
+                ['Modelos', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/modelos.mp3'],
+                ['Biblioteca', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/biblioteca.mp3'],
+                ['Organismos', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/organismos.mp3'],
+                ['Diligenciadores', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/diligenciadores.mp3'],
+                ['Notificaciones', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/notificaciones.mp3'],
+                ['Operador', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/operador.mp3'],
+                ['Reporte de Sistema', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/reporte.mp3'],
+                ['Inasistencias y Licencias', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/inasistencia.mp3'],
+                ['Consultas y Turnos', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/consultas.mp3'],
+                ['Agenda Defensor', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/agenda.mp3']
+            ]);
+
+            // Ícono del menú: solo click
+            const menuIcon = document.querySelector('.menu-icon-img');
+            if (menuIcon) {
+                const menuAudioUrl = 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/menu.mp3';
+                menuIcon.addEventListener('click', (e) => {
+                    playAudioWithCooldown(menuAudioUrl);
+                    // No detener propagación para que el listener original de #btnMainMenu funcione (desplegar menú)
+                });
+            }
+
+            // Enlaces del menú desplegable: solo click
+            const menuLinks = document.querySelectorAll('#mainMenuPopup ul li a');
+            menuLinks.forEach(link => {
+                const texto = link.textContent.trim();
+                const audioUrl = audioMap.get(texto);
+                if (audioUrl) {
+                    link.addEventListener('click', (e) => {
+                        playAudioWithCooldown(audioUrl);
+                        // No detener propagación, el onclick original ejecuta loadPage y el menú se cierra correctamente
+                    });
+                }
+            });
+        })();
     </script>
 
     <script type="module">
