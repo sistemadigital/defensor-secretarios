@@ -639,6 +639,16 @@
                             <option value="">Prioridad (todas)</option><option value="Ninguna">Ninguna</option><option value="Baja">Baja</option><option value="Media">Media</option><option value="Alta">Alta</option>
                         </select>
                     </div>
+                    <!-- NUEVO FILTRO DE PERÍODO -->
+                    <div class="filter-group">
+                        <label class="filter-label">Período</label>
+                        <select id="filtroPeriodo" class="dropdown">
+                            <option value="90">Últimos 3 meses</option>
+                            <option value="180">Últimos 6 meses</option>
+                            <option value="365">Último año</option>
+                            <option value="todos">Histórico completo</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </section>
@@ -698,8 +708,13 @@
         
         let cachedTotalCount = null;
         let lastFilterKeys = '';
+        
+        // Variables para evitar doble consulta de existencia de expediente
+        let ultimoNumeroValidado = '';
+        let numeroValido = false;
+        
         function getFilterKey() {
-            return `${filtroUsuario.value}|${filtroEstado.value}|${filtroPrioridad.value}|${filtroIntervencion.value}|${filtroTipoProceso.value}`;
+            return `${filtroUsuario.value}|${filtroEstado.value}|${filtroPrioridad.value}|${filtroIntervencion.value}|${filtroTipoProceso.value}|${$("filtroPeriodo").value}`;
         }
         
         let isPhraseSearch = false;
@@ -726,99 +741,88 @@
         
         function mostrarAlertaFlotante(mensaje, tipo = 'danger') { if (!floatingAlertText) return; floatingAlertText.textContent = mensaje; floatingAlert.classList.remove('danger', 'success', 'show'); floatingAlert.classList.add(tipo); setTimeout(() => floatingAlert.classList.add('show'), 10); setTimeout(() => floatingAlert.classList.remove('show'), 5000); }
 
-        async function cargarCausas(reset = true, direction = null) { 
-            if (!db) return; 
-            tbody.innerHTML = "<tr><td colspan='10'><i class='fas fa-spinner fa-spin'></i> Obteniendo registros...</td></tr>"; 
-            
-            try { 
-                let baseQuery = db.collection("causas"); 
-                const fUsuario = filtroUsuario.value, 
-                      fEstado = filtroEstado.value, 
-                      fPrioridad = filtroPrioridad.value, 
-                      fIntervencion = filtroIntervencion.value, 
-                      fTipoProceso = filtroTipoProceso.value, 
-                      busqueda = buscador.value.trim().toLowerCase(); 
+        async function cargarCausas(reset = true, direction = null) {
+            if (!db) return;
+            tbody.innerHTML = "<tr><td colspan='10'>Cargando...</td></tr>";
+            try {
+                let baseQuery = db.collection("causas");
+                const fUsuario = filtroUsuario.value;
+                const fEstado = filtroEstado.value;
+                const fPrioridad = filtroPrioridad.value;
+                const fIntervencion = filtroIntervencion.value;
+                const fTipoProceso = filtroTipoProceso.value;
+                const periodo = $("filtroPeriodo").value;
+                const busqueda = buscador.value.trim().toLowerCase();
 
-                if (fUsuario) baseQuery = baseQuery.where("usuarioAsignado", "==", fUsuario); 
-                if (fEstado) baseQuery = baseQuery.where("estado", "==", fEstado); 
-                if (fPrioridad) baseQuery = baseQuery.where("prioridad", "==", fPrioridad); 
-                if (fIntervencion) baseQuery = baseQuery.where("intervencion", "==", fIntervencion); 
-                if (fTipoProceso) baseQuery = baseQuery.where("tipoProceso", "==", fTipoProceso); 
+                if (fUsuario) baseQuery = baseQuery.where("usuarioAsignado", "==", fUsuario);
+                if (fEstado) baseQuery = baseQuery.where("estado", "==", fEstado);
+                if (fPrioridad) baseQuery = baseQuery.where("prioridad", "==", fPrioridad);
+                if (fIntervencion) baseQuery = baseQuery.where("intervencion", "==", fIntervencion);
+                if (fTipoProceso) baseQuery = baseQuery.where("tipoProceso", "==", fTipoProceso);
 
-                isPhraseSearch = false;
-                
-                if (busqueda) {
-                    const primeraPalabra = busqueda.split(/\s+/)[0]
-                                                   .normalize("NFD")
-                                                   .replace(/[\u0300-\u036f]/g, "")
-                                                   .replace(/[^\w\s]/gi, '');
-                    if (primeraPalabra) {
-                        baseQuery = baseQuery.where("keywords", "array-contains", primeraPalabra);
-                    }
+                if (periodo !== "todos") {
+                    let fecha = new Date();
+                    fecha.setDate(fecha.getDate() - parseInt(periodo));
+                    baseQuery = baseQuery.where("fechaRegistro", ">=", firebase.firestore.Timestamp.fromDate(fecha));
                 }
 
-                baseQuery = baseQuery.orderBy("fechaRegistro", "desc"); 
+                if (busqueda.length >= 3) {
+                    const palabra = busqueda
+                        .split(/\s+/)[0]
+                        .normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "")
+                        .replace(/[^\w\s]/gi, '');
+                    baseQuery = baseQuery.where("keywords", "array-contains", palabra);
+                }
 
-                if (reset) { 
-                    currentPage = 1; 
-                    pageSnapshots = []; 
-                    lastVisibleDoc = null; 
-                    const currentFilterKey = getFilterKey(); 
-                    
-                    if (cachedTotalCount === null || currentFilterKey !== lastFilterKeys) { 
-                        try { 
-                            const snapshotCount = await baseQuery.count().get(); 
-                            totalRecords = snapshotCount.data().count; 
-                            cachedTotalCount = totalRecords; 
-                            lastFilterKeys = currentFilterKey; 
-                        } catch (err) { 
-                            console.warn("Error en count():", err); 
-                            totalRecords = 0; 
-                        } 
-                    } else { 
-                        totalRecords = cachedTotalCount; 
-                    } 
-                    totalPages = Math.ceil(totalRecords / recordsPerPage) || 1; 
-                } 
+                baseQuery = baseQuery.orderBy("fechaRegistro", "desc");
 
-                let query = baseQuery; 
-                if (direction === 'next' && lastVisibleDoc) { 
-                    query = query.startAfter(lastVisibleDoc); 
-                    currentPage++; 
-                } else if (direction === 'prev' && currentPage > 1) { 
-                    currentPage--; 
-                    query = query.startAt(pageSnapshots[currentPage - 1]); 
-                } 
-
-                query = query.limit(recordsPerPage); 
-                const snapshot = await query.get(); 
-                
-                if (!snapshot.empty) { 
-                    if (reset || direction === 'next') pageSnapshots[currentPage - 1] = snapshot.docs[0]; 
-                    lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1]; 
-                } 
-
-                datosPaginaActual = []; 
-                snapshot.forEach(doc => { 
-                    const data = doc.data();
-                    if (busqueda.includes(' ')) {
-                        const caratula = data.caratula ? data.caratula.toLowerCase() : "";
-                        const datosNnya = data.datosNnya ? data.datosNnya.toLowerCase() : "";
-                        if (caratula.includes(busqueda) || datosNnya.includes(busqueda)) {
-                            datosPaginaActual.push({ id: doc.id, ...data });
+                if (reset) {
+                    currentPage = 1;
+                    pageSnapshots = [];
+                    lastVisibleDoc = null;
+                    const currentFilterKey = getFilterKey();
+                    if (cachedTotalCount === null || currentFilterKey !== lastFilterKeys) {
+                        try {
+                            const snapshotCount = await baseQuery.count().get();
+                            totalRecords = snapshotCount.data().count;
+                            cachedTotalCount = totalRecords;
+                            lastFilterKeys = currentFilterKey;
+                        } catch (err) {
+                            console.warn(err);
+                            totalRecords = 0;
                         }
                     } else {
-                        datosPaginaActual.push({ id: doc.id, ...data });
+                        totalRecords = cachedTotalCount;
                     }
-                }); 
+                    totalPages = Math.ceil(totalRecords / recordsPerPage) || 1;
+                }
 
-                renderTablas(datosPaginaActual); 
-                renderPaginacionServerSide(); 
+                let query = baseQuery;
+                if (direction === 'next' && lastVisibleDoc) {
+                    query = query.startAfter(lastVisibleDoc);
+                    currentPage++;
+                }
 
-            } catch (error) { 
-                console.error("Error cargando causas:", error); 
-                tbody.innerHTML = "<tr><td colspan='10'>Error al cargar los datos. Verifique su conexión.</td></tr>"; 
-            } 
+                query = query.limit(10);
+                const snapshot = await query.get();
+
+                if (!snapshot.empty) {
+                    lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1];
+                }
+
+                datosPaginaActual = [];
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    datosPaginaActual.push({ id: doc.id, ...data });
+                });
+
+                renderTablas(datosPaginaActual);
+                renderPaginacionServerSide();
+            } catch (error) {
+                console.error(error);
+                tbody.innerHTML = "<tr><td colspan='10'>Error al cargar datos</td></tr>";
+            }
         }
 
         function renderPaginacionClientSide() { const container = $("paginacion-container"); container.style.display = totalPages > 1 ? "flex" : "none"; const startReg = ((currentPage - 1) * recordsPerPage) + 1; const endReg = Math.min(currentPage * recordsPerPage, totalRecords); container.innerHTML = `<div class="page-info">Página ${currentPage} de ${totalPages} | Mostrando del ${startReg} al ${endReg} de ${totalRecords} registros</div><div class="nav-buttons"><button id="btnPrevPage" class="button" ${currentPage === 1 ? 'disabled' : ''}><i class="fa fa-arrow-left"></i> Anterior</button><button id="btnNextPage" class="button" ${currentPage >= totalPages ? 'disabled' : ''}>Siguiente <i class="fa fa-arrow-right"></i></button></div>`; if ($("btnPrevPage")) $("btnPrevPage").onclick = () => { cargarCausas(false, 'prev'); }; if ($("btnNextPage")) $("btnNextPage").onclick = () => { cargarCausas(false, 'next'); }; }
@@ -826,15 +830,124 @@
         function renderTablas(data){ if (data.length === 0) { tbody.innerHTML = "<tr><td colspan='10'>No hay registros que coincidan con los filtros</td></tr>"; return; } tbody.innerHTML = ""; data.forEach(d=>{ const todosEventos = obtenerTodosEventos(d); let eventosHTML = "—"; if (todosEventos.length > 0) { eventosHTML = `<div class="eventos-lista">`; const eventosMostrar = todosEventos.slice(0, 3); eventosMostrar.forEach(evento => { let evText = `${evento.tipo}: ${formatearFecha(evento.fecha, true)}`; if (evento.tipo === "Diligencia" && evento.detalle) evText += ` - ${evento.detalle.substring(0, 30)}...`; eventosHTML += `<div class="evento-tabla ${evento.clase}">${evText}</div>`; }); if (todosEventos.length > 3) eventosHTML += `<div class="evento-tabla">+${todosEventos.length - 3} más</div>`; eventosHTML += `</div>`; } tbody.insertAdjacentHTML("beforeend", `<tr><td>${d.numCausa||""}</td><td>${d.caratula ? (d.caratula.length > 50 ? d.caratula.substring(0,50)+'...' : d.caratula) : ""}</td><td>${d.tipoProceso||""}</td><td>${d.juzgado||""}</td><td>${d.usuarioAsignado||""}</td><td>${d.estado||""}</td><td><span class="prioridad-pill ${prioridadClase(d.prioridad)}">${d.prioridad||"Ninguna"}</span></td><td>${formatearFecha(d.fechaRegistro, false)}</td><td>${eventosHTML}</td><td class="actions"><button class="button ver-detalles" data-id="${d.id}" title="Ver"><i class="fa fa-eye"></i></button><button class="button button-secondary editar-detalles" data-id="${d.id}" title="Editar"><i class="fa fa-pen"></i></button></td></tr>`); }); setTimeout(() => { document.querySelectorAll(".ver-detalles").forEach(b=>b.onclick=()=>abrirVer(b.dataset.id)); document.querySelectorAll(".editar-detalles").forEach(b=>b.onclick=()=>abrirEditar(b.dataset.id)); }, 0); }
         function renderPaginacionServerSide() { const container = $("paginacion-container"); container.style.display = totalPages > 1 ? "flex" : "none"; const startReg = ((currentPage - 1) * recordsPerPage) + 1; const endReg = Math.min(currentPage * recordsPerPage, totalRecords); container.innerHTML = `<div class="page-info">Página ${currentPage} de ${totalPages} | Mostrando del ${startReg} al ${endReg} de ${totalRecords} registros totales</div><div class="nav-buttons"><button id="btnPrevPage" class="button" ${currentPage === 1 ? 'disabled' : ''}><i class="fa fa-arrow-left"></i> Anterior</button><button id="btnNextPage" class="button" ${currentPage >= totalPages ? 'disabled' : ''}>Siguiente <i class="fa fa-arrow-right"></i></button></div>`; if ($("btnPrevPage")) $("btnPrevPage").onclick = () => { cargarCausas(false, 'prev'); }; if ($("btnNextPage")) $("btnNextPage").onclick = () => { cargarCausas(false, 'next'); }; }
         let notasLastDoc = null, notasHasMore = true, currentCausaId = null;
-        async function cargarNotas(causaId, reset = true) { if (reset) { notasLastDoc = null; notasHasMore = true; historialNotas.innerHTML = ""; document.getElementById("cargarMasNotas").style.display = "none"; } if (!causaId) return; try { let q = db.collection("causas").doc(causaId).collection("seguimiento").orderBy("fecha", "desc").limit(10); if (!reset && notasLastDoc) q = q.startAfter(notasLastDoc); const snap = await q.get(); if (snap.empty && reset) { historialNotas.innerHTML = "<p>No hay notas.</p>"; return; } notasLastDoc = snap.docs[snap.docs.length - 1]; notasHasMore = snap.docs.length === 10; snap.forEach(doc => { const n = doc.data(); historialNotas.insertAdjacentHTML("beforeend", `<div class="note-item"><div class="note-meta"><span>${formatearFecha(n.fecha, true)}</span><span>por: ${n.usuario || "Anónimo"}</span></div><div class="note-text">${n.texto}</div></div>`); }); document.getElementById("cargarMasNotas").style.display = notasHasMore ? "inline-flex" : "none"; } catch(e) { historialNotas.innerHTML = `<p>Error: ${e.message}</p>`; } }
+        async function cargarNotas(causaId, reset = true) { if (reset) { notasLastDoc = null; notasHasMore = true; historialNotas.innerHTML = ""; document.getElementById("cargarMasNotas").style.display = "none"; } if (!causaId) return; try { let q = db.collection("causas").doc(causaId).collection("seguimiento").orderBy("fecha", "desc").limit(5); if (!reset && notasLastDoc) q = q.startAfter(notasLastDoc); const snap = await q.get(); if (snap.empty && reset) { historialNotas.innerHTML = "<p>No hay notas.</p>"; return; } notasLastDoc = snap.docs[snap.docs.length - 1]; notasHasMore = snap.docs.length === 5; snap.forEach(doc => { const n = doc.data(); historialNotas.insertAdjacentHTML("beforeend", `<div class="note-item"><div class="note-meta"><span>${formatearFecha(n.fecha, true)}</span><span>por: ${n.usuario || "Anónimo"}</span></div><div class="note-text">${n.texto}</div></div>`); }); document.getElementById("cargarMasNotas").style.display = notasHasMore ? "inline-flex" : "none"; } catch(e) { historialNotas.innerHTML = `<p>Error: ${e.message}</p>`; } }
         async function abrirVer(id){ causaActualId = id; try{ const d = datosPaginaActual.find(causa => causa.id === id); if (!d) { mostrarAlertaPersonalizada("Error", "El expediente no está en la memoria actual."); return; } let contenidoHTML = `<div class="prioridad-texto ${prioridadClaseTexto(d.prioridad)}"><strong>Prioridad: ${d.prioridad || "Ninguna"}</strong></div>`; const etiquetas = { numCausa: "N° Expediente", caratula: "Carátula", tipoProceso: "Tipo de Proceso", juzgado: "Juzgado", fechaInicio: "Fecha de Inicio", fechaPase: "Fecha de Pase", intervencion: "Intervención", datosNnya: "Datos de NNyA", vencimiento: "Vencimiento", usuarioAsignado: "Usuario Asignado", estado: "Estado", recursos: "Recursos Interpuestos", recursosContestacion: "Contestación de Recursos", estadoRecursos: "Estado de Recursos", vencimientoRecursos: "Vencimiento de Recursos", audienciaGesell: "Audiencia Gesell", nnyaGesell: "NNyA en Gesell", observaciones: "Observaciones", fechaRegistro: "Fecha de Registro" }; const ordenClaves = ["numCausa","caratula","tipoProceso","juzgado","estado","usuarioAsignado","fechaRegistro","fechaInicio","fechaPase","intervencion","datosNnya","vencimiento","audiencias","diligencias","recursos","recursosContestacion","estadoRecursos","vencimientoRecursos","audienciaGesell","nnyaGesell","observaciones"]; ordenClaves.forEach(k => { const v = d[k]; if (v !== null && v !== undefined && v !== "" && k !== "prioridad") { const etiqueta = etiquetas[k] || k; if (k === "audiencias" && Array.isArray(v) && v.length > 0) { contenidoHTML += `<p><strong>Audiencias:</strong></p>`; v.forEach(aud => contenidoHTML += `<p style="margin-left: 20px;">${formatearFecha(aud, true)}</p>`); } else if (k === "diligencias" && Array.isArray(v) && v.length > 0) { contenidoHTML += `<p><strong>Diligencias:</strong></p>`; v.forEach(dilig => { contenidoHTML += `<p style="margin-left: 20px;">${formatearFecha(dilig.fecha, true)}${dilig.detalle ? ` - ${dilig.detalle}` : ''}</p>`; }); } else if (['fechaInicio','fechaRegistro'].includes(k)) { contenidoHTML += `<p><strong>${etiqueta}:</strong> ${formatearFecha(v, false)}</p>`; } else if (v.seconds || v.toDate) { contenidoHTML += `<p><strong>${etiqueta}:</strong> ${formatearFecha(v, true)}</p>`; } else if (k === "observaciones") { contenidoHTML += `<p><strong>${etiqueta}:</strong></p><div>${v}</div>`; } else if (k !== "audiencias" && k !== "diligencias") { contenidoHTML += `<p><strong>${etiqueta}:</strong> ${v}</p>`; } } }); verContenido.innerHTML = contenidoHTML; currentCausaId = id; await cargarNotas(id, true); modalVer.style.display = "flex"; } catch(e) { console.error(e); mostrarAlertaPersonalizada("Error", "No se pudo abrir el detalle."); } }
         async function abrirEditar(id){ modo = "editar"; resetFormCausa(); editId.value = id; tituloForm.textContent = "Editar Expediente"; const d = datosPaginaActual.find(causa => causa.id === id); if (d){ cargarDatosEnForm(d); modal.style.display = "flex"; } else { mostrarAlertaPersonalizada("Error", "El expediente no fue encontrado."); } }
-        async function agregarNota() { if (!causaActualId) return; const txt = notaBitacora.value.trim(); if (!txt) return; try { await db.collection("causas").doc(causaActualId).collection("seguimiento").add({ texto: txt, fecha: firebase.firestore.FieldValue.serverTimestamp(), usuario: "Usuario Actual" }); notaBitacora.value = ""; await cargarNotas(causaActualId, true); mostrarAlertaFlotante("Nota guardada.", 'success'); } catch(e) { mostrarAlertaFlotante("Error al guardar nota.", 'danger'); } }
-        const guardarExpediente = async () => { if (!validateForm()) return; const btnGuardar = $("btnGuardar"); btnGuardar.disabled = true; btnGuardar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...'; const datos = recolectarDatosForm(); try { const textosParaKeywords = [ datos.numCausa, datos.caratula, datos.usuarioAsignado, datos.datosNnya, datos.nnyaGesell, datos.observaciones, datos.intervencion, datos.recursos, datos.recursosContestacion, datos.estadoRecursos, (datos.diligencias || []).map(d => d.detalle).join(' ') ].filter(Boolean).join(' ').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s]/gi, '').split(/\s+/).filter(p => p.length > 0); datos.keywords = [...new Set(textosParaKeywords)]; if (modo === "nuevo") { const dupCheck = await db.collection("causas").where("numCausa", "==", $("numCausa").value.trim()).get(); if (!dupCheck.empty) { mostrarAlertaFlotante("El N° Expediente ya existe en la base de datos.", 'danger'); $("numCausa").closest('.field').classList.add('error'); btnGuardar.disabled = false; btnGuardar.innerHTML = '<i class="fa fa-save"></i> Guardar'; return; } await db.collection("causas").add({ ...datos, fechaRegistro: firebase.firestore.FieldValue.serverTimestamp() }); mostrarAlertaFlotante("Se guardó correctamente.", 'success'); } else { await db.collection("causas").doc(editId.value).update(datos); mostrarAlertaFlotante("Actualizado correctamente.", 'success'); } modal.style.display = "none"; resetFormCausa(); cargarCausas(true); } catch (e) { mostrarAlertaFlotante("Fallo al procesar: " + e.message, 'danger'); } finally { btnGuardar.disabled = false; btnGuardar.innerHTML = '<i class="fa fa-save"></i> Guardar'; } };
-        function validarExistenciaExpediente() { const num = $("numCausa").value.trim(); const field = $("numCausa").closest('.field'); if (modo === "nuevo" && num) { db.collection("causas").where("numCausa", "==", num).get().then(snap => { if (!snap.empty) { field.classList.add('error'); field.querySelector('.error-message').textContent = "Número de expediente registrado."; deshabilitarCamposFormulario(true); mostrarAlertaFlotante("El número ya existe.", 'danger'); } else { field.classList.remove('error'); deshabilitarCamposFormulario(false); } }); } }
+        
+        // OPTIMIZACIÓN: agregar nota sin recargar desde Firestore
+        async function agregarNota() { 
+            if (!causaActualId) return; 
+            const txt = notaBitacora.value.trim(); 
+            if (!txt) return; 
+            try { 
+                const nuevaNotaRef = await db.collection("causas").doc(causaActualId).collection("seguimiento").add({ 
+                    texto: txt, 
+                    fecha: firebase.firestore.FieldValue.serverTimestamp(), 
+                    usuario: "Usuario Actual" 
+                }); 
+                // Obtener la fecha real del servidor (aproximada con new Date())
+                const fechaAhora = new Date();
+                const fechaFormateada = formatearFecha(fechaAhora, true);
+                // Construir el HTML de la nueva nota
+                const notaHTML = `<div class="note-item" data-id="${nuevaNotaRef.id}">
+                                    <div class="note-meta">
+                                        <span>${fechaFormateada}</span>
+                                        <span>por: Usuario Actual</span>
+                                    </div>
+                                    <div class="note-text">${txt.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+                                </div>`;
+                // Insertar al inicio del contenedor (las notas más recientes primero)
+                historialNotas.insertAdjacentHTML('afterbegin', notaHTML);
+                // Si antes no había botón "cargar más" pero ahora hay 5 o más notas visibles, mostrarlo
+                const cantidadNotas = historialNotas.children.length;
+                if (!notasHasMore && cantidadNotas >= 5) {
+                    // Podría haber más notas en el servidor, pero no sabemos. Para mantener coherencia,
+                    // si la lista alcanza 5, asumimos que puede haber más y mostramos el botón.
+                    // La variable notasHasMore se mantiene igual; si era false, significa que antes no había más.
+                    // Al agregar una nota nueva, si antes había menos de 5, ahora puede haber 5 y conviene mostrar el botón si realmente hay más.
+                    // Lo más seguro es volver a evaluar si hay más, pero eso implicaría una consulta.
+                    // Por simplicidad, mostramos el botón si la cantidad es >=5.
+                    if (cantidadNotas >= 5) {
+                        document.getElementById("cargarMasNotas").style.display = "inline-flex";
+                        notasHasMore = true; // asumimos que puede haber más
+                    }
+                }
+                notaBitacora.value = ""; 
+                mostrarAlertaFlotante("Nota guardada.", 'success'); 
+            } catch(e) { 
+                mostrarAlertaFlotante("Error al guardar nota.", 'danger'); 
+            } 
+        }
+        
+        const guardarExpediente = async () => { 
+            if (!validateForm()) return; 
+            const btnGuardar = $("btnGuardar"); 
+            btnGuardar.disabled = true; 
+            btnGuardar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...'; 
+            const datos = recolectarDatosForm(); 
+            try { 
+                const textosParaKeywords = [ datos.numCausa, datos.caratula, datos.usuarioAsignado, datos.datosNnya, datos.nnyaGesell, datos.observaciones, datos.intervencion, datos.recursos, datos.recursosContestacion, datos.estadoRecursos, (datos.diligencias || []).map(d => d.detalle).join(' ') ].filter(Boolean).join(' ').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s]/gi, '').split(/\s+/).filter(p => p.length > 0); 
+                datos.keywords = [...new Set(textosParaKeywords)]; 
+                if (modo === "nuevo") { 
+                    const numActual = $("numCausa").value.trim();
+                    // Si el número no ha cambiado desde la última validación y era válido, evitar consulta extra
+                    if (numeroValido && ultimoNumeroValidado === numActual) {
+                        // Número ya verificado, continuar sin segunda consulta
+                    } else {
+                        const dupCheck = await db.collection("causas").where("numCausa", "==", numActual).get(); 
+                        if (!dupCheck.empty) { 
+                            mostrarAlertaFlotante("El N° Expediente ya existe en la base de datos.", 'danger'); 
+                            $("numCausa").closest('.field').classList.add('error'); 
+                            btnGuardar.disabled = false; 
+                            btnGuardar.innerHTML = '<i class="fa fa-save"></i> Guardar'; 
+                            return; 
+                        }
+                    }
+                    await db.collection("causas").add({ ...datos, fechaRegistro: firebase.firestore.FieldValue.serverTimestamp() }); 
+                    mostrarAlertaFlotante("Se guardó correctamente.", 'success'); 
+                } else { 
+                    await db.collection("causas").doc(editId.value).update(datos); 
+                    mostrarAlertaFlotante("Actualizado correctamente.", 'success'); 
+                } 
+                modal.style.display = "none"; 
+                resetFormCausa(); 
+                cargarCausas(true); 
+            } catch (e) { 
+                mostrarAlertaFlotante("Fallo al procesar: " + e.message, 'danger'); 
+            } finally { 
+                btnGuardar.disabled = false; 
+                btnGuardar.innerHTML = '<i class="fa fa-save"></i> Guardar'; 
+            } 
+        };
+        
+        function validarExistenciaExpediente() { 
+            const num = $("numCausa").value.trim(); 
+            const field = $("numCausa").closest('.field'); 
+            if (modo === "nuevo" && num) { 
+                db.collection("causas").where("numCausa", "==", num).get().then(snap => { 
+                    if (!snap.empty) { 
+                        field.classList.add('error'); 
+                        field.querySelector('.error-message').textContent = "Número de expediente registrado."; 
+                        deshabilitarCamposFormulario(true); 
+                        mostrarAlertaFlotante("El número ya existe.", 'danger'); 
+                        numeroValido = false;
+                    } else { 
+                        field.classList.remove('error'); 
+                        deshabilitarCamposFormulario(false); 
+                        numeroValido = true;
+                        ultimoNumeroValidado = num;
+                    } 
+                }); 
+            } else {
+                // Si no es nuevo o no hay número, resetear estado
+                numeroValido = false;
+                ultimoNumeroValidado = '';
+            }
+        }
+        
         function deshabilitarCamposFormulario(d) { document.querySelectorAll('#formCausa input:not(#numCausa), #formCausa textarea, #formCausa select').forEach(c => c.disabled = d); if($("btnGuardar")) $("btnGuardar").disabled = d; }
         function validateForm() { let isValid = true; ["numCausa", "caratula", "tipoProceso", "juzgado", "prioridad", "usuarioAsignado"].forEach(id => { const field = $(id); const parent = field.closest('.field'); if (field.value.trim() === "") { parent.classList.add('error'); isValid = false; } else { parent.classList.remove('error'); } }); if (!isValid) mostrarAlertaFlotante("Complete todos los campos obligatorios.", 'danger'); return isValid; }
-        function resetFormCausa() { $("formCausa").reset(); observacionesEditor.innerHTML = ''; observacionesHidden.value = ''; audienciasContainer.innerHTML = ''; diligenciasContainer.innerHTML = ''; $("habilitarAudienciaGesell").checked = false; $("audienciaGesell").disabled = true; $("nnyaGesell").disabled = true; $("recursos-opcionales").style.display = 'none'; tabButtons.forEach(btn => btn.classList.remove('active')); tabContents.forEach(c => c.classList.remove('active')); tabButtons[0].classList.add('active'); tabContents[0].classList.add('active'); $("counter").textContent = '0/1000'; document.querySelectorAll('.field').forEach(f => f.classList.remove('error')); }
+        function resetFormCausa() { $("formCausa").reset(); observacionesEditor.innerHTML = ''; observacionesHidden.value = ''; audienciasContainer.innerHTML = ''; diligenciasContainer.innerHTML = ''; $("habilitarAudienciaGesell").checked = false; $("audienciaGesell").disabled = true; $("nnyaGesell").disabled = true; $("recursos-opcionales").style.display = 'none'; tabButtons.forEach(btn => btn.classList.remove('active')); tabContents.forEach(c => c.classList.remove('active')); tabButtons[0].classList.add('active'); tabContents[0].classList.add('active'); $("counter").textContent = '0/1000'; document.querySelectorAll('.field').forEach(f => f.classList.remove('error')); numeroValido = false; ultimoNumeroValidado = ''; }
         function recolectarDatosForm() { const datos = { numCausa: $("numCausa").value.trim(), caratula: $("caratula").value.trim(), tipoProceso: $("tipoProceso").value, juzgado: $("juzgado").value, prioridad: $("prioridad").value, usuarioAsignado: $("usuarioAsignado").value, estado: $("estado").value, intervencion: $("intervencion").value, datosNnya: $("datosNnya").value.trim(), fechaInicio: parseDateToTimestamp($("fechaInicio").value), fechaPase: parseDateTimeLocalToTimestamp($("fechaPase").value), vencimiento: parseDateTimeLocalToTimestamp($("vencimiento").value), vencimientoRecursos: parseDateTimeLocalToTimestamp($("vencimientoRecursos").value), recursos: $("recursos").value || null, recursosContestacion: $("recursosContestacion").value || null, estadoRecursos: $("estadoRecursos").value || null, observaciones: observacionesHidden.value }; if ($("habilitarAudienciaGesell").checked) { datos.audienciaGesell = parseDateTimeLocalToTimestamp($("audienciaGesell").value); datos.nnyaGesell = $("nnyaGesell").value.trim(); } else { datos.audienciaGesell = null; datos.nnyaGesell = ""; } datos.audiencias = []; audienciasContainer.querySelectorAll('.audiencia-fecha').forEach(i => { const t = parseDateTimeLocalToTimestamp(i.value); if (t) datos.audiencias.push(t); }); datos.diligencias = []; diligenciasContainer.querySelectorAll('.diligencia-item').forEach(i => { const f = parseDateTimeLocalToTimestamp(i.querySelector('.diligencia-fecha').value); const d = i.querySelector('.diligencia-detalle').value.trim(); if (f) datos.diligencias.push({ fecha: f, detalle: d }); }); return datos; }
         function cargarDatosEnForm(data) { $("numCausa").value = data.numCausa||''; $("caratula").value = data.caratula||''; $("tipoProceso").value = data.tipoProceso||''; poblarJuzgadosPorTipo(data.tipoProceso); setTimeout(()=>{ $("juzgado").value = data.juzgado||''; }, 100); $("prioridad").value = data.prioridad||'Ninguna'; $("usuarioAsignado").value = data.usuarioAsignado||''; $("estado").value = data.estado||'En trámite'; $("intervencion").value = data.intervencion||''; $("datosNnya").value = data.datosNnya||''; $("fechaInicio").value = formatFechaParaInput(data.fechaInicio, false); $("fechaPase").value = formatFechaParaInput(data.fechaPase, true); $("vencimiento").value = formatFechaParaInput(data.vencimiento, true); $("vencimientoRecursos").value = formatFechaParaInput(data.vencimientoRecursos, true); $("recursos").value = data.recursos||''; $("recursosContestacion").value = data.recursosContestacion||''; $("estadoRecursos").value = data.estadoRecursos||''; observacionesEditor.innerHTML = data.observaciones||''; observacionesHidden.value = data.observaciones||''; audienciasContainer.innerHTML=''; if (Array.isArray(data.audiencias)) data.audiencias.forEach(a => { const div=document.createElement('div'); div.className='audiencia-item'; div.innerHTML=`<input type="datetime-local" class="audiencia-fecha" step="60" value="${formatFechaParaInput(a,true)}"><button type="button" class="btn-eliminar-audiencia"><i class="fa fa-trash"></i></button>`; audienciasContainer.appendChild(div); div.querySelector('.btn-eliminar-audiencia').onclick=()=>audienciasContainer.removeChild(div); }); diligenciasContainer.innerHTML=''; if(Array.isArray(data.diligencias)) data.diligencias.forEach(d=>{ const div=document.createElement('div'); div.className='diligencia-item'; div.innerHTML=`<input type="datetime-local" class="diligencia-fecha" step="60" value="${formatFechaParaInput(d.fecha,true)}"><input type="text" class="diligencia-detalle" value="${d.detalle||''}"><button type="button" class="btn-eliminar-diligencia"><i class="fa fa-trash"></i></button>`; diligenciasContainer.appendChild(div); div.querySelector('.btn-eliminar-diligencia').onclick=()=>diligenciasContainer.removeChild(div); }); if(data.audienciaGesell){ $("habilitarAudienciaGesell").checked=true; $("audienciaGesell").disabled=false; $("nnyaGesell").disabled=false; $("audienciaGesell").value=formatFechaParaInput(data.audienciaGesell,true); $("nnyaGesell").value=data.nnyaGesell||''; } if(data.recursos) $("recursos-opcionales").style.display='block'; }
         function obtenerTodosEventos(causa) { const eventos = []; if (Array.isArray(causa.audiencias)) causa.audiencias.forEach(a => { const f = toDate(a); if (f && !isNaN(f.getTime())) eventos.push({ tipo: "Audiencia", fecha: f, clase: "audiencia" }); }); if (causa.audienciaGesell) { const f = toDate(causa.audienciaGesell); if (f && !isNaN(f.getTime())) eventos.push({ tipo: "Gesell", fecha: f, clase: "gesell" }); } if (causa.vencimiento) { const f = toDate(causa.vencimiento); if (f && !isNaN(f.getTime())) eventos.push({ tipo: "Vencimiento", fecha: f, clase: "vencimiento" }); } if (causa.vencimientoRecursos) { const f = toDate(causa.vencimientoRecursos); if (f && !isNaN(f.getTime())) eventos.push({ tipo: "Recurso", fecha: f, clase: "recurso" }); } if (Array.isArray(causa.diligencias)) causa.diligencias.forEach(d => { const f = toDate(d.fecha); if (f && !isNaN(f.getTime())) eventos.push({ tipo: "Diligencia", fecha: f, detalle: d.detalle||'', clase: "diligencia" }); }); return eventos.sort((a,b)=>b.fecha-a.fecha); }
@@ -869,7 +982,21 @@
             filtroPrioridad.addEventListener('change', () => { cachedTotalCount = null; actualizarFiltros(); });
             filtroIntervencion.addEventListener('change', () => { cachedTotalCount = null; actualizarFiltros(); });
             filtroTipoProceso.addEventListener('change', () => { cachedTotalCount = null; actualizarFiltros(); });
-            $("numCausa").addEventListener('blur', validarExistenciaExpediente);
+            
+            $("filtroPeriodo").addEventListener('change', () => {
+                cachedTotalCount = null;
+                actualizarFiltros();
+            });
+
+            // OPTIMIZACIÓN: debounce para validar existencia del expediente
+            let expedienteTimer;
+            $("numCausa").addEventListener('input', function(){
+                clearTimeout(expedienteTimer);
+                expedienteTimer = setTimeout(() => {
+                    validarExistenciaExpediente();
+                }, 1500);
+            });
+            
             selTipo.addEventListener('change', function() { poblarJuzgadosPorTipo(this.value); });
             $("recursos").addEventListener('change', function() { $("recursos-opcionales").style.display = this.value ? "block" : "none"; });
             $("habilitarAudienciaGesell").addEventListener('change', function() { $("audienciaGesell").disabled = !this.checked; $("nnyaGesell").disabled = !this.checked; });
