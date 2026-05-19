@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Expedientes - Gestión Judicial</title>
     
-    <!-- Firebase y complementos -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
@@ -660,16 +659,13 @@
         <div id="paginacion-container"></div>
     </main>
 
-    <!-- Modal Nuevo/Editar -->
     <div id="modal"><div class="content"><div class="modal-header"><i class="fa-solid fa-file-pen"></i><h2 id="tituloForm" style="margin:0;">Nuevo Expediente</h2></div><div class="modal-body"><form id="formCausa" action="#" method="post"><input type="hidden" id="editId" /><div class="tabs-container"><div class="tabs-nav"><button type="button" class="tab-button active" data-tab="tab1">Datos Principales</button><button type="button" class="tab-button" data-tab="tab2">Fechas</button><button type="button" class="tab-button" data-tab="tab3">Audiencias</button><button type="button" class="tab-button" data-tab="tab4">Vencimientos</button><button type="button" class="tab-button" data-tab="tab5">Diligencias</button><button type="button" class="tab-button" data-tab="tab6">Recursos</button><button type="button" class="tab-button" data-tab="tab7">Observaciones</button></div><div id="tab1" class="tab-content active"><div class="field"><label for="numCausa">N° Expediente *</label><input id="numCausa" required autocomplete="off" /><span class="error-message">Este campo es obligatorio.</span></div><div class="field"><label for="caratula">Carátula Completa *</label><textarea id="caratula" rows="2" required></textarea></div><div class="field"><label for="tipoProceso">Tipo de Proceso *</label><select id="tipoProceso" required></select></div><div class="field"><label for="juzgado">Juzgado *</label><select id="juzgado" required></select></div><div class="field"><label for="prioridad">Prioridad *</label><select id="prioridad" required><option value="Ninguna">Ninguna</option><option value="Baja">Baja</option><option value="Media">Media</option><option value="Alta">Alta</option></select></div><div class="field"><label for="usuarioAsignado">Usuario Asignado *</label><select id="usuarioAsignado" required></select></div><div class="field"><label for="estado">Estado del Proceso</label><select id="estado"><option>En trámite</option><option>Finalizado</option><option>Archivado</option><option>En Alzada</option></select></div><div class="field"><label for="intervencion">Intervención</label><select id="intervencion"><option>Defensor Oficial</option><option>Ministerio Principal</option><option>Ministerio Complementario</option><option>Patrocinante Actor</option><option>Patrocinante Demandado</option><option>Patrocinante Tercero</option><option value="Defensor de Ausente">Defensor de Ausente</option><option>Patrocinante presunto incapaz</option><option value="Defensor Oficial Asesor Letrado">Asistencia Letrada del incapaz</option><option>Ministerio Público del incapaz</option><option>Ministerio Público en turno Abril</option><option>Ministerio Público en turno Agosto</option><option>Ministerio Público en turno Diciembre</option><option>Tutor Ad Litem</option><option>Defensor Oficial Art 329 CPCC</option><option>Defensor Oficial Art 626 CPCC</option></select></div><div class="field"><label for="datosNnya">Datos de NNyA (máx. 500 palabras)</label><textarea id="datosNnya"></textarea><div class="counter" id="counterNnya" style="display:none">0/500</div></div></div><div id="tab2" class="tab-content"><div class="field"><label for="fechaInicio">Fecha de Inicio</label><input type="date" id="fechaInicio" /></div><div class="field"><label for="fechaPase">Fecha de Pase</label><input type="datetime-local" id="fechaPase" step="60" /></div></div><div id="tab3" class="tab-content"><div class="field"><label for="audiencias">Audiencias señaladas</label><div id="audiencias-container" class="audiencias-container"></div><button type="button" id="btnAgregarAudiencia" class="btn-audiencia"><i class="fa fa-plus"></i> Agregar Audiencia</button></div><div class="field"><label for="audienciaGesell">Audiencia en Cámara Gesell</label><div style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="habilitarAudienciaGesell" /><span>Habilitar</span></div><input type="datetime-local" id="audienciaGesell" step="60" disabled /></div><div class="field"><label for="nnyaGesell">NNyA en Gesell (máx. 400 palabras)</label><textarea id="nnyaGesell" disabled></textarea><div class="counter" id="counterNnyaGesell" style="display:none">0/400</div></div></div><div id="tab4" class="tab-content"><div class="field"><label for="vencimiento">Vencimiento</label><input type="datetime-local" id="vencimiento" step="60" /></div><div class="field"><label for="vencimientoRecursos">Vencimiento de Recursos</label><input type="datetime-local" id="vencimientoRecursos" step="60" /></div></div><div id="tab5" class="tab-content"><div class="field"><label for="diligencias">Diligencias</label><div id="diligencias-container" class="diligencias-container"></div><button type="button" id="btnAgregarDiligencia" class="btn-diligencia"><i class="fa fa-plus"></i> Agregar Diligencia</button></div></div><div id="tab6" class="tab-content"><div class="field"><label for="recursos">Recursos Interpuestos</label><select id="recursos"><option value="">Seleccione un recurso</option><option>Apelación</option><option>Queja</option><option>Inconstitucionalidad</option><option>Nulidad</option><option>Reposición</option><option>Aclaratoria</option><option>Recurso Extraordinario</option><option>Recurso de Inaplicabilidad</option></select></div><div id="recursos-opcionales" style="display:none;"><div class="field"><label for="recursosContestacion">Recursos Contestación</label><select id="recursosContestacion"><option value="">Seleccione un recurso</option><option>Apelación</option><option>Queja</option><option>Inconstitucionalidad</option><option>Nulidad</option><option>Reposición</option><option>Aclaratoria</option><option>Recurso Extraordinario</option><option>Recurso de Inaplicabilidad</option></select></div><div class="field"><label for="estadoRecursos">Estado de Recursos</label><select id="estadoRecursos"><option value="">Seleccione un estado</option><option>Pendiente</option><option>En trámite</option><option>Resuelto</option><option>Rechazado</option></select></div></div></div><div id="tab7" class="tab-content"><div class="field"><label for="observaciones">Observaciones (máx. 1000 palabras)</label><div class="editor-toolbar"><button type="button" id="btnBold" title="Negrita"><i class="fas fa-bold"></i></button><button type="button" id="btnColorAzul" class="color-button azul">A</button><button type="button" id="btnColorRojo" class="color-button rojo">A</button><button type="button" id="btnColorVerde" class="color-button verde">A</button><button type="button" id="btnColorNormal" class="color-button normal">Normal</button></div><div id="observaciones-editor" contenteditable="true"></div><input type="hidden" id="observaciones" name="observaciones"><div class="counter" id="counter">0/1000</div></div></div></div></form></div><div class="controls-form"><button class="button button-success" type="button" id="btnGuardar"><i class="fa fa-save"></i>Guardar</button></div></div></div>
     
-    <!-- Modal Ver Detalle -->
     <div id="modalVer"><div class="content"><div class="modal-header"><i class="fa-solid fa-eye"></i><h2 style="margin:0;">Detalle del Expediente</h2></div><div class="modal-body"><div id="verContenido"></div><div id="agregarNota"><label for="notaBitacora">Agregar Nota de Seguimiento:</label><textarea id="notaBitacora" placeholder="Escribe aquí la nota..."></textarea><button id="btnAgregarNota" class="button"><i class="fa fa-plus"></i> Guardar Nota</button></div><div class="notes-history"><h4 style="margin-bottom: 12px;">Historial de Notas</h4><div id="historialNotas"></div><button id="cargarMasNotas" class="button button-secondary" style="display:none; margin-top: 12px;"><i class="fas fa-chevron-down"></i> Cargar más notas</button></div></div><div class="controls-form" style="justify-content:flex-end;"><button id="btnCerrarVer" class="button button-secondary"><i class="fa fa-xmark"></i>Cerrar</button><button id="btnPrintRegistro" class="button button-success"><i class="fa fa-print"></i>Imprimir Registro</button></div></div></div>
     
     <div id="alertModal"><div class="content"><h3 id="alertTitle"></h3><p id="alertMessage"></p><div class="actions-row"><button id="btnAlertOK" class="button alert-success"><i class="fa fa-check"></i> OK</button></div></div></div>
 
     <script>
-        // (El código JavaScript permanece IDÉNTICO al original, sin cambios funcionales)
         const firebaseConfig = {
             apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
             authDomain: "causas-defensoria.firebaseapp.com",
@@ -730,7 +726,101 @@
         
         function mostrarAlertaFlotante(mensaje, tipo = 'danger') { if (!floatingAlertText) return; floatingAlertText.textContent = mensaje; floatingAlert.classList.remove('danger', 'success', 'show'); floatingAlert.classList.add(tipo); setTimeout(() => floatingAlert.classList.add('show'), 10); setTimeout(() => floatingAlert.classList.remove('show'), 5000); }
 
-        async function cargarCausas(reset = true, direction = null) { if (!db) return; tbody.innerHTML = "<tr><td colspan='10'><i class='fas fa-spinner fa-spin'></i> Obteniendo registros...</td></tr>"; try { let baseQuery = db.collection("causas"); const fUsuario = filtroUsuario.value, fEstado = filtroEstado.value, fPrioridad = filtroPrioridad.value, fIntervencion = filtroIntervencion.value, fTipoProceso = filtroTipoProceso.value, busqueda = buscador.value.trim(); if (fUsuario) baseQuery = baseQuery.where("usuarioAsignado", "==", fUsuario); if (fEstado) baseQuery = baseQuery.where("estado", "==", fEstado); if (fPrioridad) baseQuery = baseQuery.where("prioridad", "==", fPrioridad); if (fIntervencion) baseQuery = baseQuery.where("intervencion", "==", fIntervencion); if (fTipoProceso) baseQuery = baseQuery.where("tipoProceso", "==", fTipoProceso); const isPhrase = busqueda.includes(' '); if (isPhrase && busqueda.length > 0) { let queryNoSearch = baseQuery.orderBy("fechaRegistro", "desc"); let allDocs = [], lastDoc = null, hasMore = true; while (hasMore) { let q = queryNoSearch; if (lastDoc) q = q.startAfter(lastDoc); q = q.limit(500); const snapshot = await q.get(); if (snapshot.empty) break; snapshot.forEach(doc => allDocs.push({ id: doc.id, ...doc.data() })); lastDoc = snapshot.docs[snapshot.docs.length - 1]; hasMore = snapshot.docs.length === 500; if (allDocs.length >= 2000) { hasMore = false; mostrarAlertaFlotante("Más de 2000 expedientes. Refine filtros.", 'warning'); } } const lowerPhrase = busqueda.toLowerCase(); const filteredDocs = allDocs.filter(d => { const caratula = d.caratula ? d.caratula.toLowerCase() : ""; const datosNnya = d.datosNnya ? d.datosNnya.toLowerCase() : ""; return caratula.includes(lowerPhrase) || datosNnya.includes(lowerPhrase); }); allFilteredDocs = filteredDocs; totalRecords = filteredDocs.length; totalPages = Math.ceil(totalRecords / recordsPerPage) || 1; isPhraseSearch = true; if (reset) { currentPhraseSearchPage = 1; currentPage = 1; } else if (direction === 'next') { currentPhraseSearchPage++; currentPage = currentPhraseSearchPage; } else if (direction === 'prev') { currentPhraseSearchPage--; currentPage = currentPhraseSearchPage; } else { currentPhraseSearchPage = currentPage; } currentPhraseSearchPage = Math.min(Math.max(1, currentPhraseSearchPage), totalPages); currentPage = currentPhraseSearchPage; const startIdx = (currentPhraseSearchPage - 1) * recordsPerPage; const endIdx = startIdx + recordsPerPage; const pageDocs = allFilteredDocs.slice(startIdx, endIdx); datosPaginaActual = pageDocs; renderTablas(datosPaginaActual); renderPaginacionClientSide(); return; } isPhraseSearch = false; if (busqueda && !busqueda.includes(' ')) { const word = busqueda.split(/\s+/)[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s]/gi, ''); if (word) baseQuery = baseQuery.where("keywords", "array-contains", word); } baseQuery = baseQuery.orderBy("fechaRegistro", "desc"); if (reset) { currentPage = 1; pageSnapshots = []; lastVisibleDoc = null; const currentFilterKey = getFilterKey(); if (cachedTotalCount === null || currentFilterKey !== lastFilterKeys) { try { const snapshotCount = await baseQuery.count().get(); totalRecords = snapshotCount.data().count; cachedTotalCount = totalRecords; lastFilterKeys = currentFilterKey; } catch (err) { console.warn("Error en count():", err); totalRecords = 0; } } else { totalRecords = cachedTotalCount; } totalPages = Math.ceil(totalRecords / recordsPerPage) || 1; } let query = baseQuery; if (direction === 'next' && lastVisibleDoc) { query = query.startAfter(lastVisibleDoc); currentPage++; } else if (direction === 'prev' && currentPage > 1) { currentPage--; query = query.startAt(pageSnapshots[currentPage - 1]); } query = query.limit(recordsPerPage); const snapshot = await query.get({ source: 'default' }); if (!snapshot.empty) { if (reset || direction === 'next') pageSnapshots[currentPage - 1] = snapshot.docs[0]; lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1]; } datosPaginaActual = []; snapshot.forEach(doc => { datosPaginaActual.push({ id: doc.id, ...doc.data() }); }); renderTablas(datosPaginaActual); renderPaginacionServerSide(); } catch (error) { console.error("Error cargando causas:", error); tbody.innerHTML = "<tr><td colspan='10'>Error al cargar los datos. Verifique su conexión.</td></tr>"; } }
+        async function cargarCausas(reset = true, direction = null) { 
+            if (!db) return; 
+            tbody.innerHTML = "<tr><td colspan='10'><i class='fas fa-spinner fa-spin'></i> Obteniendo registros...</td></tr>"; 
+            
+            try { 
+                let baseQuery = db.collection("causas"); 
+                const fUsuario = filtroUsuario.value, 
+                      fEstado = filtroEstado.value, 
+                      fPrioridad = filtroPrioridad.value, 
+                      fIntervencion = filtroIntervencion.value, 
+                      fTipoProceso = filtroTipoProceso.value, 
+                      busqueda = buscador.value.trim().toLowerCase(); 
+
+                if (fUsuario) baseQuery = baseQuery.where("usuarioAsignado", "==", fUsuario); 
+                if (fEstado) baseQuery = baseQuery.where("estado", "==", fEstado); 
+                if (fPrioridad) baseQuery = baseQuery.where("prioridad", "==", fPrioridad); 
+                if (fIntervencion) baseQuery = baseQuery.where("intervencion", "==", fIntervencion); 
+                if (fTipoProceso) baseQuery = baseQuery.where("tipoProceso", "==", fTipoProceso); 
+
+                isPhraseSearch = false;
+                
+                if (busqueda) {
+                    const primeraPalabra = busqueda.split(/\s+/)[0]
+                                                   .normalize("NFD")
+                                                   .replace(/[\u0300-\u036f]/g, "")
+                                                   .replace(/[^\w\s]/gi, '');
+                    if (primeraPalabra) {
+                        baseQuery = baseQuery.where("keywords", "array-contains", primeraPalabra);
+                    }
+                }
+
+                baseQuery = baseQuery.orderBy("fechaRegistro", "desc"); 
+
+                if (reset) { 
+                    currentPage = 1; 
+                    pageSnapshots = []; 
+                    lastVisibleDoc = null; 
+                    const currentFilterKey = getFilterKey(); 
+                    
+                    if (cachedTotalCount === null || currentFilterKey !== lastFilterKeys) { 
+                        try { 
+                            const snapshotCount = await baseQuery.count().get(); 
+                            totalRecords = snapshotCount.data().count; 
+                            cachedTotalCount = totalRecords; 
+                            lastFilterKeys = currentFilterKey; 
+                        } catch (err) { 
+                            console.warn("Error en count():", err); 
+                            totalRecords = 0; 
+                        } 
+                    } else { 
+                        totalRecords = cachedTotalCount; 
+                    } 
+                    totalPages = Math.ceil(totalRecords / recordsPerPage) || 1; 
+                } 
+
+                let query = baseQuery; 
+                if (direction === 'next' && lastVisibleDoc) { 
+                    query = query.startAfter(lastVisibleDoc); 
+                    currentPage++; 
+                } else if (direction === 'prev' && currentPage > 1) { 
+                    currentPage--; 
+                    query = query.startAt(pageSnapshots[currentPage - 1]); 
+                } 
+
+                query = query.limit(recordsPerPage); 
+                const snapshot = await query.get(); 
+                
+                if (!snapshot.empty) { 
+                    if (reset || direction === 'next') pageSnapshots[currentPage - 1] = snapshot.docs[0]; 
+                    lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1]; 
+                } 
+
+                datosPaginaActual = []; 
+                snapshot.forEach(doc => { 
+                    const data = doc.data();
+                    if (busqueda.includes(' ')) {
+                        const caratula = data.caratula ? data.caratula.toLowerCase() : "";
+                        const datosNnya = data.datosNnya ? data.datosNnya.toLowerCase() : "";
+                        if (caratula.includes(busqueda) || datosNnya.includes(busqueda)) {
+                            datosPaginaActual.push({ id: doc.id, ...data });
+                        }
+                    } else {
+                        datosPaginaActual.push({ id: doc.id, ...data });
+                    }
+                }); 
+
+                renderTablas(datosPaginaActual); 
+                renderPaginacionServerSide(); 
+
+            } catch (error) { 
+                console.error("Error cargando causas:", error); 
+                tbody.innerHTML = "<tr><td colspan='10'>Error al cargar los datos. Verifique su conexión.</td></tr>"; 
+            } 
+        }
+
         function renderPaginacionClientSide() { const container = $("paginacion-container"); container.style.display = totalPages > 1 ? "flex" : "none"; const startReg = ((currentPage - 1) * recordsPerPage) + 1; const endReg = Math.min(currentPage * recordsPerPage, totalRecords); container.innerHTML = `<div class="page-info">Página ${currentPage} de ${totalPages} | Mostrando del ${startReg} al ${endReg} de ${totalRecords} registros</div><div class="nav-buttons"><button id="btnPrevPage" class="button" ${currentPage === 1 ? 'disabled' : ''}><i class="fa fa-arrow-left"></i> Anterior</button><button id="btnNextPage" class="button" ${currentPage >= totalPages ? 'disabled' : ''}>Siguiente <i class="fa fa-arrow-right"></i></button></div>`; if ($("btnPrevPage")) $("btnPrevPage").onclick = () => { cargarCausas(false, 'prev'); }; if ($("btnNextPage")) $("btnNextPage").onclick = () => { cargarCausas(false, 'next'); }; }
         function actualizarFiltros() { clearTimeout(filterTimeout); filterTimeout = setTimeout(() => { cargarCausas(true); }, 600); }
         function renderTablas(data){ if (data.length === 0) { tbody.innerHTML = "<tr><td colspan='10'>No hay registros que coincidan con los filtros</td></tr>"; return; } tbody.innerHTML = ""; data.forEach(d=>{ const todosEventos = obtenerTodosEventos(d); let eventosHTML = "—"; if (todosEventos.length > 0) { eventosHTML = `<div class="eventos-lista">`; const eventosMostrar = todosEventos.slice(0, 3); eventosMostrar.forEach(evento => { let evText = `${evento.tipo}: ${formatearFecha(evento.fecha, true)}`; if (evento.tipo === "Diligencia" && evento.detalle) evText += ` - ${evento.detalle.substring(0, 30)}...`; eventosHTML += `<div class="evento-tabla ${evento.clase}">${evText}</div>`; }); if (todosEventos.length > 3) eventosHTML += `<div class="evento-tabla">+${todosEventos.length - 3} más</div>`; eventosHTML += `</div>`; } tbody.insertAdjacentHTML("beforeend", `<tr><td>${d.numCausa||""}</td><td>${d.caratula ? (d.caratula.length > 50 ? d.caratula.substring(0,50)+'...' : d.caratula) : ""}</td><td>${d.tipoProceso||""}</td><td>${d.juzgado||""}</td><td>${d.usuarioAsignado||""}</td><td>${d.estado||""}</td><td><span class="prioridad-pill ${prioridadClase(d.prioridad)}">${d.prioridad||"Ninguna"}</span></td><td>${formatearFecha(d.fechaRegistro, false)}</td><td>${eventosHTML}</td><td class="actions"><button class="button ver-detalles" data-id="${d.id}" title="Ver"><i class="fa fa-eye"></i></button><button class="button button-secondary editar-detalles" data-id="${d.id}" title="Editar"><i class="fa fa-pen"></i></button></td></tr>`); }); setTimeout(() => { document.querySelectorAll(".ver-detalles").forEach(b=>b.onclick=()=>abrirVer(b.dataset.id)); document.querySelectorAll(".editar-detalles").forEach(b=>b.onclick=()=>abrirEditar(b.dataset.id)); }, 0); }
