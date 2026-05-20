@@ -988,13 +988,9 @@
                 actualizarFiltros();
             });
 
-            // OPTIMIZACIÓN: debounce para validar existencia del expediente
-            let expedienteTimer;
-            $("numCausa").addEventListener('input', function(){
-                clearTimeout(expedienteTimer);
-                expedienteTimer = setTimeout(() => {
-                    validarExistenciaExpediente();
-                }, 1500);
+            // Cambiado: validación al perder foco (blur) en lugar de input con debounce
+            $("numCausa").addEventListener('blur', function(){
+                validarExistenciaExpediente();
             });
             
             selTipo.addEventListener('change', function() { poblarJuzgadosPorTipo(this.value); });
