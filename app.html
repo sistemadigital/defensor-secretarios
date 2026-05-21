@@ -89,7 +89,7 @@
 
         .footer-content:hover { opacity: 0.8; }
 
-        /* Menú desplegable igual que antes */
+        /* Menú desplegable */
         .menu-popup {
             display: none;
             position: absolute;
@@ -122,7 +122,7 @@
             display: flex; align-items: center; gap: 20px; z-index: 10; height: 100%; cursor: pointer;
         }
         
-        /* BANNER FIJO CON CAMBIO DE COLOR SEGÚN EVENTOS Y CLICKABLE */
+        /* BANNER FIJO */
         .event-banner {
             border-radius: 40px;
             padding: 6px 18px;
@@ -157,7 +157,6 @@
             transform: scale(1.1);
         }
 
-        /* Texto de acceso defensor oficial */
         .acceso-defensor-text {
             color: white;
             font-size: 0.85rem;
@@ -193,7 +192,6 @@
         }
         .logout-button:hover { background-color: rgba(0,191,255,0.2); border-color: #00BFFF; }
 
-        /* Nuevo ícono de menú: GIF animado */
         .menu-icon-img {
             width: 32px;
             height: auto;
@@ -336,28 +334,57 @@
         .edit-icon { cursor: pointer; margin-left: 8px; color: #64748b; transition: color 0.2s; }
         .edit-icon:hover { color: #00BFFF; }
 
-        .top-image-container { display: flex; justify-content: center; align-items: center; width: 100%; flex: 1; cursor: pointer; margin: 0; }
+        /* CONTENEDOR ORIGINAL DE LA IMAGEN CON LUZ CELESTE ANIMADA Y VIBRANTE */
+        .top-image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            flex: 1;
+            cursor: pointer;
+            margin: 0;
+            padding: 20px;
+        }
         .image-large {
-            width: auto; max-width: 90vw; max-height: 70vh; background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 1rem;
-            padding: 0.75rem; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); display: flex; align-items: center; justify-content: center;
+            width: auto;
+            max-width: 90vw;
+            max-height: 70vh;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 1rem;
+            padding: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            /* LUZ CELESTE ANIMADA Y VIBRANTE */
+            animation: celesteGlow 2s infinite ease-in-out;
+            box-shadow: 0 0 15px 5px rgba(0, 191, 255, 0.3);
         }
-        .image-large img { width: 100%; height: auto; max-height: calc(70vh - 1.5rem); object-fit: contain; display: block; }
-
-        .info-modal {
-            display: none; position: fixed; background: white; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            padding: 1.5rem; width: 350px; max-width: 90vw; border: 1px solid #e2e8f0; z-index: 1002; color: #1e293b; line-height: 1.5;
+        .image-large img {
+            width: 100%;
+            height: auto;
+            max-height: calc(70vh - 1.5rem);
+            object-fit: contain;
+            display: block;
+            border-radius: 0.5rem;
         }
-        .info-modal.show { display: block; }
-        .info-modal p { margin: 0.5rem 0; font-size: 0.95rem; }
-        .info-modal strong { color: #003366; font-weight: 600; }
-
-        .left-info-image {
-            display: none; position: fixed; width: 350px; max-width: 90vw; height: auto; z-index: 1003;
-            pointer-events: none; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            background: rgba(255,255,255,0.1); backdrop-filter: blur(4px); padding: 8px; border: 1px solid rgba(255,255,255,0.3);
+        /* Animación vibrante de la luz de fondo */
+        @keyframes celesteGlow {
+            0% {
+                box-shadow: 0 0 5px 2px rgba(0, 191, 255, 0.2), 0 0 8px 4px rgba(0, 191, 255, 0.1);
+                border-color: rgba(0, 191, 255, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 30px 15px rgba(0, 191, 255, 0.7), 0 0 45px 20px rgba(0, 191, 255, 0.4);
+                border-color: rgba(0, 191, 255, 0.9);
+            }
+            100% {
+                box-shadow: 0 0 5px 2px rgba(0, 191, 255, 0.2), 0 0 8px 4px rgba(0, 191, 255, 0.1);
+                border-color: rgba(0, 191, 255, 0.3);
+            }
         }
-        .left-info-image img { width: 100%; height: auto; display: block; border-radius: 8px; }
 
         .birthday-modal { display: none; position: fixed; z-index: 11000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
         .birthday-modal-content { background-color: #fff; margin: auto; padding: 2rem; border-radius: 2rem; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #ff6f61; animation: fadeIn 0.3s; position: relative; }
@@ -370,14 +397,13 @@
         .btn-cerrar { background-color: #003366; color: white; border: none; padding: 0.6rem 2rem; border-radius: 2rem; cursor: pointer; font-weight: 600; transition: background 0.2s; margin-top: 1rem; }
         .btn-cerrar:hover { background-color: #002244; }
 
-        /* ----- MODALES FLOTANTES FESTIVIDADES (Modernizados y Unificados) ----- */
+        /* MODALES FESTIVOS */
         .modal-festividad-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px);
             display: flex; align-items: center; justify-content: center;
             z-index: 15000; animation: fadeInFestModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        
         .modal-festividad-contenido {
             background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
             backdrop-filter: blur(20px);
@@ -391,18 +417,14 @@
             overflow: hidden;
             animation: slideUpFestModal 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
-        /* Resplandor sutil de fondo para el modal */
         .modal-festividad-contenido::before {
             content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
             background: radial-gradient(circle, rgba(0,191,255,0.08) 0%, transparent 60%);
             z-index: -1; animation: rotateGlow 15s linear infinite; pointer-events: none;
         }
-
         @keyframes rotateGlow { 100% { transform: rotate(360deg); } }
         @keyframes slideUpFestModal { from { transform: translateY(30px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
         @keyframes fadeInFestModal { from { opacity: 0; } to { opacity: 1; } }
-        
         .modal-festividad-titulo {
             font-size: 1.8rem;
             font-weight: 800;
@@ -415,7 +437,6 @@
             background-clip: text;
             text-transform: uppercase;
         }
-        
         .modal-festividad-imagen {
             width: 100%;
             max-width: 240px;
@@ -426,13 +447,11 @@
             object-fit: cover;
             animation: pulseImgFest 3s infinite ease-in-out;
         }
-
         @keyframes pulseImgFest {
             0% { transform: scale(1); box-shadow: 0 15px 35px -10px rgba(0,0,0,0.2), 0 0 0 4px rgba(255,255,255,0.8); }
             50% { transform: scale(1.05); box-shadow: 0 25px 45px -12px rgba(2,132,199,0.35), 0 0 0 6px rgba(255,255,255,0.9); }
             100% { transform: scale(1); box-shadow: 0 15px 35px -10px rgba(0,0,0,0.2), 0 0 0 4px rgba(255,255,255,0.8); }
         }
-        
         .modal-festividad-fecha {
             font-size: 1.1rem;
             font-weight: 700;
@@ -446,19 +465,6 @@
             letter-spacing: 0.3px;
         }
 
-        @media (max-width: 640px) {
-            .modal-festividad-contenido { padding: 2rem 1.8rem; border-radius: 28px; max-width: 90%; }
-            .modal-festividad-titulo { font-size: 1.5rem; margin-bottom: 1.2rem; }
-            .modal-festividad-imagen { max-width: 190px; margin-bottom: 1.5rem; }
-            .modal-festividad-fecha { font-size: 0.95rem; padding: 0.4rem 1.4rem; }
-        }
-        @media (max-width: 480px) {
-            .modal-festividad-contenido { padding: 1.8rem 1.2rem; }
-            .modal-festividad-titulo { font-size: 1.35rem; }
-            .modal-festividad-imagen { max-width: 160px; }
-            .modal-festividad-fecha { font-size: 0.85rem; line-height: 1.4; }
-        }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 768px) {
@@ -466,8 +472,7 @@
             .sistema-digital-text { display: none; }
             .left-group { gap: 0.5rem; }
             .image-large { max-height: 50vh; }
-            .info-modal { width: 280px; }
-            .left-info-image { width: 280px; }
+            .top-image-container { padding: 15px; }
 
             footer {
                 height: auto;
@@ -479,130 +484,30 @@
                 justify-content: space-between;
                 flex-wrap: nowrap;
                 gap: 6px;
-                border-top-width: 3px;
             }
-
-            .footer-left {
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                flex: 1 1 auto;
-                justify-content: flex-start;
-                flex-wrap: nowrap;
-                width: auto;
-                min-width: 0;
-            }
-
-            .footer-content {
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                flex-shrink: 1;
-                min-width: 0;
-            }
-
-            .menu-icon-img {
-                width: 28px;
-            }
-
-            .footer-defensoria {
-                display: none;
-            }
-
-            .datetime-weather-container {
-                display: none;
-            }
-
-            .acceso-defensor-text {
-                display: none;
-            }
-
-            .footer-right {
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                flex-wrap: nowrap;
-                width: auto;
-                justify-content: flex-end;
-                flex-shrink: 0;
-            }
-
-            .event-banner {
-                padding: 4px 12px;
-                white-space: normal;
-                text-align: center;
-                max-width: 140px;
-            }
-            .event-banner p {
-                font-size: 0.7rem;
-                white-space: normal;
-                line-height: 1.2;
-            }
-
-            .sistema-info-text-container {
-                display: flex;
-                align-items: center;
-                flex-shrink: 1;
-                min-width: 0;
-            }
-
-            .sistema-info-text {
-                font-size: 0.85rem;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: 110px;
-            }
-
-            .logout-button {
-                padding: 5px 10px;
-                font-size: 0.85rem;
-                gap: 4px;
-                flex-shrink: 0;
-            }
-
-            .logout-button span:last-child {
-                display: inline;
-            }
-
-            .menu-popup {
-                width: 200px;
-                left: 0;
-                right: auto;
-            }
-
-            .calendar-popup {
-                width: 240px;
-                left: 0;
-                right: auto;
-            }
-
-            .sistema-info-modal {
-                width: 200px;
-                right: 0;
-                left: auto;
-            }
+            .footer-left { display: flex; align-items: center; gap: 6px; flex: 1 1 auto; justify-content: flex-start; flex-wrap: nowrap; width: auto; min-width: 0; }
+            .footer-content { display: flex; align-items: center; gap: 4px; flex-shrink: 1; min-width: 0; }
+            .menu-icon-img { width: 28px; }
+            .footer-defensoria { display: none; }
+            .datetime-weather-container { display: none; }
+            .acceso-defensor-text { display: none; }
+            .footer-right { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; width: auto; justify-content: flex-end; flex-shrink: 0; }
+            .event-banner { padding: 4px 12px; white-space: normal; text-align: center; max-width: 140px; }
+            .event-banner p { font-size: 0.7rem; white-space: normal; line-height: 1.2; }
+            .sistema-info-text-container { display: flex; align-items: center; flex-shrink: 1; min-width: 0; }
+            .sistema-info-text { font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
+            .logout-button { padding: 5px 10px; font-size: 0.85rem; gap: 4px; flex-shrink: 0; }
+            .menu-popup { width: 200px; left: 0; right: auto; }
+            .calendar-popup { width: 240px; left: 0; right: auto; }
+            .sistema-info-modal { width: 200px; right: 0; left: auto; }
         }
 
         @media (max-width: 360px) {
-            .sistema-info-text {
-                font-size: 0.75rem;
-                max-width: 90px;
-            }
-            .logout-button {
-                padding: 4px 8px;
-                font-size: 0.75rem;
-            }
-            .menu-icon-img {
-                width: 26px;
-            }
-            .event-banner {
-                max-width: 120px;
-                padding: 3px 8px;
-            }
-            .event-banner p {
-                font-size: 0.65rem;
-            }
+            .sistema-info-text { font-size: 0.75rem; max-width: 90px; }
+            .logout-button { padding: 4px 8px; font-size: 0.75rem; }
+            .menu-icon-img { width: 26px; }
+            .event-banner { max-width: 120px; padding: 3px 8px; }
+            .event-banner p { font-size: 0.65rem; }
         }
     </style>
 </head>
@@ -626,22 +531,11 @@
                 </div>
             </div>
 
+            <!-- IMAGEN CENTRAL: contenedor original con luz celeste animada -->
             <div class="top-image-container" id="imagenCentralContainer">
                 <div class="image-large">
                     <img src="https://github.com/sistema-secretarios/imagenes-sistema/blob/main/MP6.png?raw=true" alt="Ministerio Público">
                 </div>
-            </div>
-
-            <div id="infoModal" class="info-modal">
-                <p><strong>Defensor Oficial:</strong> Dr. Marcelo Gustavo Ramos</p>
-                <p><strong>Secretarios:</strong> Dra. Patricia Soledad Riveros, Dra. Alicia Mariela Corrales, Dr. Enzo Luciano Magnani</p>
-                <p><strong>Teléfono Oficial:</strong> +54 376 4446700 interno 1188.</p>
-                <p><strong>Whatsapp Oficial:</strong> +54 376 4889359</p>
-                <p><strong>Correo Zimbra:</strong> defensoriacivil6.posadas@mpmisiones.gob.ar</p>
-            </div>
-
-            <div id="leftInfoImage" class="left-info-image">
-                <img src="https://github.com/sistema-secretarios/imagenes-sistema/blob/main/pc.png?raw=true" alt="Computadora 3D">
             </div>
         </div>
     </main>
@@ -753,146 +647,17 @@
     </div>
 
     <script>
-        // ---------- MODALES FLOTANTES: SEMANA DE MAYO + 9 JULIO + 20 JUNIO + FIESTAS FIN DE AÑO ----------
-        function isMayoWeek() {
-            const hoy = new Date();
-            const mes = hoy.getMonth();
-            const dia = hoy.getDate();
-            return (mes === 4 && dia >= 18 && dia <= 25);
-        }
-
-        function isNueveJulio() {
-            const hoy = new Date();
-            return (hoy.getMonth() === 6 && hoy.getDate() === 9);
-        }
-
-        function isVeinteJunio() {
-            const hoy = new Date();
-            return (hoy.getMonth() === 5 && hoy.getDate() === 20);
-        }
-
-        function isFinDeAnioRange() {
-            const hoy = new Date();
-            const mes = hoy.getMonth();
-            const dia = hoy.getDate();
-            if (mes === 11 && dia >= 8) return true;
-            if (mes === 0 && dia <= 6) return true;
-            return false;
-        }
-
-        function mostrarModalSemanaMayo() {
-            if (document.querySelector('.modal-festividad-overlay')) return;
-            const modalDiv = document.createElement('div');
-            modalDiv.className = 'modal-festividad-overlay';
-            modalDiv.innerHTML = `
-                <div class="modal-festividad-contenido">
-                    <div class="modal-festividad-titulo">Semana de Mayo</div>
-                    <img src="https://github.com/sistemadigital/iconos/blob/main/argentina.jpg?raw=true" 
-                         alt="Argentina" 
-                         class="modal-festividad-imagen"
-                         loading="eager">
-                    <div class="modal-festividad-fecha">18 al 25 de Mayo</div>
-                </div>
-            `;
-            document.body.appendChild(modalDiv);
-            let timeoutId = null;
-            const cerrarModal = () => {
-                if (modalDiv && modalDiv.parentNode) {
-                    if (timeoutId) clearTimeout(timeoutId);
-                    modalDiv.remove();
-                }
-            };
-            modalDiv.addEventListener('click', (e) => { if (e.target === modalDiv) cerrarModal(); });
-            timeoutId = setTimeout(() => cerrarModal(), 5000);
-        }
-
-        function mostrarModalIndependencia() {
-            if (document.querySelector('.modal-festividad-overlay')) return;
-            const modalDiv = document.createElement('div');
-            modalDiv.className = 'modal-festividad-overlay';
-            modalDiv.innerHTML = `
-                <div class="modal-festividad-contenido">
-                    <div class="modal-festividad-titulo">Día de la Independencia</div>
-                    <img src="https://github.com/sistemadigital/iconos/blob/main/argentina.jpg?raw=true" 
-                         alt="Argentina" 
-                         class="modal-festividad-imagen"
-                         loading="eager">
-                    <div class="modal-festividad-fecha">9 de Julio - Argentina</div>
-                </div>
-            `;
-            document.body.appendChild(modalDiv);
-            let timeoutId = null;
-            const cerrarModal = () => {
-                if (modalDiv && modalDiv.parentNode) {
-                    if (timeoutId) clearTimeout(timeoutId);
-                    modalDiv.remove();
-                }
-            };
-            modalDiv.addEventListener('click', (e) => { if (e.target === modalDiv) cerrarModal(); });
-            timeoutId = setTimeout(() => cerrarModal(), 5000);
-        }
-
-        function mostrarModalBandera() {
-            if (document.querySelector('.modal-festividad-overlay')) return;
-            const modalDiv = document.createElement('div');
-            modalDiv.className = 'modal-festividad-overlay';
-            modalDiv.innerHTML = `
-                <div class="modal-festividad-contenido">
-                    <div class="modal-festividad-titulo">Día de la Bandera</div>
-                    <img src="https://github.com/sistemadigital/iconos/blob/main/argentina.jpg?raw=true" 
-                         alt="Argentina" 
-                         class="modal-festividad-imagen"
-                         loading="eager">
-                    <div class="modal-festividad-fecha">20 de Junio - Argentina</div>
-                </div>
-            `;
-            document.body.appendChild(modalDiv);
-            let timeoutId = null;
-            const cerrarModal = () => {
-                if (modalDiv && modalDiv.parentNode) {
-                    if (timeoutId) clearTimeout(timeoutId);
-                    modalDiv.remove();
-                }
-            };
-            modalDiv.addEventListener('click', (e) => { if (e.target === modalDiv) cerrarModal(); });
-            timeoutId = setTimeout(() => cerrarModal(), 5000);
-        }
-
-        function mostrarModalFinDeAnio() {
-            if (document.querySelector('.modal-festividad-overlay')) return;
-            const modalDiv = document.createElement('div');
-            modalDiv.className = 'modal-festividad-overlay';
-            modalDiv.innerHTML = `
-                <div class="modal-festividad-contenido">
-                    <div class="modal-festividad-titulo">Fiestas de Fin de Año</div>
-                    <img src="https://github.com/sistemadigital/iconos/blob/main/navidad.png?raw=true" 
-                         alt="Navidad" 
-                         class="modal-festividad-imagen"
-                         loading="eager">
-                    <div class="modal-festividad-fecha">Navidad, Año Nuevo y Reyes</div>
-                </div>
-            `;
-            document.body.appendChild(modalDiv);
-            let timeoutId = null;
-            const cerrarModal = () => {
-                if (modalDiv && modalDiv.parentNode) {
-                    if (timeoutId) clearTimeout(timeoutId);
-                    modalDiv.remove();
-                }
-            };
-            modalDiv.addEventListener('click', (e) => { if (e.target === modalDiv) cerrarModal(); });
-            timeoutId = setTimeout(() => cerrarModal(), 5000);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            if (isMayoWeek()) setTimeout(() => mostrarModalSemanaMayo(), 200);
-            if (isNueveJulio()) setTimeout(() => mostrarModalIndependencia(), 250);
-            if (isVeinteJunio()) setTimeout(() => mostrarModalBandera(), 300);
-            if (isFinDeAnioRange()) setTimeout(() => mostrarModalFinDeAnio(), 350);
-        });
-    </script>
-
-    <script>
+        // Festividades (sin cambios)
+        function isMayoWeek() { const hoy = new Date(); const mes = hoy.getMonth(); const dia = hoy.getDate(); return (mes === 4 && dia >= 18 && dia <= 25); }
+        function isNueveJulio() { const hoy = new Date(); return (hoy.getMonth() === 6 && hoy.getDate() === 9); }
+        function isVeinteJunio() { const hoy = new Date(); return (hoy.getMonth() === 5 && hoy.getDate() === 20); }
+        function isFinDeAnioRange() { const hoy = new Date(); const mes = hoy.getMonth(); const dia = hoy.getDate(); if (mes === 11 && dia >= 8) return true; if (mes === 0 && dia <= 6) return true; return false; }
+        function mostrarModalSemanaMayo() { if (document.querySelector('.modal-festividad-overlay')) return; const modalDiv = document.createElement('div'); modalDiv.className = 'modal-festividad-overlay'; modalDiv.innerHTML = `<div class="modal-festividad-contenido"><div class="modal-festividad-titulo">Semana de Mayo</div><img src="https://github.com/sistemadigital/iconos/blob/main/argentina.jpg?raw=true" alt="Argentina" class="modal-festividad-imagen" loading="eager"><div class="modal-festividad-fecha">18 al 25 de Mayo</div></div>`; document.body.appendChild(modalDiv); let timeoutId = null; const cerrarModal = () => { if (modalDiv && modalDiv.parentNode) { if (timeoutId) clearTimeout(timeoutId); modalDiv.remove(); } }; modalDiv.addEventListener('click', (e) => { if (e.target === modalDiv) cerrarModal(); }); timeoutId = setTimeout(() => cerrarModal(), 5000); }
+        function mostrarModalIndependencia() { if (document.querySelector('.modal-festividad-overlay')) return; const modalDiv = document.createElement('div'); modalDiv.className = 'modal-festividad-overlay'; modalDiv.innerHTML = `<div class="modal-festividad-contenido"><div class="modal-festividad-titulo">Día de la Independencia</div><img src="https://github.com/sistemadigital/iconos/blob/main/argentina.jpg?raw=true" alt="Argentina" class="modal-festividad-imagen" loading="eager"><div class="modal-festividad-fecha">9 de Julio - Argentina</div></div>`; document.body.appendChild(modalDiv); let timeoutId = null; const cerrarModal = () => { if (modalDiv && modalDiv.parentNode) { if (timeoutId) clearTimeout(timeoutId); modalDiv.remove(); } }; modalDiv.addEventListener('click', (e) => { if (e.target === modalDiv) cerrarModal(); }); timeoutId = setTimeout(() => cerrarModal(), 5000); }
+        function mostrarModalBandera() { if (document.querySelector('.modal-festividad-overlay')) return; const modalDiv = document.createElement('div'); modalDiv.className = 'modal-festividad-overlay'; modalDiv.innerHTML = `<div class="modal-festividad-contenido"><div class="modal-festividad-titulo">Día de la Bandera</div><img src="https://github.com/sistemadigital/iconos/blob/main/argentina.jpg?raw=true" alt="Argentina" class="modal-festividad-imagen" loading="eager"><div class="modal-festividad-fecha">20 de Junio - Argentina</div></div>`; document.body.appendChild(modalDiv); let timeoutId = null; const cerrarModal = () => { if (modalDiv && modalDiv.parentNode) { if (timeoutId) clearTimeout(timeoutId); modalDiv.remove(); } }; modalDiv.addEventListener('click', (e) => { if (e.target === modalDiv) cerrarModal(); }); timeoutId = setTimeout(() => cerrarModal(), 5000); }
+        function mostrarModalFinDeAnio() { if (document.querySelector('.modal-festividad-overlay')) return; const modalDiv = document.createElement('div'); modalDiv.className = 'modal-festividad-overlay'; modalDiv.innerHTML = `<div class="modal-festividad-contenido"><div class="modal-festividad-titulo">Fiestas de Fin de Año</div><img src="https://github.com/sistemadigital/iconos/blob/main/navidad.png?raw=true" alt="Navidad" class="modal-festividad-imagen" loading="eager"><div class="modal-festividad-fecha">Navidad, Año Nuevo y Reyes</div></div>`; document.body.appendChild(modalDiv); let timeoutId = null; const cerrarModal = () => { if (modalDiv && modalDiv.parentNode) { if (timeoutId) clearTimeout(timeoutId); modalDiv.remove(); } }; modalDiv.addEventListener('click', (e) => { if (e.target === modalDiv) cerrarModal(); }); timeoutId = setTimeout(() => cerrarModal(), 5000); }
+        document.addEventListener('DOMContentLoaded', () => { if (isMayoWeek()) setTimeout(() => mostrarModalSemanaMayo(), 200); if (isNueveJulio()) setTimeout(() => mostrarModalIndependencia(), 250); if (isVeinteJunio()) setTimeout(() => mostrarModalBandera(), 300); if (isFinDeAnioRange()) setTimeout(() => mostrarModalFinDeAnio(), 350); });
+        
         function loadPage(url) {
             const iframe = document.getElementById('appIframe');
             const home = document.getElementById('homeContent');
@@ -901,272 +666,65 @@
             home.style.display = 'none';
             closeAllModals(); 
         }
-
         window.mostrarHome = function() {
             document.getElementById('appIframe').style.display = 'none';
             document.getElementById('homeContent').style.display = 'flex';
             document.getElementById('appIframe').src = '';
             closeAllModals();
         };
-
         function closeAllModals() {
             document.getElementById('mainMenuPopup')?.classList.remove('show');
             document.getElementById('calendarPopup')?.classList.remove('show');
-            document.getElementById('infoModal')?.classList.remove('show');
             document.getElementById('sistemaInfoModal')?.classList.remove('show');
-            if(document.getElementById('leftInfoImage')) document.getElementById('leftInfoImage').style.display = 'none';
             const dropdown = document.getElementById('userDropdown');
             if(dropdown) dropdown.classList.remove('show');
         }
-
         document.addEventListener('click', (e) => {
             const isClickInsideMenu = document.getElementById('btnMainMenu')?.contains(e.target);
             const isClickInsideCalendar = document.getElementById('dateTimeWeatherBtn')?.contains(e.target);
-            const isClickInsideInfoDefensoria = document.getElementById('footerDefensoria')?.contains(e.target);
-            const isClickInsideInfoCentral = document.getElementById('imagenCentralContainer')?.contains(e.target);
-            const isClickInsideUser = document.getElementById('welcomeBar')?.contains(e.target) || document.getElementById('userDropdown')?.contains(e.target);
-            const isClickInsideFooter = document.getElementById('mainFooter')?.contains(e.target);
             const isClickInsideDevInfo = document.getElementById('btnSistemaInfoContainer')?.contains(e.target);
             const isClickInsideBanner = document.getElementById('eventBanner')?.contains(e.target);
-
-            if (!isClickInsideMenu && !isClickInsideCalendar && !isClickInsideInfoDefensoria && !isClickInsideInfoCentral && !isClickInsideUser && !isClickInsideFooter && !isClickInsideDevInfo && !isClickInsideBanner) {
-                closeAllModals();
-            }
+            if (!isClickInsideMenu && !isClickInsideCalendar && !isClickInsideDevInfo && !isClickInsideBanner) closeAllModals();
         });
-
         document.getElementById('mainFooter').addEventListener('click', function(e) {
             if (e.target.closest('#eventBanner')) return;
-            if (e.target === this || e.target.id === 'footerLeftArea' || e.target.id === 'footerRightArea') {
-                window.mostrarHome();
-            }
+            if (e.target === this || e.target.id === 'footerLeftArea' || e.target.id === 'footerRightArea') window.mostrarHome();
         });
-
-        document.getElementById('btnMainMenu').addEventListener('click', (e) => {
-            if (e.target.closest('a')) return;
-            e.stopPropagation();
-            const menu = document.getElementById('mainMenuPopup');
-            const isShow = menu.classList.contains('show');
-            closeAllModals();
-            if(!isShow) menu.classList.add('show');
-        });
-
-        document.getElementById('btnSistemaInfoText')?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const modal = document.getElementById('sistemaInfoModal');
-            const isShow = modal.classList.contains('show');
-            closeAllModals();
-            if(!isShow) modal.classList.add('show');
-        });
-
+        document.getElementById('btnMainMenu').addEventListener('click', (e) => { if (e.target.closest('a')) return; e.stopPropagation(); const menu = document.getElementById('mainMenuPopup'); const isShow = menu.classList.contains('show'); closeAllModals(); if(!isShow) menu.classList.add('show'); });
+        document.getElementById('btnSistemaInfoText')?.addEventListener('click', (e) => { e.stopPropagation(); const modal = document.getElementById('sistemaInfoModal'); const isShow = modal.classList.contains('show'); closeAllModals(); if(!isShow) modal.classList.add('show'); });
+        
         const dtwBtn = document.getElementById('dateTimeWeatherBtn');
         const calPopup = document.getElementById('calendarPopup');
-
-        dtwBtn.addEventListener('click', (e) => {
-           e.stopPropagation();
-            const isShow = calPopup.classList.contains('show');
-            closeAllModals();
-            if(!isShow) {
-                calPopup.classList.add('show');
-                const today = new Date();
-                currentMonth = today.getMonth();
-                currentYear = today.getFullYear();
-                
-                renderCalendar(currentMonth, currentYear);
-            }
-        });
-
-        function updateDateTime() {
-            const now = new Date();
-            const day = String(now.getDate()).padStart(2, '0');
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const year = now.getFullYear();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('currentDateTime').textContent = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-        }
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
-
-        let currentMonth = new Date().getMonth();
-        let currentYear = new Date().getFullYear();
-
-        function renderCalendar(month, year) {
-            const grid = document.getElementById('calendarGrid');
-            const monthYearText = document.getElementById('monthYear');
-            grid.innerHTML = '';
-            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-            monthYearText.textContent = `${monthNames[month]} ${year}`;
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const today = new Date();
-            for (let i = 0; i < firstDay; i++) { grid.innerHTML += `<div class="calendar-day empty"></div>`; }
-            for (let i = 1; i <= daysInMonth; i++) {
-                const isToday = (i === today.getDate() && month === today.getMonth() && year === today.getFullYear());
-                const classes = isToday ? 'calendar-day current' : 'calendar-day';
-                grid.innerHTML += `<div class="${classes}">${i}</div>`;
-            }
-        }
-
+        dtwBtn.addEventListener('click', (e) => { e.stopPropagation(); const isShow = calPopup.classList.contains('show'); closeAllModals(); if(!isShow) { calPopup.classList.add('show'); const today = new Date(); currentMonth = today.getMonth(); currentYear = today.getFullYear(); renderCalendar(currentMonth, currentYear); } });
+        
+        function updateDateTime() { const now = new Date(); const day = String(now.getDate()).padStart(2, '0'); const month = String(now.getMonth() + 1).padStart(2, '0'); const year = now.getFullYear(); const hours = String(now.getHours()).padStart(2, '0'); const minutes = String(now.getMinutes()).padStart(2, '0'); const seconds = String(now.getSeconds()).padStart(2, '0'); document.getElementById('currentDateTime').textContent = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`; }
+        setInterval(updateDateTime, 1000); updateDateTime();
+        let currentMonth = new Date().getMonth(); let currentYear = new Date().getFullYear();
+        function renderCalendar(month, year) { const grid = document.getElementById('calendarGrid'); const monthYearText = document.getElementById('monthYear'); grid.innerHTML = ''; const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']; monthYearText.textContent = `${monthNames[month]} ${year}`; const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate(); const today = new Date(); for (let i = 0; i < firstDay; i++) { grid.innerHTML += `<div class="calendar-day empty"></div>`; } for (let i = 1; i <= daysInMonth; i++) { const isToday = (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()); const classes = isToday ? 'calendar-day current' : 'calendar-day'; grid.innerHTML += `<div class="${classes}">${i}</div>`; } }
         document.getElementById('prevMonth').addEventListener('click', (e) => { e.stopPropagation(); currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; } renderCalendar(currentMonth, currentYear); });
         document.getElementById('nextMonth').addEventListener('click', (e) => { e.stopPropagation(); currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; } renderCalendar(currentMonth, currentYear); });
-
-        async function fetchWeather() {
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-27.3671&longitude=-55.8961&current_weather=true');
-                const data = await res.json();
-                document.getElementById('currentWeather').innerHTML = `🌤️ ${data.current_weather.temperature}°C`;
-            } catch (error) { document.getElementById('currentWeather').innerHTML = `🌤️ N/A`; }
-        }
-        fetchWeather();
-
-        const modalSalida = document.getElementById('modalSalida');
-        const audioSalida = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/salida.mp3');
-        document.getElementById('btnSalir').addEventListener('click', () => {
-            modalSalida.classList.add('active');
-            audioSalida.play().catch(err => console.warn('Audio salida no pudo reproducirse automáticamente:', err));
-        });
-        document.getElementById('cancelarSalida').addEventListener('click', () => { modalSalida.classList.remove('active'); });
-
-        const infoModal = document.getElementById('infoModal');
-        const leftImage = document.getElementById('leftInfoImage');
-        const footerDefensoria = document.getElementById('footerDefensoria');
-        const imagenContainer = document.getElementById('imagenCentralContainer');
-
-        function posicionarModales() {
-            const isMobile = window.innerWidth <= 768;
-            const imagen = document.querySelector('.image-large img');
-            if (isMobile || !imagen || imagen.offsetParent === null) {
-                infoModal.style.left = '50%'; infoModal.style.top = '50%'; infoModal.style.transform = 'translate(-50%, -50%)'; leftImage.style.display = 'none'; return;
-            }
-            const imgRect = imagen.getBoundingClientRect();
-            infoModal.style.left = (imgRect.right + 10) + 'px';
-            infoModal.style.top = (imgRect.top + (imgRect.height / 2) - (infoModal.offsetHeight / 2)) + 'px';
-            infoModal.style.transform = 'none';
-            leftImage.style.display = 'block';
-            leftImage.style.left = (imgRect.left - leftImage.offsetWidth - 10) + 'px';
-            leftImage.style.top = (imgRect.top + (imgRect.height / 2) - (leftImage.offsetHeight / 2)) + 'px';
-            leftImage.style.transform = 'none';
-        }
-
-        function toggleInfoModal(e) {
-            e.stopPropagation();
-            const isShow = infoModal.classList.contains('show');
-            closeAllModals();
-            if(!isShow) {
-                infoModal.classList.add('show');
-                setTimeout(posicionarModales, 10);
-            }
-        }
-        const audioTituloIcon = document.getElementById('audioTituloIcon');
-        if (audioTituloIcon) {
-            audioTituloIcon.addEventListener('click', (e) => e.stopPropagation());
-        }
-        footerDefensoria.addEventListener('click', toggleInfoModal);
-        imagenContainer.addEventListener('click', toggleInfoModal);
-
-        const birthdayModal = document.getElementById('birthdayModal');
-        function cerrarBirthdayModal() { birthdayModal.style.display = 'none'; }
-        document.getElementById('closeBirthdayBtn').addEventListener('click', cerrarBirthdayModal);
-        document.querySelector('.close-birthday').addEventListener('click', cerrarBirthdayModal);
         
-        document.getElementById('eventBanner')?.addEventListener('click', (e) => {
-            if (e.target.closest('.audio-icon-banner')) return;
-            loadPage('https://sistemadigital.github.io/defensor-secretarios/eventos.html');
-        });
-
-        // ==================== AUDIOS ====================
+        async function fetchWeather() { try { const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-27.3671&longitude=-55.8961&current_weather=true'); const data = await res.json(); document.getElementById('currentWeather').innerHTML = `🌤️ ${data.current_weather.temperature}°C`; } catch (error) { document.getElementById('currentWeather').innerHTML = `🌤️ N/A`; } }
+        fetchWeather();
+        
+        const modalSalida = document.getElementById('modalSalida'); const audioSalida = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/salida.mp3');
+        document.getElementById('btnSalir').addEventListener('click', () => { modalSalida.classList.add('active'); audioSalida.play().catch(err => console.warn('Audio salida no pudo reproducirse automáticamente:', err)); });
+        document.getElementById('cancelarSalida').addEventListener('click', () => { modalSalida.classList.remove('active'); });
+        
         const audioIngreso = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/ingreso.mp3');
         const audioTitulo = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/titulo.mp3');
         const audioNoAgenda = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/noagenda.mp3');
         const audioSiAgenda = new Audio('https://github.com/sistemadigital/iconos/raw/refs/heads/main/siagenda.mp3');
-
-        document.getElementById('audioIngresoIcon').addEventListener('click', (e) => {
-            e.stopPropagation();
-            audioIngreso.play().catch(err => console.warn('Audio ingreso no pudo reproducirse:', err));
-        });
-
-        document.getElementById('audioSalidaIcon').addEventListener('click', (e) => {
-            e.stopPropagation();
-            audioSalida.play().catch(err => console.warn('Audio salida no pudo reproducirse:', err));
-        });
-
-        document.getElementById('audioTituloIcon').addEventListener('click', (e) => {
-            e.stopPropagation();
-            audioTitulo.play().catch(err => console.warn('Audio título no pudo reproducirse:', err));
-        });
-
+        document.getElementById('audioIngresoIcon').addEventListener('click', (e) => { e.stopPropagation(); audioIngreso.play().catch(err => console.warn('Audio ingreso no pudo reproducirse:', err)); });
+        document.getElementById('audioSalidaIcon').addEventListener('click', (e) => { e.stopPropagation(); audioSalida.play().catch(err => console.warn('Audio salida no pudo reproducirse:', err)); });
+        document.getElementById('audioTituloIcon').addEventListener('click', (e) => { e.stopPropagation(); audioTitulo.play().catch(err => console.warn('Audio título no pudo reproducirse:', err)); });
         const bannerDiv = document.getElementById('eventBanner');
         const bannerAudioIcon = document.getElementById('bannerAudioIcon');
+        function playBannerAudio() { if (bannerDiv.classList.contains('hay-eventos')) { audioSiAgenda.play().catch(err => console.warn('Audio si agenda no pudo reproducirse:', err)); } else { audioNoAgenda.play().catch(err => console.warn('Audio no agenda no pudo reproducirse:', err)); } }
+        bannerAudioIcon?.addEventListener('click', (e) => { e.stopPropagation(); playBannerAudio(); });
+        document.getElementById('eventBanner')?.addEventListener('click', (e) => { if (e.target.closest('.audio-icon-banner')) return; loadPage('https://sistemadigital.github.io/defensor-secretarios/eventos.html'); });
         
-        function playBannerAudio() {
-            if (bannerDiv.classList.contains('hay-eventos')) {
-                audioSiAgenda.play().catch(err => console.warn('Audio si agenda no pudo reproducirse:', err));
-            } else {
-                audioNoAgenda.play().catch(err => console.warn('Audio no agenda no pudo reproducirse:', err));
-            }
-        }
-        
-        bannerAudioIcon?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            playBannerAudio();
-        });
-
-        // ==================== AUDIOS PARA MENÚ: SOLO CLICK (sin hover) ====================
-        (function agregarAudiosMenuSoloClick() {
-            const ultimaReproduccion = new Map();
-
-            function playAudioWithCooldown(url) {
-                if (!url) return;
-                const ahora = Date.now();
-                const ultima = ultimaReproduccion.get(url) || 0;
-                if (ahora - ultima < 10000) return;
-                ultimaReproduccion.set(url, ahora);
-                const audio = new Audio(url);
-                audio.play().catch(err => console.warn(`No se pudo reproducir audio: ${url}`, err));
-            }
-
-            const audioMap = new Map([
-                ['Expedientes', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/expedientes.mp3'],
-                ['Eventos agendados', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/eventos.mp3'],
-                ['Libros', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/libros.mp3'],
-                ['Protección', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/proteccion.mp3'],
-                ['Clientes', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/clientes.mp3'],
-                ['Modelos', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/modelos.mp3'],
-                ['Biblioteca', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/biblioteca.mp3'],
-                ['Organismos', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/organismos.mp3'],
-                ['Diligenciadores', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/diligenciadores.mp3'],
-                ['Notificaciones', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/notificaciones.mp3'],
-                ['Operador', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/operador.mp3'],
-                ['Reporte de Sistema', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/reporte.mp3'],
-                ['Inasistencias y Licencias', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/inasistencia.mp3'],
-                ['Consultas y Turnos', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/consultas.mp3'],
-                ['Agenda Defensor', 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/agenda.mp3']
-            ]);
-
-            // Ícono del menú: solo click
-            const menuIcon = document.querySelector('.menu-icon-img');
-            if (menuIcon) {
-                const menuAudioUrl = 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/menu.mp3';
-                menuIcon.addEventListener('click', (e) => {
-                    playAudioWithCooldown(menuAudioUrl);
-                    // No detener propagación para que el listener original de #btnMainMenu funcione (desplegar menú)
-                });
-            }
-
-            // Enlaces del menú desplegable: solo click
-            const menuLinks = document.querySelectorAll('#mainMenuPopup ul li a');
-            menuLinks.forEach(link => {
-                const texto = link.textContent.trim();
-                const audioUrl = audioMap.get(texto);
-                if (audioUrl) {
-                    link.addEventListener('click', (e) => {
-                        playAudioWithCooldown(audioUrl);
-                        // No detener propagación, el onclick original ejecuta loadPage y el menú se cierra correctamente
-                    });
-                }
-            });
-        })();
+        (function agregarAudiosMenuSoloClick() { const ultimaReproduccion = new Map(); function playAudioWithCooldown(url) { if (!url) return; const ahora = Date.now(); const ultima = ultimaReproduccion.get(url) || 0; if (ahora - ultima < 10000) return; ultimaReproduccion.set(url, ahora); const audio = new Audio(url); audio.play().catch(err => console.warn(`No se pudo reproducir audio: ${url}`, err)); } const audioMap = new Map([['Expedientes','https://github.com/sistemadigital/iconos/raw/refs/heads/main/expedientes.mp3'],['Eventos agendados','https://github.com/sistemadigital/iconos/raw/refs/heads/main/eventos.mp3'],['Libros','https://github.com/sistemadigital/iconos/raw/refs/heads/main/libros.mp3'],['Protección','https://github.com/sistemadigital/iconos/raw/refs/heads/main/proteccion.mp3'],['Clientes','https://github.com/sistemadigital/iconos/raw/refs/heads/main/clientes.mp3'],['Modelos','https://github.com/sistemadigital/iconos/raw/refs/heads/main/modelos.mp3'],['Biblioteca','https://github.com/sistemadigital/iconos/raw/refs/heads/main/biblioteca.mp3'],['Organismos','https://github.com/sistemadigital/iconos/raw/refs/heads/main/organismos.mp3'],['Diligenciadores','https://github.com/sistemadigital/iconos/raw/refs/heads/main/diligenciadores.mp3'],['Notificaciones','https://github.com/sistemadigital/iconos/raw/refs/heads/main/notificaciones.mp3'],['Operador','https://github.com/sistemadigital/iconos/raw/refs/heads/main/operador.mp3'],['Reporte de Sistema','https://github.com/sistemadigital/iconos/raw/refs/heads/main/reporte.mp3'],['Inasistencias y Licencias','https://github.com/sistemadigital/iconos/raw/refs/heads/main/inasistencia.mp3'],['Consultas y Turnos','https://github.com/sistemadigital/iconos/raw/refs/heads/main/consultas.mp3'],['Agenda Defensor','https://github.com/sistemadigital/iconos/raw/refs/heads/main/agenda.mp3']]); const menuIcon = document.querySelector('.menu-icon-img'); if (menuIcon) { const menuAudioUrl = 'https://github.com/sistemadigital/iconos/raw/refs/heads/main/menu.mp3'; menuIcon.addEventListener('click', (e) => { playAudioWithCooldown(menuAudioUrl); }); } const menuLinks = document.querySelectorAll('#mainMenuPopup ul li a'); menuLinks.forEach(link => { const texto = link.textContent.trim(); const audioUrl = audioMap.get(texto); if (audioUrl) { link.addEventListener('click', (e) => { playAudioWithCooldown(audioUrl); }); } }); })();
     </script>
 
     <script type="module">
@@ -1182,7 +740,6 @@
             messagingSenderId: "1024631392849",
             appId: "1:1024631392849:web:1dc13292e690e2ed100670"
         };
-
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const dbPerfil = getFirestore(app);
@@ -1198,305 +755,23 @@
         const causasApp = initializeApp(causasConfig, "causas");
         const dbEventos = getFirestore(causasApp);
         
-        function toDate(val) {
-            if (!val) return null;
-            if (val.toDate) return val.toDate();
-            if (val.seconds) return new Date(val.seconds * 1000);
-            if (val instanceof Date) return val;
-            return new Date(val);
-        }
-        
-        async function hayEventosHoy() {
-            try {
-                const snapshot = await getDocs(collection(dbEventos, "causas"));
-                const hoy = new Date();
-                hoy.setHours(0, 0, 0, 0);
-                const manana = new Date(hoy);
-                manana.setDate(manana.getDate() + 1);
-        
-                for (const docSnap of snapshot.docs) {
-                    const causa = docSnap.data();
-                    if (Array.isArray(causa.audiencias)) {
-                        for (const fecha of causa.audiencias) {
-                            const fechaObj = toDate(fecha);
-                            if (fechaObj && fechaObj >= hoy && fechaObj < manana) return true;
-                        }
-                    }
-                    if (causa.audienciaGesell) {
-                        const fechaObj = toDate(causa.audienciaGesell);
-                        if (fechaObj && fechaObj >= hoy && fechaObj < manana) return true;
-                    }
-                    if (causa.vencimiento) {
-                        const fechaObj = toDate(causa.vencimiento);
-                        if (fechaObj && fechaObj >= hoy && fechaObj < manana) return true;
-                    }
-                    if (causa.vencimientoRecursos) {
-                        const fechaObj = toDate(causa.vencimientoRecursos);
-                        if (fechaObj && fechaObj >= hoy && fechaObj < manana) return true;
-                    }
-                    if (Array.isArray(causa.diligencias)) {
-                        for (const d of causa.diligencias) {
-                            const fechaObj = toDate(d.fecha);
-                            if (fechaObj && fechaObj >= hoy && fechaObj < manana) return true;
-                        }
-                    }
-                }
-                return false;
-            } catch (error) {
-                console.error("Error al consultar eventos:", error);
-                return false;
-            }
-        }
-        
-        async function actualizarBannerEventos() {
-            const bannerDiv = document.getElementById('eventBanner');
-            const bannerText = document.getElementById('bannerText');
-            if (!bannerDiv || !bannerText) return;
-            try {
-                const hayEventos = await hayEventosHoy();
-                if (hayEventos) {
-                    bannerText.textContent = "📅 Recuerda, hoy tenemos eventos agendados";
-                    bannerDiv.classList.add('hay-eventos');
-                } else {
-                    bannerText.textContent = "📅 Hoy no tenemos nada agendado";
-                    bannerDiv.classList.remove('hay-eventos');
-                }
-            } catch (err) {
-                console.error(err);
-                bannerText.textContent = "📅 No se pudo verificar eventos";
-                bannerDiv.classList.remove('hay-eventos');
-            }
-        }
-        
-        actualizarBannerEventos();
-        setInterval(actualizarBannerEventos, 30 * 60 * 1000);
+        function toDate(val) { if (!val) return null; if (val.toDate) return val.toDate(); if (val.seconds) return new Date(val.seconds * 1000); if (val instanceof Date) return val; return new Date(val); }
+        async function hayEventosHoy() { try { const snapshot = await getDocs(collection(dbEventos, "causas")); const hoy = new Date(); hoy.setHours(0,0,0,0); const manana = new Date(hoy); manana.setDate(manana.getDate()+1); for (const docSnap of snapshot.docs) { const causa = docSnap.data(); if (Array.isArray(causa.audiencias)) { for (const fecha of causa.audiencias) { const fechaObj = toDate(fecha); if (fechaObj && fechaObj >= hoy && fechaObj < manana) return true; } } if (causa.audienciaGesell) { const fechaObj = toDate(causa.audienciaGesell); if (fechaObj && fechaObj >= hoy && fechaObj < manana) return true; } if (causa.vencimiento) { const fechaObj = toDate(causa.vencimiento); if (fechaObj && fechaObj >= hoy && fechaObj < manana) return true; } if (causa.vencimientoRecursos) { const fechaObj = toDate(causa.vencimientoRecursos); if (fechaObj && fechaObj >= hoy && fechaObj < manana) return true; } if (Array.isArray(causa.diligencias)) { for (const d of causa.diligencias) { const fechaObj = toDate(d.fecha); if (fechaObj && fechaObj >= hoy && fechaObj < manana) return true; } } } return false; } catch (error) { console.error("Error al consultar eventos:", error); return false; } }
+        async function actualizarBannerEventos() { const bannerDiv = document.getElementById('eventBanner'); const bannerText = document.getElementById('bannerText'); if (!bannerDiv || !bannerText) return; try { const hayEventos = await hayEventosHoy(); if (hayEventos) { bannerText.textContent = "📅 Recuerda, hoy tenemos eventos agendados"; bannerDiv.classList.add('hay-eventos'); } else { bannerText.textContent = "📅 Hoy no tenemos nada agendado"; bannerDiv.classList.remove('hay-eventos'); } } catch (err) { console.error(err); bannerText.textContent = "📅 No se pudo verificar eventos"; bannerDiv.classList.remove('hay-eventos'); } }
+        actualizarBannerEventos(); setInterval(actualizarBannerEventos, 30 * 60 * 1000);
 
         const AVATAR_HOMBRE = 'https://github.com/sistemadigital/iconos/blob/main/hombre.png?raw=true';
         const AVATAR_MUJER = 'https://github.com/sistemadigital/iconos/blob/main/mujer.png?raw=true';
-
-        let currentUser = null;
-        let birthdayModalShown = false;
-        let userDataCache = {};
-
-        function formatDate(timestamp) {
-            if (!timestamp) return 'Desconocido';
-            const date = new Date(timestamp);
-            return `${date.getDate().toString().padStart(2,'0')}/${(date.getMonth()+1).toString().padStart(2,'0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`;
-        }
-
-        async function updateUserAvatar(photoURL) {
-            if (!currentUser) return;
-            try {
-                await updateProfile(currentUser, { photoURL });
-                userDataCache.photoURL = photoURL;
-                showWelcomeMessage(currentUser, true);
-            } catch (error) { console.error('Error al actualizar avatar:', error); }
-        }
-
-        async function updateDisplayName(newName) {
-            if (!currentUser || !newName.trim()) return;
-            try {
-                const safeEmail = currentUser.email || 'anonimo';
-                await updateProfile(currentUser, { displayName: newName.trim() });
-                await setDoc(doc(dbPerfil, "usuarios", safeEmail), { nombreCompleto: newName.trim() }, { merge: true });
-                userDataCache.displayName = newName.trim();
-                showWelcomeMessage(currentUser, true);
-            } catch (error) { console.error('Error al actualizar nombre:', error); }
-        }
-
-        async function updateFechaNacimiento(newFecha) {
-            if (!currentUser) return;
-            try {
-                const safeEmail = currentUser.email || 'anonimo';
-                await setDoc(doc(dbPerfil, "usuarios", safeEmail), { fechaNacimiento: newFecha }, { merge: true });
-                userDataCache.fechaNacimiento = newFecha;
-                showWelcomeMessage(currentUser, true);
-            } catch (error) { console.error('Error al actualizar fecha:', error); }
-        }
-
-        async function launchConfetti() {
-            try {
-                const module = await import('https://cdn.skypack.dev/canvas-confetti');
-                const confetti = module.default;
-                var duration = 3 * 1000;
-                var animationEnd = Date.now() + duration;
-                var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-                function randomInRange(min, max) { return Math.random() * (max - min) + min; }
-                var interval = setInterval(function() {
-                    var timeLeft = animationEnd - Date.now();
-                    if (timeLeft <= 0) return clearInterval(interval);
-                    var particleCount = 50 * (timeLeft / duration);
-                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-                }, 250);
-            } catch (e) {
-                console.warn("No se pudo cargar la animación de confeti. Ejecución continuada.");
-            }
-        }
-
-        async function checkBirthdays(isCurrentUserBirthday) {
-            if (!currentUser || isCurrentUserBirthday) return;
-            const today = new Date();
-            const hoy = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}`;
-            try {
-                const q = query(collection(dbPerfil, "usuarios"), where("fechaNacimiento", "==", hoy));
-                const querySnapshot = await getDocs(q);
-                const birthdayUsers = [];
-                querySnapshot.forEach(doc => { if (doc.data().email !== (currentUser?.email || '')) birthdayUsers.push(doc.data().nombreCompleto); });
-
-                if (birthdayUsers.length > 0 && !birthdayModalShown) {
-                    const list = document.getElementById('birthdayList');
-                    list.innerHTML = '';
-                    birthdayUsers.forEach(nombre => {
-                        const li = document.createElement('li');
-                        li.textContent = nombre;
-                        list.appendChild(li);
-                    });
-                    document.getElementById('birthdayModal').style.display = 'flex';
-                    birthdayModalShown = true;
-                }
-            } catch (error) { console.error("Error al consultar cumpleaños:", error); }
-        }
-
-        async function showWelcomeMessage(user, useCache = false) {
-            const dynamicContent = document.getElementById('dynamicContent');
-            const email = user.email || ""; 
-            const displayName = user.displayName || (email ? email.split('@')[0] : 'Usuario');
-            const photoURL = user.photoURL;
-            const inicial = displayName.charAt(0).toUpperCase();
-
-            let fechaNacimiento = userDataCache.fechaNacimiento || '';
-            let faltaFecha = false;
-            let esCumpleanos = false;
-            let mensajeBienvenida = `¡Hola ${displayName}!`;
-
-            if (!useCache && !userDataCache.fechaNacimiento && email) {
-                try {
-                    const docRef = doc(dbPerfil, "usuarios", email);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        fechaNacimiento = docSnap.data().fechaNacimiento || '';
-                        userDataCache.fechaNacimiento = fechaNacimiento;
-                    }
-                } catch (error) { console.warn("No se pudo obtener el perfil de usuario:", error); }
-            }
-
-            if (fechaNacimiento) {
-                const hoy = new Date();
-                const fechaHoy = `${String(hoy.getDate()).padStart(2, '0')}/${String(hoy.getMonth() + 1).padStart(2, '0')}`;
-                if (fechaNacimiento === fechaHoy) {
-                    mensajeBienvenida = `¡Feliz Cumpleaños, ${displayName}! 🎉`;
-                    esCumpleanos = true;
-                }
-            } else { faltaFecha = true; }
-
-            const creationTime = user.metadata?.creationTime ? new Date(user.metadata.creationTime) : null;
-            const lastLoginAt = user.metadata?.lastLoginAt ? new Date(parseInt(user.metadata.lastLoginAt)) : null;
-            const creationStr = creationTime ? formatDate(creationTime) : 'No disponible';
-            const lastLoginStr = lastLoginAt ? formatDate(lastLoginAt) : 'No disponible';
-
-            let avatarHtml = photoURL ? `<img src="${photoURL}" alt="Avatar" class="avatar-medium">` : `<div class="avatar-placeholder-medium">${inicial}</div>`;
-            let dropdownHeaderHtml = photoURL ? `<div style="font-weight:600; font-size:1.2rem; margin-bottom:1rem; color:#1e293b;">Detalle de Usuario</div>` : `<div class="dropdown-avatar-placeholder">${inicial}</div><div style="font-weight:600; color:#1e293b; text-align:center;">Elige un avatar</div>`;
-            let avatarOptionsHtml = photoURL ? '' : `<div class="avatar-options"><img src="${AVATAR_HOMBRE}" class="avatar-option" id="avatarHombre"><img src="${AVATAR_MUJER}" class="avatar-option" id="avatarMujer"></div>`;
-
-            dynamicContent.innerHTML = `
-                <div class="welcome-container" id="welcomeContainer">
-                    <div class="welcome-bar" id="welcomeBar">
-                        <div class="left-group">
-                            ${avatarHtml}
-                            <div>
-                                <div class="welcome-message">${mensajeBienvenida}</div>
-                                ${faltaFecha ? `<div id="avisoCompletar" style="font-size: 0.75em; color: #d9534f; cursor: pointer; text-decoration: underline;">🎉 Completa tu fecha de cumpleaños</div>` : ''}
-                            </div>
-                        </div>
-                        <span class="sistema-digital-text">Sistema Digital</span>
-                    </div>
-                    <div class="user-dropdown" id="userDropdown">
-                        ${dropdownHeaderHtml}
-                        ${avatarOptionsHtml}
-                        <div class="info-item" id="nameDisplayRow">
-                            <strong>Nombre:</strong> <span id="displayNameSpan">${displayName}</span>
-                            <i class="fas fa-pencil-alt edit-icon" id="editNameIcon"></i>
-                        </div>
-                        <div class="info-item edit-row" id="nameEditRow" style="display:none;">
-                            <strong>Nombre:</strong> <input type="text" id="nameInput" value="${displayName}" placeholder="Nombre y apellido">
-                            <button id="saveNameBtn" class="save-btn"><i class="fas fa-check"></i></button>
-                            <button id="cancelNameBtn" class="cancel-btn"><i class="fas fa-times"></i></button>
-                        </div>
-                        <div class="info-item" id="fechaDisplayRow">
-                            <strong>F. Nacimiento:</strong> <span id="fechaSpan">${fechaNacimiento || 'No registrada'}</span>
-                            <i class="fas fa-pencil-alt edit-icon" id="editFechaIcon"></i>
-                        </div>
-                        <div class="info-item edit-row" id="fechaEditRow" style="display:none;">
-                            <strong>F. Nacimiento:</strong> <input type="text" id="fechaInput" value="${fechaNacimiento}" placeholder="DD/MM" maxlength="5">
-                            <button id="saveFechaBtn" class="save-btn"><i class="fas fa-check"></i></button>
-                            <button id="cancelFechaBtn" class="cancel-btn"><i class="fas fa-times"></i></button>
-                        </div>
-                        <div class="info-item"><strong>Correo:</strong> ${email || 'No asignado'}</div>
-                        <div class="info-item"><strong>Último acceso:</strong> ${lastLoginStr}</div>
-                        <div class="info-item"><strong>Registro:</strong> ${creationStr}</div>
-                        <div class="version-badge">Versión 3.1.2026</div>
-                        <button onclick="window.mostrarHome()" style="margin-top:10px; padding:8px 15px; cursor:pointer; background:#00BFFF; border:none; border-radius:5px; color:white; font-weight:bold; width:100%;">Volver al Inicio</button>
-                    </div>
-                </div>
-            `;
-
-            if (esCumpleanos) launchConfetti();
-
-            const bar = document.getElementById('welcomeBar');
-            const dropdown = document.getElementById('userDropdown');
-
-            bar.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isShow = dropdown.classList.contains('show');
-                closeAllModals();
-                if(!isShow) dropdown.classList.add('show');
-            });
-
-            dropdown.addEventListener('click', (e) => e.stopPropagation());
-
-            document.getElementById('avatarHombre')?.addEventListener('click', () => updateUserAvatar(AVATAR_HOMBRE));
-            document.getElementById('avatarMujer')?.addEventListener('click', () => updateUserAvatar(AVATAR_MUJER));
-
-            document.getElementById('editNameIcon')?.addEventListener('click', () => { document.getElementById('nameDisplayRow').style.display='none'; document.getElementById('nameEditRow').style.display='flex'; document.getElementById('nameInput').focus(); });
-            document.getElementById('cancelNameBtn')?.addEventListener('click', () => { document.getElementById('nameDisplayRow').style.display='flex'; document.getElementById('nameEditRow').style.display='none'; document.getElementById('nameInput').value = displayName; });
-            document.getElementById('saveNameBtn')?.addEventListener('click', async () => {
-                const newName = document.getElementById('nameInput').value.trim();
-                if (newName && newName !== displayName) await updateDisplayName(newName);
-                else { document.getElementById('nameDisplayRow').style.display='flex'; document.getElementById('nameEditRow').style.display='none'; }
-            });
-
-            document.getElementById('editFechaIcon')?.addEventListener('click', () => { document.getElementById('fechaDisplayRow').style.display='none'; document.getElementById('fechaEditRow').style.display='flex'; document.getElementById('fechaInput').focus(); });
-            document.getElementById('cancelFechaBtn')?.addEventListener('click', () => { document.getElementById('fechaDisplayRow').style.display='flex'; document.getElementById('fechaEditRow').style.display='none'; document.getElementById('fechaInput').value = fechaNacimiento; });
-            document.getElementById('saveFechaBtn')?.addEventListener('click', async () => {
-                const newFecha = document.getElementById('fechaInput').value.trim();
-                if (!/^\d{2}\/\d{2}$/.test(newFecha)) return alert("Formato inválido. Usa DD/MM");
-                if (newFecha !== fechaNacimiento) await updateFechaNacimiento(newFecha);
-                else { document.getElementById('fechaDisplayRow').style.display='flex'; document.getElementById('fechaEditRow').style.display='none'; }
-            });
-
-            document.getElementById('avisoCompletar')?.addEventListener('click', () => {
-                dropdown.classList.add('show'); document.getElementById('fechaDisplayRow').style.display='none'; document.getElementById('fechaEditRow').style.display='flex'; document.getElementById('fechaInput').focus();
-            });
-
-            await checkBirthdays(esCumpleanos);
-        }
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                userDataCache.displayName = user.displayName;
-                userDataCache.photoURL = user.photoURL;
-                showWelcomeMessage(currentUser);
-            } else {
-                window.location.href = 'index.html';
-            }
-        });
-
-        document.getElementById('confirmarSalida').addEventListener('click', async () => {
-            document.getElementById('modalSalida').classList.remove('active');
-            try { await signOut(auth); } catch (error) { console.error('Error al salir:', error); }
-        });
+        let currentUser = null; let birthdayModalShown = false; let userDataCache = {};
+        function formatDate(timestamp) { if (!timestamp) return 'Desconocido'; const date = new Date(timestamp); return `${date.getDate().toString().padStart(2,'0')}/${(date.getMonth()+1).toString().padStart(2,'0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`; }
+        async function updateUserAvatar(photoURL) { if (!currentUser) return; try { await updateProfile(currentUser, { photoURL }); userDataCache.photoURL = photoURL; showWelcomeMessage(currentUser, true); } catch (error) { console.error('Error al actualizar avatar:', error); } }
+        async function updateDisplayName(newName) { if (!currentUser || !newName.trim()) return; try { const safeEmail = currentUser.email || 'anonimo'; await updateProfile(currentUser, { displayName: newName.trim() }); await setDoc(doc(dbPerfil, "usuarios", safeEmail), { nombreCompleto: newName.trim() }, { merge: true }); userDataCache.displayName = newName.trim(); showWelcomeMessage(currentUser, true); } catch (error) { console.error('Error al actualizar nombre:', error); } }
+        async function updateFechaNacimiento(newFecha) { if (!currentUser) return; try { const safeEmail = currentUser.email || 'anonimo'; await setDoc(doc(dbPerfil, "usuarios", safeEmail), { fechaNacimiento: newFecha }, { merge: true }); userDataCache.fechaNacimiento = newFecha; showWelcomeMessage(currentUser, true); } catch (error) { console.error('Error al actualizar fecha:', error); } }
+        async function launchConfetti() { try { const module = await import('https://cdn.skypack.dev/canvas-confetti'); const confetti = module.default; var duration = 3 * 1000; var animationEnd = Date.now() + duration; var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 }; function randomInRange(min, max) { return Math.random() * (max - min) + min; } var interval = setInterval(function() { var timeLeft = animationEnd - Date.now(); if (timeLeft <= 0) return clearInterval(interval); var particleCount = 50 * (timeLeft / duration); confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } })); confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } })); }, 250); } catch (e) { console.warn("No se pudo cargar la animación de confeti."); } }
+        async function checkBirthdays(isCurrentUserBirthday) { if (!currentUser || isCurrentUserBirthday) return; const today = new Date(); const hoy = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}`; try { const q = query(collection(dbPerfil, "usuarios"), where("fechaNacimiento", "==", hoy)); const querySnapshot = await getDocs(q); const birthdayUsers = []; querySnapshot.forEach(doc => { if (doc.data().email !== (currentUser?.email || '')) birthdayUsers.push(doc.data().nombreCompleto); }); if (birthdayUsers.length > 0 && !birthdayModalShown) { const list = document.getElementById('birthdayList'); list.innerHTML = ''; birthdayUsers.forEach(nombre => { const li = document.createElement('li'); li.textContent = nombre; list.appendChild(li); }); document.getElementById('birthdayModal').style.display = 'flex'; birthdayModalShown = true; } } catch (error) { console.error("Error al consultar cumpleaños:", error); } }
+        async function showWelcomeMessage(user, useCache = false) { const dynamicContent = document.getElementById('dynamicContent'); const email = user.email || ""; const displayName = user.displayName || (email ? email.split('@')[0] : 'Usuario'); const photoURL = user.photoURL; const inicial = displayName.charAt(0).toUpperCase(); let fechaNacimiento = userDataCache.fechaNacimiento || ''; let faltaFecha = false; let esCumpleanos = false; let mensajeBienvenida = `¡Hola ${displayName}!`; if (!useCache && !userDataCache.fechaNacimiento && email) { try { const docRef = doc(dbPerfil, "usuarios", email); const docSnap = await getDoc(docRef); if (docSnap.exists()) { fechaNacimiento = docSnap.data().fechaNacimiento || ''; userDataCache.fechaNacimiento = fechaNacimiento; } } catch (error) { console.warn("No se pudo obtener el perfil de usuario:", error); } } if (fechaNacimiento) { const hoy = new Date(); const fechaHoy = `${String(hoy.getDate()).padStart(2, '0')}/${String(hoy.getMonth() + 1).padStart(2, '0')}`; if (fechaNacimiento === fechaHoy) { mensajeBienvenida = `¡Feliz Cumpleaños, ${displayName}! 🎉`; esCumpleanos = true; } } else { faltaFecha = true; } const creationTime = user.metadata?.creationTime ? new Date(user.metadata.creationTime) : null; const lastLoginAt = user.metadata?.lastLoginAt ? new Date(parseInt(user.metadata.lastLoginAt)) : null; const creationStr = creationTime ? formatDate(creationTime) : 'No disponible'; const lastLoginStr = lastLoginAt ? formatDate(lastLoginAt) : 'No disponible'; let avatarHtml = photoURL ? `<img src="${photoURL}" alt="Avatar" class="avatar-medium">` : `<div class="avatar-placeholder-medium">${inicial}</div>`; let dropdownHeaderHtml = photoURL ? `<div style="font-weight:600; font-size:1.2rem; margin-bottom:1rem; color:#1e293b;">Detalle de Usuario</div>` : `<div class="dropdown-avatar-placeholder">${inicial}</div><div style="font-weight:600; color:#1e293b; text-align:center;">Elige un avatar</div>`; let avatarOptionsHtml = photoURL ? '' : `<div class="avatar-options"><img src="${AVATAR_HOMBRE}" class="avatar-option" id="avatarHombre"><img src="${AVATAR_MUJER}" class="avatar-option" id="avatarMujer"></div>`; dynamicContent.innerHTML = `<div class="welcome-container" id="welcomeContainer"><div class="welcome-bar" id="welcomeBar"><div class="left-group">${avatarHtml}<div><div class="welcome-message">${mensajeBienvenida}</div>${faltaFecha ? `<div id="avisoCompletar" style="font-size: 0.75em; color: #d9534f; cursor: pointer; text-decoration: underline;">🎉 Completa tu fecha de cumpleaños</div>` : ''}</div></div><span class="sistema-digital-text">Sistema Digital</span></div><div class="user-dropdown" id="userDropdown">${dropdownHeaderHtml}${avatarOptionsHtml}<div class="info-item" id="nameDisplayRow"><strong>Nombre:</strong> <span id="displayNameSpan">${displayName}</span><i class="fas fa-pencil-alt edit-icon" id="editNameIcon"></i></div><div class="info-item edit-row" id="nameEditRow" style="display:none;"><strong>Nombre:</strong> <input type="text" id="nameInput" value="${displayName}" placeholder="Nombre y apellido"><button id="saveNameBtn" class="save-btn"><i class="fas fa-check"></i></button><button id="cancelNameBtn" class="cancel-btn"><i class="fas fa-times"></i></button></div><div class="info-item" id="fechaDisplayRow"><strong>F. Nacimiento:</strong> <span id="fechaSpan">${fechaNacimiento || 'No registrada'}</span><i class="fas fa-pencil-alt edit-icon" id="editFechaIcon"></i></div><div class="info-item edit-row" id="fechaEditRow" style="display:none;"><strong>F. Nacimiento:</strong> <input type="text" id="fechaInput" value="${fechaNacimiento}" placeholder="DD/MM" maxlength="5"><button id="saveFechaBtn" class="save-btn"><i class="fas fa-check"></i></button><button id="cancelFechaBtn" class="cancel-btn"><i class="fas fa-times"></i></button></div><div class="info-item"><strong>Correo:</strong> ${email || 'No asignado'}</div><div class="info-item"><strong>Último acceso:</strong> ${lastLoginStr}</div><div class="info-item"><strong>Registro:</strong> ${creationStr}</div><div class="version-badge">Versión 3.1.2026</div><button onclick="window.mostrarHome()" style="margin-top:10px; padding:8px 15px; cursor:pointer; background:#00BFFF; border:none; border-radius:5px; color:white; font-weight:bold; width:100%;">Volver al Inicio</button></div></div>`; if (esCumpleanos) launchConfetti(); const bar = document.getElementById('welcomeBar'); const dropdown = document.getElementById('userDropdown'); bar.addEventListener('click', (e) => { e.stopPropagation(); const isShow = dropdown.classList.contains('show'); closeAllModals(); if(!isShow) dropdown.classList.add('show'); }); dropdown.addEventListener('click', (e) => e.stopPropagation()); document.getElementById('avatarHombre')?.addEventListener('click', () => updateUserAvatar(AVATAR_HOMBRE)); document.getElementById('avatarMujer')?.addEventListener('click', () => updateUserAvatar(AVATAR_MUJER)); document.getElementById('editNameIcon')?.addEventListener('click', () => { document.getElementById('nameDisplayRow').style.display='none'; document.getElementById('nameEditRow').style.display='flex'; document.getElementById('nameInput').focus(); }); document.getElementById('cancelNameBtn')?.addEventListener('click', () => { document.getElementById('nameDisplayRow').style.display='flex'; document.getElementById('nameEditRow').style.display='none'; document.getElementById('nameInput').value = displayName; }); document.getElementById('saveNameBtn')?.addEventListener('click', async () => { const newName = document.getElementById('nameInput').value.trim(); if (newName && newName !== displayName) await updateDisplayName(newName); else { document.getElementById('nameDisplayRow').style.display='flex'; document.getElementById('nameEditRow').style.display='none'; } }); document.getElementById('editFechaIcon')?.addEventListener('click', () => { document.getElementById('fechaDisplayRow').style.display='none'; document.getElementById('fechaEditRow').style.display='flex'; document.getElementById('fechaInput').focus(); }); document.getElementById('cancelFechaBtn')?.addEventListener('click', () => { document.getElementById('fechaDisplayRow').style.display='flex'; document.getElementById('fechaEditRow').style.display='none'; document.getElementById('fechaInput').value = fechaNacimiento; }); document.getElementById('saveFechaBtn')?.addEventListener('click', async () => { const newFecha = document.getElementById('fechaInput').value.trim(); if (!/^\d{2}\/\d{2}$/.test(newFecha)) return alert("Formato inválido. Usa DD/MM"); if (newFecha !== fechaNacimiento) await updateFechaNacimiento(newFecha); else { document.getElementById('fechaDisplayRow').style.display='flex'; document.getElementById('fechaEditRow').style.display='none'; } }); document.getElementById('avisoCompletar')?.addEventListener('click', () => { dropdown.classList.add('show'); document.getElementById('fechaDisplayRow').style.display='none'; document.getElementById('fechaEditRow').style.display='flex'; document.getElementById('fechaInput').focus(); }); await checkBirthdays(esCumpleanos); }
+        onAuthStateChanged(auth, (user) => { if (user) { currentUser = user; userDataCache.displayName = user.displayName; userDataCache.photoURL = user.photoURL; showWelcomeMessage(currentUser); } else { window.location.href = 'index.html'; } });
+        document.getElementById('confirmarSalida').addEventListener('click', async () => { document.getElementById('modalSalida').classList.remove('active'); try { await signOut(auth); } catch (error) { console.error('Error al salir:', error); } });
     </script>
 </body>
 </html>
