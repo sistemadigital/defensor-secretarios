@@ -100,10 +100,10 @@
         .note-text { font-size: 0.85rem; line-height: 1.4; color: var(--text-main); }
         #cargarMasNotas { margin-top: 12px; width: 100%; justify-content: center; }
 
-        .btn-eliminar-audiencia, .btn-eliminar-diligencia { background: var(--danger); color: white; border: none; border-radius: var(--radius-sm); padding: 6px 12px; cursor: pointer; font-size: 0.75rem; }
+        .btn-eliminar-audiencia, .btn-eliminar-diligencia, .btn-eliminar-costas { background: var(--danger); color: white; border: none; border-radius: var(--radius-sm); padding: 6px 12px; cursor: pointer; font-size: 0.75rem; }
         .btn-audiencia, .btn-diligencia { background: var(--success); border: none; padding: 8px 14px; border-radius: var(--radius-md); color: white; cursor: pointer; font-size: 0.8rem; font-weight: 500; margin-top: 8px; }
-        .audiencia-item, .diligencia-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
-        .audiencia-item input, .diligencia-item input { flex: 1; }
+        .audiencia-item, .diligencia-item, .costas-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+        .audiencia-item input, .diligencia-item input, .costas-item input, .costas-item select { flex: 1; min-width: 150px; }
         .editor-toolbar { display: flex; gap: 8px; margin-bottom: 12px; background: var(--bg-surface-soft); border-radius: var(--radius-md); padding: 8px 12px; border: 1px solid var(--border-light); }
         .editor-toolbar button { background: white; border: 1px solid var(--border-light); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-weight: 500; transition: all 0.1s; }
         .editor-toolbar button:hover { background: var(--primary-soft); }
@@ -217,7 +217,19 @@
         <div id="paginacion-container"></div>
     </main>
 
-    <div id="modal"><div class="content"><div class="modal-header"><i class="fa-solid fa-file-pen"></i><h2 id="tituloForm" style="margin:0;">Nuevo Expediente</h2></div><div class="modal-body"><form id="formCausa" action="#" method="post"><input type="hidden" id="editId" /><div class="tabs-container"><div class="tabs-nav"><button type="button" class="tab-button active" data-tab="tab1">Datos Principales</button><button type="button" class="tab-button" data-tab="tab2">Fechas</button><button type="button" class="tab-button" data-tab="tab3">Audiencias</button><button type="button" class="tab-button" data-tab="tab4">Vencimientos</button><button type="button" class="tab-button" data-tab="tab5">Diligencias</button><button type="button" class="tab-button" data-tab="tab6">Recursos</button><button type="button" class="tab-button" data-tab="tab7">Costas</button><button type="button" class="tab-button" data-tab="tab8">Observaciones</button></div><div id="tab1" class="tab-content active"><div class="field"><label for="numCausa">N° Expediente *</label><input id="numCausa" required autocomplete="off" /><span class="error-message">Este campo es obligatorio.</span></div><div class="field"><label for="caratula">Carátula Completa *</label><textarea id="caratula" rows="2" required></textarea></div><div class="field"><label for="tipoProceso">Tipo de Proceso *</label><select id="tipoProceso" required></select></div><div class="field"><label for="juzgado">Juzgado *</label><select id="juzgado" required></select></div><div class="field"><label for="prioridad">Prioridad *</label><select id="prioridad" required><option value="Ninguna">Ninguna</option><option value="Baja">Baja</option><option value="Media">Media</option><option value="Alta">Alta</option></select></div><div class="field"><label for="usuarioAsignado">Usuario Asignado *</label><select id="usuarioAsignado" required></select></div><div class="field"><label for="estado">Estado del Proceso</label><select id="estado"><option>En trámite</option><option>Finalizado</option><option>Archivado</option><option>En Alzada</option></select></div><div class="field"><label for="intervencion">Intervención</label><select id="intervencion"><option>Defensor Oficial</option><option>Ministerio Principal</option><option>Ministerio Complementario</option><option>Patrocinante Actor</option><option>Patrocinante Demandado</option><option>Patrocinante Tercero</option><option value="Defensor de Ausente">Defensor de Ausente</option><option>Patrocinante presunto incapaz</option><option value="Defensor Oficial Asesor Letrado">Asistencia Letrada del incapaz</option><option>Ministerio Público del incapaz</option><option>Ministerio Público en turno Abril</option><option>Ministerio Público en turno Agosto</option><option>Ministerio Público en turno Diciembre</option><option>Tutor Ad Litem</option><option>Defensor Oficial Art 329 CPCC</option><option>Defensor Oficial Art 626 CPCC</option></select></div><div class="field"><label for="datosNnya">Datos de NNyA (máx. 500 palabras)</label><textarea id="datosNnya"></textarea><div class="counter" id="counterNnya" style="display:none">0/500</div></div></div><div id="tab2" class="tab-content"><div class="field"><label for="fechaInicio">Fecha de Inicio</label><input type="date" id="fechaInicio" /></div><div class="field"><label for="fechaPase">Fecha de Pase</label><input type="datetime-local" id="fechaPase" step="60" /></div></div><div id="tab3" class="tab-content"><div class="field"><label for="audiencias">Audiencias señaladas</label><div id="audiencias-container" class="audiencias-container"></div><button type="button" id="btnAgregarAudiencia" class="btn-audiencia"><i class="fa fa-plus"></i> Agregar Audiencia</button></div><div class="field"><label for="audienciaGesell">Audiencia en Cámara Gesell</label><div style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="habilitarAudienciaGesell" /><span>Habilitar</span></div><input type="datetime-local" id="audienciaGesell" step="60" disabled /></div><div class="field"><label for="nnyaGesell">NNyA en Gesell (máx. 400 palabras)</label><textarea id="nnyaGesell" disabled></textarea><div class="counter" id="counterNnyaGesell" style="display:none">0/400</div></div></div><div id="tab4" class="tab-content"><div class="field"><label for="vencimiento">Vencimiento</label><input type="datetime-local" id="vencimiento" step="60" /></div><div class="field"><label for="vencimientoRecursos">Vencimiento de Recursos</label><input type="datetime-local" id="vencimientoRecursos" step="60" /></div></div><div id="tab5" class="tab-content"><div class="field"><label for="diligencias">Diligencias</label><div id="diligencias-container" class="diligencias-container"></div><button type="button" id="btnAgregarDiligencia" class="btn-diligencia"><i class="fa fa-plus"></i> Agregar Diligencia</button></div></div><div id="tab6" class="tab-content"><div class="field"><label for="recursos">Recursos Interpuestos</label><select id="recursos"><option value="">Seleccione un recurso</option><option>Apelación</option><option>Queja</option><option>Inconstitucionalidad</option><option>Nulidad</option><option>Reposición</option><option>Aclaratoria</option><option>Recurso Extraordinario</option><option>Recurso de Inaplicabilidad</option></select></div><div id="recursos-opcionales" style="display:none;"><div class="field"><label for="recursosContestacion">Recursos Contestación</label><select id="recursosContestacion"><option value="">Seleccione un recurso</option><option>Apelación</option><option>Queja</option><option>Inconstitucionalidad</option><option>Nulidad</option><option>Reposición</option><option>Aclaratoria</option><option>Recurso Extraordinario</option><option>Recurso de Inaplicabilidad</option></select></div><div class="field"><label for="estadoRecursos">Estado de Recursos</label><select id="estadoRecursos"><option value="">Seleccione un estado</option><option>Pendiente</option><option>En trámite</option><option>Resuelto</option><option>Rechazado</option></select></div></div></div><div id="tab7" class="tab-content"><div class="field"><label for="fechaCostas">Fecha Resolución-Sentencia que impone costas</label><input type="date" id="fechaCostas" /></div><div class="field"><label for="costasFavor">Defensoría con costas a favor</label><select id="costasFavor"><option value="NO">NO</option><option value="SI">SI</option></select></div><div class="field"><label for="detalleCostas">Detalle</label><textarea id="detalleCostas" rows="3" placeholder="Especifique cualquier detalle relevante de las costas..."></textarea></div></div><div id="tab8" class="tab-content"><div class="field"><label for="observaciones">Observaciones (máx. 1000 palabras)</label><div class="editor-toolbar"><button type="button" id="btnBold" title="Negrita"><i class="fas fa-bold"></i></button><button type="button" id="btnColorAzul" class="color-button azul">A</button><button type="button" id="btnColorRojo" class="color-button rojo">A</button><button type="button" id="btnColorVerde" class="color-button verde">A</button><button type="button" id="btnColorNormal" class="color-button normal">Normal</button></div><div id="observaciones-editor" contenteditable="true"></div><input type="hidden" id="observaciones" name="observaciones"><div class="counter" id="counter">0/1000</div></div></div></div></form></div><div class="controls-form"><button class="button button-success" type="button" id="btnGuardar"><i class="fa fa-save"></i>Guardar</button></div></div></div>
+    <div id="modal"><div class="content"><div class="modal-header"><i class="fa-solid fa-file-pen"></i><h2 id="tituloForm" style="margin:0;">Nuevo Expediente</h2></div><div class="modal-body"><form id="formCausa" action="#" method="post"><input type="hidden" id="editId" /><div class="tabs-container"><div class="tabs-nav"><button type="button" class="tab-button active" data-tab="tab1">Datos Principales</button><button type="button" class="tab-button" data-tab="tab2">Fechas</button><button type="button" class="tab-button" data-tab="tab3">Audiencias</button><button type="button" class="tab-button" data-tab="tab4">Vencimientos</button><button type="button" class="tab-button" data-tab="tab5">Diligencias</button><button type="button" class="tab-button" data-tab="tab6">Recursos</button><button type="button" class="tab-button" data-tab="tab7">Costas</button><button type="button" class="tab-button" data-tab="tab8">Observaciones</button></div><div id="tab1" class="tab-content active"><div class="field"><label for="numCausa">N° Expediente *</label><input id="numCausa" required autocomplete="off" /><span class="error-message">Este campo es obligatorio.</span></div><div class="field"><label for="caratula">Carátula Completa *</label><textarea id="caratula" rows="2" required></textarea></div><div class="field"><label for="tipoProceso">Tipo de Proceso *</label><select id="tipoProceso" required></select></div><div class="field"><label for="juzgado">Juzgado *</label><select id="juzgado" required></select></div><div class="field"><label for="prioridad">Prioridad *</label><select id="prioridad" required><option value="Ninguna">Ninguna</option><option value="Baja">Baja</option><option value="Media">Media</option><option value="Alta">Alta</option></select></div><div class="field"><label for="usuarioAsignado">Usuario Asignado *</label><select id="usuarioAsignado" required></select></div><div class="field"><label for="estado">Estado del Proceso</label><select id="estado"><option>En trámite</option><option>Finalizado</option><option>Archivado</option><option>En Alzada</option></select></div><div class="field"><label for="intervencion">Intervención</label><select id="intervencion"><option>Defensor Oficial</option><option>Ministerio Principal</option><option>Ministerio Complementario</option><option>Patrocinante Actor</option><option>Patrocinante Demandado</option><option>Patrocinante Tercero</option><option value="Defensor de Ausente">Defensor de Ausente</option><option>Patrocinante presunto incapaz</option><option value="Defensor Oficial Asesor Letrado">Asistencia Letrada del incapaz</option><option>Ministerio Público del incapaz</option><option>Ministerio Público en turno Abril</option><option>Ministerio Público en turno Agosto</option><option>Ministerio Público en turno Diciembre</option><option>Tutor Ad Litem</option><option>Defensor Oficial Art 329 CPCC</option><option>Defensor Oficial Art 626 CPCC</option></select></div><div class="field"><label for="datosNnya">Datos de NNyA (máx. 500 palabras)</label><textarea id="datosNnya"></textarea><div class="counter" id="counterNnya" style="display:none">0/500</div></div></div><div id="tab2" class="tab-content"><div class="field"><label for="fechaInicio">Fecha de Inicio</label><input type="date" id="fechaInicio" /></div><div class="field"><label for="fechaPase">Fecha de Pase</label><input type="datetime-local" id="fechaPase" step="60" /></div></div><div id="tab3" class="tab-content"><div class="field"><label for="audiencias">Audiencias señaladas</label><div id="audiencias-container" class="audiencias-container"></div><button type="button" id="btnAgregarAudiencia" class="btn-audiencia"><i class="fa fa-plus"></i> Agregar Audiencia</button></div><div class="field"><label for="audienciaGesell">Audiencia en Cámara Gesell</label><div style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="habilitarAudienciaGesell" /><span>Habilitar</span></div><input type="datetime-local" id="audienciaGesell" step="60" disabled /></div><div class="field"><label for="nnyaGesell">NNyA en Gesell (máx. 400 palabras)</label><textarea id="nnyaGesell" disabled></textarea><div class="counter" id="counterNnyaGesell" style="display:none">0/400</div></div></div><div id="tab4" class="tab-content"><div class="field"><label for="vencimiento">Vencimiento</label><input type="datetime-local" id="vencimiento" step="60" /></div><div class="field"><label for="vencimientoRecursos">Vencimiento de Recursos</label><input type="datetime-local" id="vencimientoRecursos" step="60" /></div></div><div id="tab5" class="tab-content"><div class="field"><label for="diligencias">Diligencias</label><div id="diligencias-container" class="diligencias-container"></div><button type="button" id="btnAgregarDiligencia" class="btn-diligencia"><i class="fa fa-plus"></i> Agregar Diligencia</button></div></div><div id="tab6" class="tab-content"><div class="field"><label for="recursos">Recursos Interpuestos</label><select id="recursos"><option value="">Seleccione un recurso</option><option>Apelación</option><option>Queja</option><option>Inconstitucionalidad</option><option>Nulidad</option><option>Reposición</option><option>Aclaratoria</option><option>Recurso Extraordinario</option><option>Recurso de Inaplicabilidad</option></select></div><div id="recursos-opcionales" style="display:none;"><div class="field"><label for="recursosContestacion">Recursos Contestación</label><select id="recursosContestacion"><option value="">Seleccione un recurso</option><option>Apelación</option><option>Queja</option><option>Inconstitucionalidad</option><option>Nulidad</option><option>Reposición</option><option>Aclaratoria</option><option>Recurso Extraordinario</option><option>Recurso de Inaplicabilidad</option></select></div><div class="field"><label for="estadoRecursos">Estado de Recursos</label><select id="estadoRecursos"><option value="">Seleccione un estado</option><option>Pendiente</option><option>En trámite</option><option>Resuelto</option><option>Rechazado</option></select></div></div></div>
+            <div id="tab7" class="tab-content">
+                <div class="field">
+                    <label>Costas por Resolución / Sentencia</label>
+                    <div id="costas-items-container"></div>
+                    <button type="button" id="btnAgregarCostasItem" class="btn-diligencia" style="margin-top:8px;"><i class="fa fa-plus"></i> Agregar fecha</button>
+                </div>
+                <div class="field">
+                    <label for="detalleCostas">Detalle general de Costas</label>
+                    <textarea id="detalleCostas" rows="3" placeholder="Especifique cualquier detalle relevante de las costas..."></textarea>
+                </div>
+            </div>
+            <div id="tab8" class="tab-content"><div class="field"><label for="observaciones">Observaciones (máx. 1000 palabras)</label><div class="editor-toolbar"><button type="button" id="btnBold" title="Negrita"><i class="fas fa-bold"></i></button><button type="button" id="btnColorAzul" class="color-button azul">A</button><button type="button" id="btnColorRojo" class="color-button rojo">A</button><button type="button" id="btnColorVerde" class="color-button verde">A</button><button type="button" id="btnColorNormal" class="color-button normal">Normal</button></div><div id="observaciones-editor" contenteditable="true"></div><input type="hidden" id="observaciones" name="observaciones"><div class="counter" id="counter">0/1000</div></div></div></div></form></div><div class="controls-form"><button class="button button-success" type="button" id="btnGuardar"><i class="fa fa-save"></i>Guardar</button></div></div></div>
     
     <div id="modalVer"><div class="content"><div class="modal-header"><i class="fa-solid fa-eye"></i><h2 style="margin:0;">Detalle del Expediente</h2></div><div class="modal-body"><div id="verContenido"></div><div id="agregarNota"><label for="notaBitacora">Agregar Nota de Seguimiento:</label><textarea id="notaBitacora" placeholder="Escribe aquí la nota..."></textarea><button id="btnAgregarNota" class="button"><i class="fa fa-plus"></i> Guardar Nota</button></div><div class="notes-history"><h4 style="margin-bottom: 12px;">Historial de Notas</h4><div id="historialNotas"></div><button id="cargarMasNotas" class="button button-secondary" style="display:none; margin-top: 12px;"><i class="fas fa-chevron-down"></i> Cargar más notas</button></div></div><div class="controls-form" style="justify-content:flex-end;"><button id="btnCerrarVer" class="button button-secondary"><i class="fa fa-xmark"></i>Cerrar</button><button id="btnPrintRegistro" class="button button-success"><i class="fa fa-print"></i>Imprimir Registro</button></div></div></div>
     
@@ -394,14 +406,12 @@
                     eventosHTML += `</div>`; 
                 } 
 
-                // AMBAS BASES SON EDITABLES: siempre mostramos el botón de editar habilitado
                 const botonEditar = `<button class="button button-secondary editar-detalles" data-id="${d.id}" title="Editar"><i class="fa fa-pen"></i></button>`;
 
                 tbody.insertAdjacentHTML("beforeend", `<tr><td>${d.numCausa||""}</td><td>${d.caratula ? (d.caratula.length > 50 ? d.caratula.substring(0,50)+'...' : d.caratula) : ""}</td><td>${d.tipoProceso||""}</td><td>${d.juzgado||""}</td><td>${d.usuarioAsignado||""}</td><td>${d.estado||""}</td><td><span class="prioridad-pill ${prioridadClase(d.prioridad)}">${d.prioridad||"Ninguna"}</span></td><td>${formatearFecha(d.fechaRegistro, false)}</td><td>${eventosHTML}</td><td class="actions"><button class="button ver-detalles" data-id="${d.id}" title="Ver"><i class="fa fa-eye"></i></button>${botonEditar}</td></tr>`); 
             }); 
             setTimeout(() => { 
                 document.querySelectorAll(".ver-detalles").forEach(b=>b.onclick=()=>abrirVer(b.dataset.id)); 
-                // Siempre asignamos el evento de editar (sin restricción de solo lectura)
                 document.querySelectorAll(".editar-detalles").forEach(b=>b.onclick=()=>abrirEditar(b.dataset.id)); 
             }, 0); 
         }
@@ -432,19 +442,34 @@
                 const d = datosPaginaActual.find(causa => causa.id === id); 
                 if (!d) { mostrarAlertaPersonalizada("Error", "El expediente no está en la memoria actual."); return; } 
                 
-                // Siempre mostrar el bloque para agregar notas (ya sea histórica o nueva)
                 $("agregarNota").style.display = "block";
 
                 let contenidoHTML = `<div class="prioridad-texto ${prioridadClaseTexto(d.prioridad)}"><strong>Prioridad: ${d.prioridad || "Ninguna"}</strong></div>`; 
-                const etiquetas = { numCausa: "N° Expediente", caratula: "Carátula", tipoProceso: "Tipo de Proceso", juzgado: "Juzgado", fechaInicio: "Fecha de Inicio", fechaPase: "Fecha de Pase", intervencion: "Intervención", datosNnya: "Datos de NNyA", vencimiento: "Vencimiento", usuarioAsignado: "Usuario Asignado", estado: "Estado", recursos: "Recursos Interpuestos", recursosContestacion: "Contestación de Recursos", estadoRecursos: "Estado de Recursos", vencimientoRecursos: "Vencimiento de Recursos", audienciaGesell: "Audiencia Gesell", nnyaGesell: "NNyA en Gesell", observaciones: "Observaciones", fechaCostas: "Fecha Res./Sentencia (Costas)", costasFavor: "Defensoría c/ costas a favor", detalleCostas: "Detalle de Costas", fechaRegistro: "Fecha de Registro" }; 
-                const ordenClaves = ["numCausa","caratula","tipoProceso","juzgado","estado","usuarioAsignado","fechaRegistro","fechaInicio","fechaPase","intervencion","datosNnya","vencimiento","audiencias","diligencias","recursos","recursosContestacion","estadoRecursos","vencimientoRecursos","fechaCostas","costasFavor","detalleCostas","audienciaGesell","nnyaGesell","observaciones"]; 
+                const etiquetas = { numCausa: "N° Expediente", caratula: "Carátula", tipoProceso: "Tipo de Proceso", juzgado: "Juzgado", fechaInicio: "Fecha de Inicio", fechaPase: "Fecha de Pase", intervencion: "Intervención", datosNnya: "Datos de NNyA", vencimiento: "Vencimiento", usuarioAsignado: "Usuario Asignado", estado: "Estado", recursos: "Recursos Interpuestos", recursosContestacion: "Contestación de Recursos", estadoRecursos: "Estado de Recursos", vencimientoRecursos: "Vencimiento de Recursos", audienciaGesell: "Audiencia Gesell", nnyaGesell: "NNyA en Gesell", observaciones: "Observaciones", detalleCostas: "Detalle de Costas", fechaRegistro: "Fecha de Registro" }; 
+                const ordenClaves = ["numCausa","caratula","tipoProceso","juzgado","estado","usuarioAsignado","fechaRegistro","fechaInicio","fechaPase","intervencion","datosNnya","vencimiento","audiencias","diligencias","recursos","recursosContestacion","estadoRecursos","vencimientoRecursos","detalleCostas","audienciaGesell","nnyaGesell","observaciones"]; 
+                
+                // Mostrar items de costas si existen
+                if (d.costasItems && Array.isArray(d.costasItems) && d.costasItems.length > 0) {
+                    contenidoHTML += `<p><strong>Costas por Resolución/Sentencia:</strong></p><ul>`;
+                    d.costasItems.forEach(item => {
+                        const fechaStr = formatearFecha(item.fecha, false);
+                        const costasTexto = item.costasFavor === "SI" ? "Sí" : "No";
+                        contenidoHTML += `<li>${fechaStr} - Costas a favor: ${costasTexto}</li>`;
+                    });
+                    contenidoHTML += `</ul>`;
+                } else if (d.fechaCostas) { // compatibilidad con datos antiguos
+                    const fechaStr = formatearFecha(d.fechaCostas, false);
+                    const costasTexto = d.costasFavor === "SI" ? "Sí" : "No";
+                    contenidoHTML += `<p><strong>Costas por Resolución/Sentencia:</strong> ${fechaStr} - Costas a favor: ${costasTexto}</p>`;
+                }
+                
                 ordenClaves.forEach(k => { 
                     const v = d[k]; 
-                    if (v !== null && v !== undefined && v !== "" && k !== "prioridad") { 
+                    if (v !== null && v !== undefined && v !== "" && k !== "prioridad" && k !== "costasItems" && k !== "fechaCostas" && k !== "costasFavor") { 
                         const etiqueta = etiquetas[k] || k; 
                         if (k === "audiencias" && Array.isArray(v) && v.length > 0) { contenidoHTML += `<p><strong>Audiencias:</strong></p>`; v.forEach(aud => contenidoHTML += `<p style="margin-left: 20px;">${formatearFecha(aud, true)}</p>`); } 
                         else if (k === "diligencias" && Array.isArray(v) && v.length > 0) { contenidoHTML += `<p><strong>Diligencias:</strong></p>`; v.forEach(dilig => { contenidoHTML += `<p style="margin-left: 20px;">${formatearFecha(dilig.fecha, true)}${dilig.detalle ? ` - ${dilig.detalle}` : ''}</p>`; }); } 
-                        else if (['fechaInicio','fechaRegistro','fechaCostas'].includes(k)) { contenidoHTML += `<p><strong>${etiqueta}:</strong> ${formatearFecha(v, false)}</p>`; } 
+                        else if (['fechaInicio','fechaRegistro'].includes(k)) { contenidoHTML += `<p><strong>${etiqueta}:</strong> ${formatearFecha(v, false)}</p>`; } 
                         else if (v.seconds || v.toDate) { contenidoHTML += `<p><strong>${etiqueta}:</strong> ${formatearFecha(v, true)}</p>`; } 
                         else if (k === "observaciones") { contenidoHTML += `<p><strong>${etiqueta}:</strong></p><div>${v}</div>`; } 
                         else if (k !== "audiencias" && k !== "diligencias") { contenidoHTML += `<p><strong>${etiqueta}:</strong> ${v}</p>`; } 
@@ -464,12 +489,11 @@
             const txt = notaBitacora.value.trim(); 
             if (!txt) return; 
             try { 
-                // Guardamos la nota en la base activa (la misma del expediente)
-                const nuevaNotaRef = await dbActiva.collection("causas").doc(causaActualId).collection("seguimiento").add({ 
+                await dbActiva.collection("causas").doc(causaActualId).collection("seguimiento").add({ 
                     texto: txt, fecha: firebase.firestore.FieldValue.serverTimestamp(), usuario: "Usuario Actual" 
                 }); 
                 const fechaAhora = new Date(); const fechaFormateada = formatearFecha(fechaAhora, true);
-                const notaHTML = `<div class="note-item" data-id="${nuevaNotaRef.id}"><div class="note-meta"><span>${fechaFormateada}</span><span>por: Usuario Actual</span></div><div class="note-text">${txt.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div></div>`;
+                const notaHTML = `<div class="note-item"><div class="note-meta"><span>${fechaFormateada}</span><span>por: Usuario Actual</span></div><div class="note-text">${txt.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div></div>`;
                 historialNotas.insertAdjacentHTML('afterbegin', notaHTML);
                 const cantidadNotas = historialNotas.children.length;
                 if (!notasHasMore && cantidadNotas >= 5) {
@@ -479,32 +503,50 @@
             } catch(e) { mostrarAlertaFlotante("Error al guardar nota.", 'danger'); } 
         }
         
+        // Función para agregar un nuevo ítem de costas al formulario
+        function agregarItemCostas(fecha = "", costasFavor = "NO") {
+            const container = document.getElementById("costas-items-container");
+            const div = document.createElement('div');
+            div.className = 'costas-item';
+            const fechaInput = document.createElement('input');
+            fechaInput.type = 'date';
+            fechaInput.className = 'costas-fecha';
+            fechaInput.value = fecha;
+            const select = document.createElement('select');
+            select.className = 'costas-favor';
+            select.innerHTML = `<option value="NO">NO</option><option value="SI">SI</option>`;
+            if (costasFavor === "SI") select.value = "SI";
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'btn-eliminar-costas';
+            deleteBtn.innerHTML = '<i class="fa fa-trash"></i>';
+            div.appendChild(fechaInput);
+            div.appendChild(select);
+            div.appendChild(deleteBtn);
+            container.appendChild(div);
+            deleteBtn.onclick = () => div.remove();
+        }
+
         const guardarExpediente = async () => { 
             if (!validateForm()) return; 
             
-            // --- NUEVA VALIDACIÓN: No permitir crear en histórica ---
             if (modo === "nuevo" && dbActiva === dbHistorica) {
                 mostrarAlertaFlotante("No se permite crear nuevos expedientes en el archivo histórico.", 'danger');
                 return;
             }
-            // ---------------------------------------------------------
             
             const btnGuardar = $("btnGuardar"); 
             btnGuardar.disabled = true; 
             btnGuardar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...'; 
             const datos = recolectarDatosForm(); 
             try { 
-                const textosParaKeywords = [ datos.numCausa, datos.caratula, datos.usuarioAsignado, datos.datosNnya, datos.nnyaGesell, datos.observaciones, datos.intervencion, datos.costasFavor, datos.recursos, datos.recursosContestacion, datos.estadoRecursos, (datos.diligencias || []).map(d => d.detalle).join(' ') ].filter(Boolean).join(' ').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s]/gi, '').split(/\s+/).filter(p => p.length > 0); 
+                const textosParaKeywords = [ datos.numCausa, datos.caratula, datos.usuarioAsignado, datos.datosNnya, datos.nnyaGesell, datos.observaciones, datos.intervencion, datos.detalleCostas, datos.recursos, datos.recursosContestacion, datos.estadoRecursos, (datos.diligencias || []).map(d => d.detalle).join(' ') ].filter(Boolean).join(' ').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s]/gi, '').split(/\s+/).filter(p => p.length > 0); 
                 datos.keywords = [...new Set(textosParaKeywords)]; 
                 if (modo === "nuevo") { 
                     const numActual = $("numCausa").value.trim();
-                    if (numeroValido && ultimoNumeroValidado === numActual) {
-                        // Ya validado, pasa directo
-                    } else {
-                        // Comprobación en AMBAS bases para evitar duplicados cruzados
+                    if (!(numeroValido && ultimoNumeroValidado === numActual)) {
                         const snapNuevo = await dbNueva.collection("causas").where("numCausa", "==", numActual).get(); 
                         const snapHistorico = await dbHistorica.collection("causas").where("numCausa", "==", numActual).get();
-                        
                         if (!snapNuevo.empty || !snapHistorico.empty) { 
                             mostrarAlertaFlotante("El N° Expediente ya existe en la base de datos.", 'danger'); 
                             $("numCausa").closest('.field').classList.add('error'); 
@@ -512,11 +554,9 @@
                             return; 
                         }
                     }
-                    // Guardamos en la base activa (la que está seleccionada actualmente)
                     await dbActiva.collection("causas").add({ ...datos, fechaRegistro: firebase.firestore.FieldValue.serverTimestamp() }); 
                     mostrarAlertaFlotante("Se guardó correctamente.", 'success'); 
                 } else { 
-                    // Actualizamos en la base activa (la que corresponda)
                     await dbActiva.collection("causas").doc(editId.value).update(datos); 
                     mostrarAlertaFlotante("Actualizado correctamente.", 'success'); 
                 } 
@@ -534,7 +574,6 @@
                 try {
                     const snapNuevo = await dbNueva.collection("causas").where("numCausa", "==", num).get();
                     const snapHistorico = await dbHistorica.collection("causas").where("numCausa", "==", num).get();
-                    
                     if (!snapNuevo.empty || !snapHistorico.empty) { 
                         field.classList.add('error'); 
                         const origen = !snapHistorico.empty ? "el historial" : "la base nueva";
@@ -555,10 +594,168 @@
         
         function deshabilitarCamposFormulario(d) { document.querySelectorAll('#formCausa input:not(#numCausa), #formCausa textarea, #formCausa select').forEach(c => c.disabled = d); if($("btnGuardar")) $("btnGuardar").disabled = d; }
         function validateForm() { let isValid = true; ["numCausa", "caratula", "tipoProceso", "juzgado", "prioridad", "usuarioAsignado"].forEach(id => { const field = $(id); const parent = field.closest('.field'); if (field.value.trim() === "") { parent.classList.add('error'); isValid = false; } else { parent.classList.remove('error'); } }); if (!isValid) mostrarAlertaFlotante("Complete todos los campos obligatorios.", 'danger'); return isValid; }
-        function resetFormCausa() { $("formCausa").reset(); observacionesEditor.innerHTML = ''; observacionesHidden.value = ''; audienciasContainer.innerHTML = ''; diligenciasContainer.innerHTML = ''; $("habilitarAudienciaGesell").checked = false; $("audienciaGesell").disabled = true; $("nnyaGesell").disabled = true; $("recursos-opcionales").style.display = 'none'; tabButtons.forEach(btn => btn.classList.remove('active')); tabContents.forEach(c => c.classList.remove('active')); tabButtons[0].classList.add('active'); tabContents[0].classList.add('active'); $("counter").textContent = '0/1000'; document.querySelectorAll('.field').forEach(f => f.classList.remove('error')); numeroValido = false; ultimoNumeroValidado = ''; }
-        function recolectarDatosForm() { const datos = { numCausa: $("numCausa").value.trim(), caratula: $("caratula").value.trim(), tipoProceso: $("tipoProceso").value, juzgado: $("juzgado").value, prioridad: $("prioridad").value, usuarioAsignado: $("usuarioAsignado").value, estado: $("estado").value, intervencion: $("intervencion").value, datosNnya: $("datosNnya").value.trim(), fechaInicio: parseDateToTimestamp($("fechaInicio").value), fechaPase: parseDateTimeLocalToTimestamp($("fechaPase").value), vencimiento: parseDateTimeLocalToTimestamp($("vencimiento").value), vencimientoRecursos: parseDateTimeLocalToTimestamp($("vencimientoRecursos").value), recursos: $("recursos").value || null, recursosContestacion: $("recursosContestacion").value || null, estadoRecursos: $("estadoRecursos").value || null, observaciones: observacionesHidden.value, fechaCostas: parseDateToTimestamp($("fechaCostas").value), costasFavor: $("costasFavor").value, detalleCostas: $("detalleCostas").value.trim() }; if ($("habilitarAudienciaGesell").checked) { datos.audienciaGesell = parseDateTimeLocalToTimestamp($("audienciaGesell").value); datos.nnyaGesell = $("nnyaGesell").value.trim(); } else { datos.audienciaGesell = null; datos.nnyaGesell = ""; } datos.audiencias = []; audienciasContainer.querySelectorAll('.audiencia-fecha').forEach(i => { const t = parseDateTimeLocalToTimestamp(i.value); if (t) datos.audiencias.push(t); }); datos.diligencias = []; diligenciasContainer.querySelectorAll('.diligencia-item').forEach(i => { const f = parseDateTimeLocalToTimestamp(i.querySelector('.diligencia-fecha').value); const d = i.querySelector('.diligencia-detalle').value.trim(); if (f) datos.diligencias.push({ fecha: f, detalle: d }); }); return datos; }
-        function cargarDatosEnForm(data) { $("numCausa").value = data.numCausa||''; $("caratula").value = data.caratula||''; $("tipoProceso").value = data.tipoProceso||''; poblarJuzgadosPorTipo(data.tipoProceso); setTimeout(()=>{ $("juzgado").value = data.juzgado||''; }, 100); $("prioridad").value = data.prioridad||'Ninguna'; $("usuarioAsignado").value = data.usuarioAsignado||''; $("estado").value = data.estado||'En trámite'; $("intervencion").value = data.intervencion||''; $("datosNnya").value = data.datosNnya||''; $("fechaInicio").value = formatFechaParaInput(data.fechaInicio, false); $("fechaPase").value = formatFechaParaInput(data.fechaPase, true); $("vencimiento").value = formatFechaParaInput(data.vencimiento, true); $("vencimientoRecursos").value = formatFechaParaInput(data.vencimientoRecursos, true); $("recursos").value = data.recursos||''; $("recursosContestacion").value = data.recursosContestacion||''; $("estadoRecursos").value = data.estadoRecursos||''; observacionesEditor.innerHTML = data.observaciones||''; observacionesHidden.value = data.observaciones||''; $("fechaCostas").value = formatFechaParaInput(data.fechaCostas, false); $("costasFavor").value = data.costasFavor||'NO'; $("detalleCostas").value = data.detalleCostas||''; audienciasContainer.innerHTML=''; if (Array.isArray(data.audiencias)) data.audiencias.forEach(a => { const div=document.createElement('div'); div.className='audiencia-item'; div.innerHTML=`<input type="datetime-local" class="audiencia-fecha" step="60" value="${formatFechaParaInput(a,true)}"><button type="button" class="btn-eliminar-audiencia"><i class="fa fa-trash"></i></button>`; audienciasContainer.appendChild(div); div.querySelector('.btn-eliminar-audiencia').onclick=()=>audienciasContainer.removeChild(div); }); diligenciasContainer.innerHTML=''; if(Array.isArray(data.diligencias)) data.diligencias.forEach(d=>{ const div=document.createElement('div'); div.className='diligencia-item'; div.innerHTML=`<input type="datetime-local" class="diligencia-fecha" step="60" value="${formatFechaParaInput(d.fecha,true)}"><input type="text" class="diligencia-detalle" value="${d.detalle||''}"><button type="button" class="btn-eliminar-diligencia"><i class="fa fa-trash"></i></button>`; diligenciasContainer.appendChild(div); div.querySelector('.btn-eliminar-diligencia').onclick=()=>diligenciasContainer.removeChild(div); }); if(data.audienciaGesell){ $("habilitarAudienciaGesell").checked=true; $("audienciaGesell").disabled=false; $("nnyaGesell").disabled=false; $("audienciaGesell").value=formatFechaParaInput(data.audienciaGesell,true); $("nnyaGesell").value=data.nnyaGesell||''; } if(data.recursos) $("recursos-opcionales").style.display='block'; }
-        function obtenerTodosEventos(causa) { const eventos = []; if (Array.isArray(causa.audiencias)) causa.audiencias.forEach(a => { const f = toDate(a); if (f && !isNaN(f.getTime())) eventos.push({ tipo: "Audiencia", fecha: f, clase: "audiencia" }); }); if (causa.audienciaGesell) { const f = toDate(causa.audienciaGesell); if (f && !isNaN(f.getTime())) eventos.push({ tipo: "Gesell", fecha: f, clase: "gesell" }); } if (causa.vencimiento) { const f = toDate(causa.vencimiento); if (f && !isNaN(f.getTime())) eventos.push({ tipo: "Vencimiento", fecha: f, clase: "vencimiento" }); } if (causa.vencimientoRecursos) { const f = toDate(causa.vencimientoRecursos); if (f && !isNaN(f.getTime())) eventos.push({ tipo: "Recurso", fecha: f, clase: "recurso" }); } if (Array.isArray(causa.diligencias)) causa.diligencias.forEach(d => { const f = toDate(d.fecha); if (f && !isNaN(f.getTime())) eventos.push({ tipo: "Diligencia", fecha: f, detalle: d.detalle||'', clase: "diligencia" }); }); return eventos.sort((a,b)=>b.fecha-a.fecha); }
+        function resetFormCausa() { 
+            $("formCausa").reset(); 
+            observacionesEditor.innerHTML = ''; 
+            observacionesHidden.value = ''; 
+            audienciasContainer.innerHTML = ''; 
+            diligenciasContainer.innerHTML = ''; 
+            document.getElementById("costas-items-container").innerHTML = '';
+            $("habilitarAudienciaGesell").checked = false; 
+            $("audienciaGesell").disabled = true; 
+            $("nnyaGesell").disabled = true; 
+            $("recursos-opcionales").style.display = 'none'; 
+            tabButtons.forEach(btn => btn.classList.remove('active')); 
+            tabContents.forEach(c => c.classList.remove('active')); 
+            tabButtons[0].classList.add('active'); 
+            tabContents[0].classList.add('active'); 
+            $("counter").textContent = '0/1000'; 
+            document.querySelectorAll('.field').forEach(f => f.classList.remove('error')); 
+            numeroValido = false; 
+            ultimoNumeroValidado = ''; 
+        }
+        function recolectarDatosForm() { 
+            const datos = { 
+                numCausa: $("numCausa").value.trim(), 
+                caratula: $("caratula").value.trim(), 
+                tipoProceso: $("tipoProceso").value, 
+                juzgado: $("juzgado").value, 
+                prioridad: $("prioridad").value, 
+                usuarioAsignado: $("usuarioAsignado").value, 
+                estado: $("estado").value, 
+                intervencion: $("intervencion").value, 
+                datosNnya: $("datosNnya").value.trim(), 
+                fechaInicio: parseDateToTimestamp($("fechaInicio").value), 
+                fechaPase: parseDateTimeLocalToTimestamp($("fechaPase").value), 
+                vencimiento: parseDateTimeLocalToTimestamp($("vencimiento").value), 
+                vencimientoRecursos: parseDateTimeLocalToTimestamp($("vencimientoRecursos").value), 
+                recursos: $("recursos").value || null, 
+                recursosContestacion: $("recursosContestacion").value || null, 
+                estadoRecursos: $("estadoRecursos").value || null, 
+                observaciones: observacionesHidden.value, 
+                detalleCostas: $("detalleCostas").value.trim() 
+            };
+            
+            // Recolectar items de costas
+            const costasItems = [];
+            document.querySelectorAll('.costas-item').forEach(item => {
+                const fecha = item.querySelector('.costas-fecha').value;
+                const costasFavor = item.querySelector('.costas-favor').value;
+                if (fecha) {
+                    costasItems.push({
+                        fecha: parseDateToTimestamp(fecha),
+                        costasFavor: costasFavor
+                    });
+                }
+            });
+            if (costasItems.length > 0) {
+                datos.costasItems = costasItems;
+            }
+            
+            if ($("habilitarAudienciaGesell").checked) { 
+                datos.audienciaGesell = parseDateTimeLocalToTimestamp($("audienciaGesell").value); 
+                datos.nnyaGesell = $("nnyaGesell").value.trim(); 
+            } else { 
+                datos.audienciaGesell = null; 
+                datos.nnyaGesell = ""; 
+            } 
+            datos.audiencias = []; 
+            audienciasContainer.querySelectorAll('.audiencia-fecha').forEach(i => { 
+                const t = parseDateTimeLocalToTimestamp(i.value); 
+                if (t) datos.audiencias.push(t); 
+            }); 
+            datos.diligencias = []; 
+            diligenciasContainer.querySelectorAll('.diligencia-item').forEach(i => { 
+                const f = parseDateTimeLocalToTimestamp(i.querySelector('.diligencia-fecha').value); 
+                const d = i.querySelector('.diligencia-detalle').value.trim(); 
+                if (f) datos.diligencias.push({ fecha: f, detalle: d }); 
+            }); 
+            return datos; 
+        }
+        function cargarDatosEnForm(data) { 
+            $("numCausa").value = data.numCausa||''; 
+            $("caratula").value = data.caratula||''; 
+            $("tipoProceso").value = data.tipoProceso||''; 
+            poblarJuzgadosPorTipo(data.tipoProceso); 
+            setTimeout(()=>{ $("juzgado").value = data.juzgado||''; }, 100); 
+            $("prioridad").value = data.prioridad||'Ninguna'; 
+            $("usuarioAsignado").value = data.usuarioAsignado||''; 
+            $("estado").value = data.estado||'En trámite'; 
+            $("intervencion").value = data.intervencion||''; 
+            $("datosNnya").value = data.datosNnya||''; 
+            $("fechaInicio").value = formatFechaParaInput(data.fechaInicio, false); 
+            $("fechaPase").value = formatFechaParaInput(data.fechaPase, true); 
+            $("vencimiento").value = formatFechaParaInput(data.vencimiento, true); 
+            $("vencimientoRecursos").value = formatFechaParaInput(data.vencimientoRecursos, true); 
+            $("recursos").value = data.recursos||''; 
+            $("recursosContestacion").value = data.recursosContestacion||''; 
+            $("estadoRecursos").value = data.estadoRecursos||''; 
+            observacionesEditor.innerHTML = data.observaciones||''; 
+            observacionesHidden.value = data.observaciones||''; 
+            $("detalleCostas").value = data.detalleCostas||'';
+            
+            // Cargar items de costas (nuevo formato) o convertir campos antiguos
+            const container = document.getElementById("costas-items-container");
+            container.innerHTML = '';
+            if (data.costasItems && Array.isArray(data.costasItems) && data.costasItems.length > 0) {
+                data.costasItems.forEach(item => {
+                    const fechaStr = formatFechaParaInput(item.fecha, false);
+                    agregarItemCostas(fechaStr, item.costasFavor);
+                });
+            } else if (data.fechaCostas) {
+                // Compatibilidad con datos antiguos: convertir a item
+                const fechaStr = formatFechaParaInput(data.fechaCostas, false);
+                const costasFavor = data.costasFavor === "SI" ? "SI" : "NO";
+                agregarItemCostas(fechaStr, costasFavor);
+            }
+            
+            audienciasContainer.innerHTML=''; 
+            if (Array.isArray(data.audiencias)) data.audiencias.forEach(a => { 
+                const div=document.createElement('div'); div.className='audiencia-item'; 
+                div.innerHTML=`<input type="datetime-local" class="audiencia-fecha" step="60" value="${formatFechaParaInput(a,true)}"><button type="button" class="btn-eliminar-audiencia"><i class="fa fa-trash"></i></button>`; 
+                audienciasContainer.appendChild(div); 
+                div.querySelector('.btn-eliminar-audiencia').onclick=()=>audienciasContainer.removeChild(div); 
+            }); 
+            diligenciasContainer.innerHTML=''; 
+            if(Array.isArray(data.diligencias)) data.diligencias.forEach(d=>{ 
+                const div=document.createElement('div'); div.className='diligencia-item'; 
+                div.innerHTML=`<input type="datetime-local" class="diligencia-fecha" step="60" value="${formatFechaParaInput(d.fecha,true)}"><input type="text" class="diligencia-detalle" value="${d.detalle||''}"><button type="button" class="btn-eliminar-diligencia"><i class="fa fa-trash"></i></button>`; 
+                diligenciasContainer.appendChild(div); 
+                div.querySelector('.btn-eliminar-diligencia').onclick=()=>diligenciasContainer.removeChild(div); 
+            }); 
+            if(data.audienciaGesell){ 
+                $("habilitarAudienciaGesell").checked=true; 
+                $("audienciaGesell").disabled=false; 
+                $("nnyaGesell").disabled=false; 
+                $("audienciaGesell").value=formatFechaParaInput(data.audienciaGesell,true); 
+                $("nnyaGesell").value=data.nnyaGesell||''; 
+            } 
+            if(data.recursos) $("recursos-opcionales").style.display='block'; 
+        }
+        function obtenerTodosEventos(causa) { 
+            const eventos = []; 
+            if (Array.isArray(causa.audiencias)) causa.audiencias.forEach(a => { 
+                const f = toDate(a); 
+                if (f && !isNaN(f.getTime())) eventos.push({ tipo: "Audiencia", fecha: f, clase: "audiencia" }); 
+            }); 
+            if (causa.audienciaGesell) { 
+                const f = toDate(causa.audienciaGesell); 
+                if (f && !isNaN(f.getTime())) eventos.push({ tipo: "Gesell", fecha: f, clase: "gesell" }); 
+            } 
+            if (causa.vencimiento) { 
+                const f = toDate(causa.vencimiento); 
+                if (f && !isNaN(f.getTime())) eventos.push({ tipo: "Vencimiento", fecha: f, clase: "vencimiento" }); 
+            } 
+            if (causa.vencimientoRecursos) { 
+                const f = toDate(causa.vencimientoRecursos); 
+                if (f && !isNaN(f.getTime())) eventos.push({ tipo: "Recurso", fecha: f, clase: "recurso" }); 
+            } 
+            if (Array.isArray(causa.diligencias)) causa.diligencias.forEach(d => { 
+                const f = toDate(d.fecha); 
+                if (f && !isNaN(f.getTime())) eventos.push({ tipo: "Diligencia", fecha: f, detalle: d.detalle||'', clase: "diligencia" }); 
+            }); 
+            return eventos.sort((a,b)=>b.fecha-a.fecha); 
+        }
         function getCachedData(key) { const c = localStorage.getItem(key); if (!c) return null; const d = JSON.parse(c); if (Date.now() - d.timestamp > 24 * 60 * 60 * 1000) return null; return d.items; }
         function setCachedData(key, items) { localStorage.setItem(key, JSON.stringify({ items, timestamp: Date.now() })); }
         
@@ -584,17 +781,16 @@
             await cargarCatalagosConCache();
             await cargarCausas(true);
             
-            // Selector de Base de Datos Event Listener (modificado)
             $("selectorBaseDatos").addEventListener('change', (e) => {
                 if (e.target.value === "nueva") {
                     dbActiva = dbNueva;
-                    $("btnNuevo").style.display = "inline-flex"; // Mostramos el botón
+                    $("btnNuevo").style.display = "inline-flex";
                 } else {
                     dbActiva = dbHistorica;
-                    $("btnNuevo").style.display = "none"; // Ocultamos el botón para evitar nuevos registros
+                    $("btnNuevo").style.display = "none";
                 }
-                cachedTotalCount = null; // Limpiamos caché de conteo
-                cargarCausas(true); // Forzamos carga desde página 1
+                cachedTotalCount = null;
+                cargarCausas(true);
             });
 
             $("btnNuevo").onclick = () => { modo = "nuevo"; resetFormCausa(); editId.value = ""; tituloForm.textContent = "Nuevo Expediente"; modal.style.display = "flex"; };
@@ -606,6 +802,7 @@
             modal.addEventListener('click', e => { if (e.target === modal) { modal.style.display = "none"; resetFormCausa(); } });
             $("btnAgregarAudiencia").onclick = agregarAudiencia;
             $("btnAgregarDiligencia").onclick = agregarDiligencia;
+            document.getElementById("btnAgregarCostasItem").onclick = () => agregarItemCostas();
             $("btnBuscar").onclick = () => cargarCausas(true);
             buscador.addEventListener('keypress', e => { if (e.key === 'Enter') cargarCausas(true); });
             filtroEstado.addEventListener('change', () => { cachedTotalCount = null; actualizarFiltros(); });
