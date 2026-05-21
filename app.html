@@ -334,7 +334,7 @@
         .edit-icon { cursor: pointer; margin-left: 8px; color: #64748b; transition: color 0.2s; }
         .edit-icon:hover { color: #00BFFF; }
 
-        /* CONTENEDOR ORIGINAL DE LA IMAGEN CON LUZ CELESTE ANIMADA Y VIBRANTE */
+        /* CONTENEDOR ORIGINAL DE LA IMAGEN - ESTÁTICO, SIN ANIMACIÓN VIBRANTE */
         .top-image-container {
             display: flex;
             justify-content: center;
@@ -351,15 +351,14 @@
             max-height: 70vh;
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(0, 191, 255, 0.6);   /* Borde celeste fijo estático */
             border-radius: 1rem;
             padding: 0.75rem;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
-            /* LUZ CELESTE ANIMADA Y VIBRANTE */
-            animation: celesteGlow 2s infinite ease-in-out;
+            /* Luz celeste estática, sin animación */
             box-shadow: 0 0 15px 5px rgba(0, 191, 255, 0.3);
         }
         .image-large img {
@@ -369,21 +368,6 @@
             object-fit: contain;
             display: block;
             border-radius: 0.5rem;
-        }
-        /* Animación vibrante de la luz de fondo */
-        @keyframes celesteGlow {
-            0% {
-                box-shadow: 0 0 5px 2px rgba(0, 191, 255, 0.2), 0 0 8px 4px rgba(0, 191, 255, 0.1);
-                border-color: rgba(0, 191, 255, 0.3);
-            }
-            50% {
-                box-shadow: 0 0 30px 15px rgba(0, 191, 255, 0.7), 0 0 45px 20px rgba(0, 191, 255, 0.4);
-                border-color: rgba(0, 191, 255, 0.9);
-            }
-            100% {
-                box-shadow: 0 0 5px 2px rgba(0, 191, 255, 0.2), 0 0 8px 4px rgba(0, 191, 255, 0.1);
-                border-color: rgba(0, 191, 255, 0.3);
-            }
         }
 
         .birthday-modal { display: none; position: fixed; z-index: 11000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
@@ -531,7 +515,7 @@
                 </div>
             </div>
 
-            <!-- IMAGEN CENTRAL: contenedor original con luz celeste animada -->
+            <!-- IMAGEN CENTRAL: contenedor original con luz celeste estática (sin animación vibrante) -->
             <div class="top-image-container" id="imagenCentralContainer">
                 <div class="image-large">
                     <img src="https://github.com/sistema-secretarios/imagenes-sistema/blob/main/MP6.png?raw=true" alt="Ministerio Público">
