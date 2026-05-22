@@ -516,7 +516,6 @@
                 </div>
             </div>
 
-            <!-- IMAGEN CENTRAL: contenedor original con luz celeste estática (sin animación vibrante) -->
             <div class="top-image-container" id="imagenCentralContainer">
                 <div class="image-large">
                     <img src="https://github.com/sistema-secretarios/imagenes-sistema/blob/main/MP6.png?raw=true" alt="Ministerio Público">
@@ -789,6 +788,11 @@
                 // Aplicar color de texto a los elementos internos del footer
                 const footerElements = footer.querySelectorAll('*');
                 footerElements.forEach(el => {
+                    // EVITAR AFECTAR LOS POPUPS PARA QUE SIGAN LEYÉNDOSE CORRECTAMENTE
+                    if (el.closest('.calendar-popup') || el.closest('.menu-popup') || el.closest('.sistema-info-modal')) {
+                        return;
+                    }
+
                     if (el.classList && (el.classList.contains('event-banner') || el.classList.contains('logout-button') || 
                         el.classList.contains('sistema-info-text') || el.classList.contains('dtw-content') ||
                         el.classList.contains('footer-defensoria') || el.classList.contains('acceso-defensor-text'))) {
@@ -868,7 +872,6 @@
             let avatarOptionsHtml = photoURL ? '' : `<div class="avatar-options"><img src="${AVATAR_HOMBRE}" class="avatar-option" id="avatarHombre"><img src="${AVATAR_MUJER}" class="avatar-option" id="avatarMujer"></div>`; 
             
             dynamicContent.innerHTML = `<div class="welcome-container" id="welcomeContainer"><div class="welcome-bar" id="welcomeBar"><div class="left-group">${avatarHtml}<div><div class="welcome-message">${mensajeBienvenida}</div>${faltaFecha ? `<div id="avisoCompletar" style="font-size: 0.75em; color: #d9534f; cursor: pointer; text-decoration: underline;">🎉 Completa tu fecha de cumpleaños</div>` : ''}</div></div><span class="sistema-digital-text">Sistema Digital</span></div><div class="user-dropdown" id="userDropdown">${dropdownHeaderHtml}${avatarOptionsHtml}<div class="info-item" id="nameDisplayRow"><strong>Nombre:</strong> <span id="displayNameSpan">${displayName}</span><i class="fas fa-pencil-alt edit-icon" id="editNameIcon"></i></div><div class="info-item edit-row" id="nameEditRow" style="display:none;"><strong>Nombre:</strong> <input type="text" id="nameInput" value="${displayName}" placeholder="Nombre y apellido"><button id="saveNameBtn" class="save-btn"><i class="fas fa-check"></i></button><button id="cancelNameBtn" class="cancel-btn"><i class="fas fa-times"></i></button></div><div class="info-item" id="fechaDisplayRow"><strong>F. Nacimiento:</strong> <span id="fechaSpan">${fechaNacimiento || 'No registrada'}</span><i class="fas fa-pencil-alt edit-icon" id="editFechaIcon"></i></div><div class="info-item edit-row" id="fechaEditRow" style="display:none;"><strong>F. Nacimiento:</strong> <input type="text" id="fechaInput" value="${fechaNacimiento}" placeholder="DD/MM" maxlength="5"><button id="saveFechaBtn" class="save-btn"><i class="fas fa-check"></i></button><button id="cancelFechaBtn" class="cancel-btn"><i class="fas fa-times"></i></button></div>
-            <!-- NUEVO: Selector de color personalizado -->
             <div class="info-item"><strong>Color Personal:</strong> <input type="color" id="colorPicker" value="${colorPersonalizado}" style="cursor: pointer; border: none; width: 40px; height: 30px; border-radius: 4px; padding: 0; background: transparent;"></div>
             <div class="info-item"><strong>Correo:</strong> ${email || 'No asignado'}</div><div class="info-item"><strong>Último acceso:</strong> ${lastLoginStr}</div><div class="info-item"><strong>Registro:</strong> ${creationStr}</div><div class="version-badge">Versión 3.1.2026</div><button onclick="window.mostrarHome()" style="margin-top:10px; padding:8px 15px; cursor:pointer; background:#00BFFF; border:none; border-radius:5px; color:white; font-weight:bold; width:100%;">Volver al Inicio</button></div></div>`; 
             
