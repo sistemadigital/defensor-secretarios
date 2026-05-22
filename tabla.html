@@ -594,6 +594,7 @@
         
         function deshabilitarCamposFormulario(d) { document.querySelectorAll('#formCausa input:not(#numCausa), #formCausa textarea, #formCausa select').forEach(c => c.disabled = d); if($("btnGuardar")) $("btnGuardar").disabled = d; }
         function validateForm() { let isValid = true; ["numCausa", "caratula", "tipoProceso", "juzgado", "prioridad", "usuarioAsignado"].forEach(id => { const field = $(id); const parent = field.closest('.field'); if (field.value.trim() === "") { parent.classList.add('error'); isValid = false; } else { parent.classList.remove('error'); } }); if (!isValid) mostrarAlertaFlotante("Complete todos los campos obligatorios.", 'danger'); return isValid; }
+        
         function resetFormCausa() { 
             $("formCausa").reset(); 
             observacionesEditor.innerHTML = ''; 
@@ -614,6 +615,7 @@
             numeroValido = false; 
             ultimoNumeroValidado = ''; 
         }
+
         function recolectarDatosForm() { 
             const datos = { 
                 numCausa: $("numCausa").value.trim(), 
@@ -638,6 +640,7 @@
             
             // Recolectar items de costas
             const costasItems = [];
+            let flagCostasFavor = "NO";
             document.querySelectorAll('.costas-item').forEach(item => {
                 const fecha = item.querySelector('.costas-fecha').value;
                 const costasFavor = item.querySelector('.costas-favor').value;
@@ -646,11 +649,17 @@
                         fecha: parseDateToTimestamp(fecha),
                         costasFavor: costasFavor
                     });
+                    if (costasFavor === "SI") flagCostasFavor = "SI";
                 }
             });
             if (costasItems.length > 0) {
                 datos.costasItems = costasItems;
+            } else {
+                datos.costasItems = [];
             }
+            
+            // Se guarda el campo a nivel de la raíz para que Firestore pueda filtrar
+            datos.costasFavor = flagCostasFavor;
             
             if ($("habilitarAudienciaGesell").checked) { 
                 datos.audienciaGesell = parseDateTimeLocalToTimestamp($("audienciaGesell").value); 
@@ -672,6 +681,7 @@
             }); 
             return datos; 
         }
+
         function cargarDatosEnForm(data) { 
             $("numCausa").value = data.numCausa||''; 
             $("caratula").value = data.caratula||''; 
@@ -732,6 +742,7 @@
             } 
             if(data.recursos) $("recursos-opcionales").style.display='block'; 
         }
+
         function obtenerTodosEventos(causa) { 
             const eventos = []; 
             if (Array.isArray(causa.audiencias)) causa.audiencias.forEach(a => { 
