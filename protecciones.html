@@ -41,6 +41,15 @@
             justify-items: center;
         }
 
+        /* Wrapper para cada módulo + sus botones adicionales */
+        .module-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 350px;
+        }
+
         /* Tarjetas de módulos */
         .card {
             background-color: white;
@@ -55,7 +64,6 @@
             text-align: center;
             cursor: pointer;
             width: 100%;
-            max-width: 350px;
         }
 
         .card:hover {
@@ -106,6 +114,29 @@
 
         .card-button:hover {
             background-color: #0d47a1;
+        }
+
+        /* Botones externos (nuevos) */
+        .external-button {
+            background: #e0f2fe;       /* fondo celeste suave */
+            color: #0369a1;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            width: 100%;
+            margin-top: 16px;
+            box-shadow: 0 0 8px rgba(56, 189, 248, 0.5); /* luz de fondo celeste */
+            border: 1px solid #bae6fd;
+        }
+
+        .external-button:hover {
+            background: #bae6fd;
+            box-shadow: 0 0 14px rgba(56, 189, 248, 0.8);
+            transform: translateY(-2px);
         }
 
         /* Vista del módulo seleccionado (iframe) */
@@ -201,6 +232,11 @@
                 padding: 8px 16px;
                 font-size: 0.9rem;
             }
+
+            .external-button {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -209,21 +245,34 @@
     <!-- Contenedor principal de tarjetas (dos módulos) -->
     <div class="container">
         <div class="cards-container" id="cardsContainer">
-            <!-- Tarjeta Protección NNyA -->
-            <div class="card" data-module="nnYa">
-                <div class="card-icon">
-                    <i class="fas fa-user-shield"></i>
+            <!-- Módulo Protección NNyA + Botón R.U.N.N.A.I + Botón Registro Defensoría -->
+            <div class="module-wrapper">
+                <div class="card" data-module="nnYa">
+                    <div class="card-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3 class="card-title">Protección de NNyA</h3>
+                    <button class="card-button">Abrir</button>
                 </div>
-                <h3 class="card-title">Protección de NNyA</h3>
-                <button class="card-button">Abrir</button>
+                <!-- Botón Acceso R.U.N.N.A.I -->
+                <button class="external-button" id="btnRunnai" title="Acceso al Registro Unico de NNyA Institucionalizados">
+                    Acceso R.U.N.N.A.I
+                </button>
+                <!-- Botón Registro Defensoria NNyA Institucionalizados (justo debajo del anterior) -->
+                <button class="external-button" id="btnRegistroDefensoria">
+                    Registro Defensoria NNyA Institucionalizados
+                </button>
             </div>
-            <!-- Tarjeta Protección Adultos -->
-            <div class="card" data-module="adultos">
-                <div class="card-icon">
-                    <i class="fas fa-user-shield"></i>
+
+            <!-- Módulo Protección Adultos (sin botón adicional) -->
+            <div class="module-wrapper">
+                <div class="card" data-module="adultos">
+                    <div class="card-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3 class="card-title">Protección Adultos</h3>
+                    <button class="card-button">Abrir</button>
                 </div>
-                <h3 class="card-title">Protección Adultos</h3>
-                <button class="card-button">Abrir</button>
             </div>
         </div>
     </div>
@@ -253,12 +302,15 @@
         };
 
         // Elementos del DOM
-        const cardsContainer = document.getElementById('cardsContainer');
         const container = document.querySelector('.container');
         const moduleView = document.getElementById('moduleView');
         const moduleFrame = document.getElementById('moduleFrame');
         const backButton = document.getElementById('backButton');
         const cardButtons = document.querySelectorAll('.card-button');
+
+        // Botones externos
+        const btnRunnai = document.getElementById('btnRunnai');
+        const btnRegistroDefensoria = document.getElementById('btnRegistroDefensoria');
 
         // Abrir un módulo (oculta tarjetas y muestra iframe)
         function openModule(moduleKey) {
@@ -286,14 +338,14 @@
         // Event listeners para las tarjetas (click en cualquier parte de la tarjeta)
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', function(e) {
-                // Si el clic fue en el botón, lo manejamos aparte para evitar doble apertura
+                // Si el clic fue en el botón interno de la tarjeta, lo manejamos aparte para evitar doble apertura
                 if (e.target.classList.contains('card-button')) return;
                 const moduleKey = this.getAttribute('data-module');
                 openModule(moduleKey);
             });
         });
 
-        // Event listeners para los botones dentro de las tarjetas
+        // Event listeners para los botones internos de las tarjetas
         cardButtons.forEach(button => {
             button.addEventListener('click', function(e) {
                 e.stopPropagation(); // Evita que el evento se propague a la tarjeta
@@ -312,6 +364,23 @@
                 showCards();
             }
         });
+
+        // --- BOTONES EXTERNOS ---
+        // Botón R.U.N.N.A.I: abre enlace externo en nueva pestaña con tooltip flotante
+        if (btnRunnai) {
+            btnRunnai.addEventListener('click', function(e) {
+                e.stopPropagation();
+                window.open('https://www.sysrunnai.misiones.gov.ar/', '_blank', 'noopener,noreferrer');
+            });
+        }
+
+        // Botón Registro Defensoria: (funcionalidad en desarrollo)
+        if (btnRegistroDefensoria) {
+            btnRegistroDefensoria.addEventListener('click', function(e) {
+                e.stopPropagation();
+                alert('Funcionalidad en desarrollo. Próximamente disponible.');
+            });
+        }
     </script>
 </body>
 </html>
