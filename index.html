@@ -86,7 +86,7 @@
             transition: all 0.3s ease;
         }
 
-        /* CONTENEDOR IMAGEN CON ANILLOS (sin badge, sin audio) */
+        /* CONTENEDOR IMAGEN CON ANILLOS */
         .img-wrapper {
             position: relative;
             display: inline-block;
@@ -162,17 +162,30 @@
             50% { transform: translateY(-12px); }
         }
 
-        /* TÍTULO PRINCIPAL UNA SOLA LÍNEA */
+        /* TÍTULO PRINCIPAL: EFECTO MAGNÉTICO RÁPIDO */
         .titulo-sistema {
             font-size: clamp(2.8rem, 10vw, 5rem);
             font-weight: 900;
             line-height: 1.2;
             letter-spacing: -0.03em;
-            color: #001f3f;
             margin-top: 1.2rem;
             margin-bottom: 1rem;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.02);
             white-space: nowrap;
+            
+            /* Colores */
+            background: linear-gradient(90deg, #001f3f 30%, #00BFFF 50%, #001f3f 70%);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            
+            /* Animación más rápida (3s) */
+            animation: brilloMagnetico 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes brilloMagnetico {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
         }
 
         /* PROTOCOLO ACTUACIÓN */
