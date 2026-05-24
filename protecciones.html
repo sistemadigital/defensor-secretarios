@@ -139,6 +139,19 @@
             transform: translateY(-2px);
         }
 
+        /* Estilos específicos para el botón de RUNNAI (Color Naranja) */
+        #btnRunnai {
+            background: #ff9800; /* Fondo naranja */
+            color: #ffffff; /* Texto blanco para resaltar */
+            box-shadow: 0 0 8px rgba(255, 152, 0, 0.5); /* Luz de fondo naranja */
+            border: 1px solid #ffb74d;
+        }
+
+        #btnRunnai:hover {
+            background: #f57c00; /* Naranja más oscuro al pasar el mouse */
+            box-shadow: 0 0 14px rgba(255, 152, 0, 0.8);
+        }
+
         /* Vista del módulo seleccionado (iframe) */
         .module-view {
             position: fixed;
@@ -245,7 +258,7 @@
     <!-- Contenedor principal de tarjetas (dos módulos) -->
     <div class="container">
         <div class="cards-container" id="cardsContainer">
-            <!-- Módulo Protección NNyA + Botón R.U.N.N.A.I + Botón Registro Defensoría -->
+            <!-- Módulo Protección NNyA + Botón Registro Defensoría -->
             <div class="module-wrapper">
                 <div class="card" data-module="nnYa">
                     <div class="card-icon">
@@ -254,17 +267,13 @@
                     <h3 class="card-title">Protección de NNyA</h3>
                     <button class="card-button">Abrir</button>
                 </div>
-                <!-- Botón Acceso R.U.N.N.A.I -->
-                <button class="external-button" id="btnRunnai" title="Acceso al Registro Unico de NNyA Institucionalizados">
-                    Acceso R.U.N.N.A.I
-                </button>
-                <!-- Botón Registro Defensoria NNyA Institucionalizados (justo debajo del anterior) -->
+                <!-- Botón Registro Defensoria NNyA Institucionalizados -->
                 <button class="external-button" id="btnRegistroDefensoria">
                     Registro Defensoria NNyA Institucionalizados
                 </button>
             </div>
 
-            <!-- Módulo Protección Adultos (sin botón adicional) -->
+            <!-- Módulo Protección Adultos + Botón R.U.N.N.A.I -->
             <div class="module-wrapper">
                 <div class="card" data-module="adultos">
                     <div class="card-icon">
@@ -273,6 +282,10 @@
                     <h3 class="card-title">Protección Adultos</h3>
                     <button class="card-button">Abrir</button>
                 </div>
+                <!-- Botón Acceso R.U.N.N.A.I movido aquí -->
+                <button class="external-button" id="btnRunnai" title="Acceso al Registro Unico de NNyA Institucionalizados">
+                    Acceso R.U.N.N.A.I
+                </button>
             </div>
         </div>
     </div>
