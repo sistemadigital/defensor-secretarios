@@ -374,11 +374,19 @@
             });
         }
 
-        // Botón Registro Defensoria: (funcionalidad en desarrollo)
+        // Botón Registro Defensoria: abre la URL en la vista del iframe de la app
         if (btnRegistroDefensoria) {
             btnRegistroDefensoria.addEventListener('click', function(e) {
                 e.stopPropagation();
-                alert('Funcionalidad en desarrollo. Próximamente disponible.');
+                
+                // Ocultar contenedor de tarjetas
+                container.style.display = 'none';
+                
+                // Mostrar vista del módulo
+                moduleView.style.display = 'flex';
+                
+                // Cargar URL en el iframe
+                moduleFrame.src = 'https://sistemadigital.github.io/ingreso-sistema/runnai-defensoria.html';
             });
         }
     </script>
