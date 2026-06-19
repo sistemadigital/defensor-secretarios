@@ -666,6 +666,27 @@
         const bannerDiv = document.getElementById('eventBanner');
         document.getElementById('eventBanner')?.addEventListener('click', (e) => { loadPage('https://sistemadigital.github.io/defensor-secretarios/eventos.html'); });
         
+        // --- NUEVA LÓGICA: CERRAR MODAL DE CUMPLEAÑOS ---
+        const bdayModal = document.getElementById('birthdayModal');
+        const closeBdayBtn = document.getElementById('closeBirthdayBtn');
+        const closeBdaySpan = document.querySelector('.close-birthday');
+
+        function cerrarModalCumpleanos() {
+            if (bdayModal) bdayModal.style.display = 'none';
+        }
+
+        if (closeBdayBtn) closeBdayBtn.addEventListener('click', cerrarModalCumpleanos);
+        if (closeBdaySpan) closeBdaySpan.addEventListener('click', cerrarModalCumpleanos);
+        
+        if (bdayModal) {
+            bdayModal.addEventListener('click', (e) => {
+                if (e.target === bdayModal) {
+                    cerrarModalCumpleanos();
+                }
+            });
+        }
+        // ------------------------------------------------
+
         // Función del menú sin audio
     </script>
 
