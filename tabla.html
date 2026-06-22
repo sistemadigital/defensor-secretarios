@@ -210,7 +210,7 @@
                         <tr><th>N°</th><th>Carátula</th><th>Tipo</th><th>Juzgado</th><th>Usuario</th><th>Estado</th><th>Prioridad</th><th>Registro</th><th>Eventos</th><th class="no-print">Acciones</th></tr>
                     </thead>
                     <tbody id="tbodyCausas">
-                        <tr><td colspan="10">Cargando expedientes...</td></tr>
+                        <tr><td colspan="10" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Cargando expedientes...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -237,7 +237,7 @@
     <div id="alertModal"><div class="content"><h3 id="alertTitle"></h3><p id="alertMessage"></p><div class="actions-row"><button id="btnAlertOK" class="button alert-success"><i class="fa fa-check"></i> OK</button></div></div></div>
 
     <script>
-        // Configuración de Firebase (misma que en index.html)
+        // --- 1. Inicialización de Firebase DEFAULT (Autenticación) ---
         const firebaseConfig = {
             apiKey: "AIzaSyBDXZYAxWsvMiMGCrPRp3EBVuU0dzuWF4M",
             authDomain: "sistemadefensoria6.firebaseapp.com",
@@ -246,16 +246,13 @@
             messagingSenderId: "1024631392849",
             appId: "1:1024631392849:web:1dc13292e690e2ed100670"
         };
-        // Inicializar Firebase (si no está ya)
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
         const auth = firebase.auth();
-        const db = firebase.firestore();
-        // Habilitar persistencia
-        db.enablePersistence({ synchronizeTabs: true }).catch(err => console.warn("Persistencia no disponible", err));
+        const dbAuth = firebase.firestore();
 
-        // Configuración de la base de datos HISTÓRICA (hasta 21 Mayo 2026)
+        // --- 2. Configuraciones de las otras 2 Bases de Datos ---
         const firebaseConfigHistorica = {
             apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
             authDomain: "causas-defensoria.firebaseapp.com",
@@ -265,7 +262,6 @@
             appId: "1:186064671470:web:b58bae5eadbe6e469f19ff"
         };
 
-        // Configuración de la NUEVA base de datos (A partir del 21 Mayo 2026)
         const firebaseConfigNueva = {
             apiKey: "AIzaSyBevCwkh4iOWVqhp3gG2ae1eCUMkFpnr6I",
             authDomain: "causas-2defensoria.firebaseapp.com",
@@ -277,22 +273,21 @@
         
         let appNueva, dbNueva;
         let appHistorica, dbHistorica;
-        let dbActiva; // Representará la base de datos seleccionada en la vista
+        let dbActiva;
 
+        // --- 3. Corrección Crítica en la carga de Proyectos ---
         try {
-            if (firebase.apps && firebase.apps.length > 0) { 
-                appNueva = firebase.app(); 
-                try { appHistorica = firebase.app("historica"); } catch(e) {}
-            } else { 
-                appNueva = firebase.initializeApp(firebaseConfigNueva); 
-                appHistorica = firebase.initializeApp(firebaseConfigHistorica, "historica");
-            }
+            // Buscamos si ya existen por su nombre, si no, las inicializamos explícitamente
+            appNueva = firebase.apps.find(app => app.name === "nueva") || firebase.initializeApp(firebaseConfigNueva, "nueva");
+            appHistorica = firebase.apps.find(app => app.name === "historica") || firebase.initializeApp(firebaseConfigHistorica, "historica");
+            
             dbNueva = appNueva.firestore();
             dbHistorica = appHistorica.firestore();
             dbActiva = dbNueva; // Por defecto arrancamos con la nueva base de datos
 
             try { dbNueva.enablePersistence({ synchronizeTabs: true }); } catch(e) { console.warn("Caché nueva no disponible"); }
-        } catch (e) { console.error("Error Firebase:", e); }
+            try { dbHistorica.enablePersistence({ synchronizeTabs: true }); } catch(e) { console.warn("Caché historica no disponible"); }
+        } catch (e) { console.error("Error al inicializar las bases de datos de causas:", e); }
 
         // ---------- VARIABLES GLOBALES ----------
         let modo = "nuevo";
@@ -316,10 +311,10 @@
         let numeroValido = false;
 
         // ---------- VARIABLES DE USUARIO ----------
-        let currentUser = null;          // objeto usuario de Firebase
-        let currentDisplayName = '';     // nombre completo
-        let currentEmail = '';           // email
-        let isAdmin = false;             // si es administrador
+        let currentUser = null;          
+        let currentDisplayName = '';     
+        let currentEmail = '';           
+        let isAdmin = false;             
         const ADMIN_EMAILS = [
             'mgramos@mpmisiones.gob.ar',
             'amcorrales@mpmisiones.gob.ar',
@@ -350,10 +345,11 @@
         
         function mostrarAlertaFlotante(mensaje, tipo = 'danger') { if (!floatingAlertText) return; floatingAlertText.textContent = mensaje; floatingAlert.classList.remove('danger', 'success', 'show'); floatingAlert.classList.add(tipo); setTimeout(() => floatingAlert.classList.add('show'), 10); setTimeout(() => floatingAlert.classList.remove('show'), 5000); }
 
-        // ---------- CARGAR CAUSAS CON FILTRO DE USUARIO ----------
+        // ---------- CARGAR CAUSAS (CORREGIDO CON MANEJO DE ERRORES) ----------
         async function cargarCausas(reset = true, direction = null) {
             if (!dbActiva) return;
-            tbody.innerHTML = "<tr><td colspan='10'>Cargando...</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='10' style='text-align: center;'><i class='fas fa-spinner fa-spin'></i> Cargando expedientes...</td></tr>";
+            
             try {
                 let baseQuery = dbActiva.collection("causas");
                 const fUsuario = filtroUsuario.value;
@@ -396,12 +392,10 @@
                     lastVisibleDoc = null;
                     const currentFilterKey = getFilterKey();
                     if (cachedTotalCount === null || currentFilterKey !== lastFilterKeys) {
-                        try {
-                            const snapshotCount = await baseQuery.count().get();
-                            totalRecords = snapshotCount.data().count;
-                            cachedTotalCount = totalRecords;
-                            lastFilterKeys = currentFilterKey;
-                        } catch (err) { totalRecords = 0; }
+                        const snapshotCount = await baseQuery.count().get();
+                        totalRecords = snapshotCount.data().count;
+                        cachedTotalCount = totalRecords;
+                        lastFilterKeys = currentFilterKey;
                     } else { totalRecords = cachedTotalCount; }
                     totalPages = Math.ceil(totalRecords / recordsPerPage) || 1;
                 }
@@ -419,9 +413,24 @@
 
                 renderTablas(datosPaginaActual);
                 renderPaginacionServerSide();
+                
             } catch (error) {
-                console.error(error);
-                tbody.innerHTML = "<tr><td colspan='10'>Error al cargar datos</td></tr>";
+                console.error("Error devuelto por Firebase: ", error);
+                
+                let errorMsg = "Ocurrió un error al consultar la base de datos.";
+                
+                // Muestra un mensaje claro si es por permisos o falta un índice
+                if (error.code === 'permission-denied') {
+                    errorMsg = "Error de Permisos: Revisa las Reglas de Firestore, tu usuario no tiene acceso a esta colección.";
+                    mostrarAlertaFlotante("Acceso denegado por reglas de seguridad.", "danger");
+                } else if (error.code === 'failed-precondition' || String(error).includes("index")) {
+                    errorMsg = "¡FALTA UN ÍNDICE COMPUESTO! Presiona F12 (Consola) y haz clic en el enlace azul de Firebase para crearlo.";
+                    mostrarAlertaFlotante("Falta Índice. Revisa la consola F12.", "danger");
+                } else {
+                    errorMsg = "Error: " + error.message;
+                }
+                
+                tbody.innerHTML = `<tr><td colspan='10' style='color:var(--danger); text-align:center; padding: 20px; font-weight: bold;'>${errorMsg}</td></tr>`;
             }
         }
 
@@ -445,7 +454,6 @@
                     eventosHTML += `</div>`; 
                 } 
 
-                // Solo mostrar botones de editar si el usuario es admin o es el asignado
                 let botonEditar = '';
                 if (isAdmin || d.usuarioAsignado === currentDisplayName) {
                     botonEditar = `<button class="button button-secondary editar-detalles" data-id="${d.id}" title="Editar"><i class="fa fa-pen"></i></button>`;
@@ -529,7 +537,6 @@
         async function abrirEditar(id){ 
             const d = datosPaginaActual.find(causa => causa.id === id);
             if (!d) { mostrarAlertaPersonalizada("Error", "Expediente no encontrado."); return; }
-            // Verificar permiso: solo admin o el asignado
             if (!isAdmin && d.usuarioAsignado !== currentDisplayName) {
                 mostrarAlertaFlotante("No tienes permiso para editar este expediente.", 'danger');
                 return;
@@ -592,9 +599,7 @@
                 return;
             }
             
-            // Forzar el usuario asignado al nombre del usuario actual si no es admin
             if (!isAdmin && currentDisplayName) {
-                // Asegurar que el campo usuarioAsignado en el formulario esté deshabilitado y contenga su nombre
                 const selUsu = $("usuarioAsignado");
                 selUsu.value = currentDisplayName;
             }
@@ -621,11 +626,7 @@
                     await dbActiva.collection("causas").add({ ...datos, fechaRegistro: firebase.firestore.FieldValue.serverTimestamp() }); 
                     mostrarAlertaFlotante("Se guardó correctamente.", 'success'); 
                 } else { 
-                    // En edición, verificar que no se cambie el usuarioAsignado (solo admin puede)
-                    if (!isAdmin) {
-                        // Forzar el usuario actual en el documento
-                        datos.usuarioAsignado = currentDisplayName;
-                    }
+                    if (!isAdmin) datos.usuarioAsignado = currentDisplayName;
                     await dbActiva.collection("causas").doc(editId.value).update(datos); 
                     mostrarAlertaFlotante("Actualizado correctamente.", 'success'); 
                 } 
@@ -684,15 +685,12 @@
             numeroValido = false; 
             ultimoNumeroValidado = ''; 
 
-            // Si no es admin, bloquear el campo usuarioAsignado y precargar su nombre
             if (!isAdmin && currentDisplayName) {
                 const sel = $("usuarioAsignado");
-                // Asegurar que la lista tenga solo su nombre
                 sel.innerHTML = `<option value="${currentDisplayName}">${currentDisplayName}</option>`;
                 sel.value = currentDisplayName;
                 sel.disabled = true;
             } else {
-                // Admin: habilitar y cargar todos los usuarios
                 const sel = $("usuarioAsignado");
                 sel.disabled = false;
                 poblarFiltro('usuarioAsignado', usuariosCache);
@@ -770,7 +768,6 @@
             setTimeout(()=>{ $("juzgado").value = data.juzgado||''; }, 100); 
             $("prioridad").value = data.prioridad||'Ninguna'; 
             
-            // Usuario asignado: si no es admin, forzar su nombre y deshabilitar
             if (!isAdmin && currentDisplayName) {
                 $("usuarioAsignado").innerHTML = `<option value="${currentDisplayName}">${currentDisplayName}</option>`;
                 $("usuarioAsignado").value = currentDisplayName;
@@ -872,11 +869,8 @@
             const usrs = await cargarCatalogoOptimizado("usuarios", "cache_usuarios", d => d.data().nombreCompleto); 
             usuariosCache = usrs.filter(u=>u).sort((a,b)=>a.localeCompare(b));
             
-            // Si no es admin, la lista de usuarios será solo su nombre
             if (!isAdmin && currentDisplayName) {
-                // Para el filtro de usuario, solo mostrar su nombre (o deshabilitar)
                 poblarFiltro('filtroUsuario', [currentDisplayName], 'Usuario (solo el tuyo)');
-                // El select de usuario asignado se llenará más tarde en resetFormCausa
             } else {
                 poblarFiltro('filtroUsuario', usuariosCache, 'Usuario (todos)');
             }
@@ -898,10 +892,8 @@
 
         // ---------- INICIO AL CARGAR LA PÁGINA ----------
         document.addEventListener('DOMContentLoaded', async function() {
-            // Esperar a que el usuario esté autenticado
             auth.onAuthStateChanged(async (user) => {
                 if (!user) {
-                    // Redirigir al login si no está autenticado
                     window.location.href = 'index.html';
                     return;
                 }
@@ -910,33 +902,23 @@
                 currentDisplayName = user.displayName || '';
                 isAdmin = ADMIN_EMAILS.includes(currentEmail);
 
-                // Si el usuario no tiene displayName, usar el email como fallback
                 if (!currentDisplayName) {
                     currentDisplayName = currentEmail.split('@')[0];
                 }
 
-                console.log(`Usuario: ${currentDisplayName} (${currentEmail}) - Admin: ${isAdmin}`);
+                console.log(`Usuario autenticado: ${currentDisplayName} - Admin: ${isAdmin}`);
 
-                // Cargar catálogos y luego las causas
                 await cargarCatalagosConCache();
                 
-                // Si no es admin, forzar el filtro de usuario a su nombre y deshabilitar
                 if (!isAdmin) {
                     filtroUsuario.value = currentDisplayName;
                     filtroUsuario.disabled = true;
-                    // Ocultar el botón "Nuevo" para no administradores? No, pueden crear pero solo para sí mismos.
-                    // Pero dejamos visible para que puedan crear.
                 } else {
                     filtroUsuario.disabled = false;
                 }
 
-                // Aplicar reglas de visibilidad de botón "Nuevo" - siempre visible, pero el guardado forzará su usuario
-                // Mostrar el botón Nuevo solo si está en la base nueva (histórico no permite crear)
-                // Ya se maneja en el evento change del selector.
-
                 await cargarCausas(true);
 
-                // Configurar eventos
                 $("selectorBaseDatos").addEventListener('change', (e) => {
                     if (e.target.value === "nueva") {
                         dbActiva = dbNueva;
@@ -999,7 +981,6 @@
                 $("btnPrintFiltrado").onclick = () => window.print(); 
                 $("btnPrintRegistro").onclick = () => window.print();
 
-                // Inicializar el estado del botón Nuevo según la base seleccionada
                 if ($("selectorBaseDatos").value === "historica") {
                     $("btnNuevo").style.display = "none";
                 }
