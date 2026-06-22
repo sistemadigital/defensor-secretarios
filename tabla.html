@@ -277,7 +277,6 @@
 
         // --- 3. Corrección Crítica en la carga de Proyectos ---
         try {
-            // Buscamos si ya existen por su nombre, si no, las inicializamos explícitamente
             appNueva = firebase.apps.find(app => app.name === "nueva") || firebase.initializeApp(firebaseConfigNueva, "nueva");
             appHistorica = firebase.apps.find(app => app.name === "historica") || firebase.initializeApp(firebaseConfigHistorica, "historica");
             
@@ -345,7 +344,7 @@
         
         function mostrarAlertaFlotante(mensaje, tipo = 'danger') { if (!floatingAlertText) return; floatingAlertText.textContent = mensaje; floatingAlert.classList.remove('danger', 'success', 'show'); floatingAlert.classList.add(tipo); setTimeout(() => floatingAlert.classList.add('show'), 10); setTimeout(() => floatingAlert.classList.remove('show'), 5000); }
 
-        // ---------- CARGAR CAUSAS (CORREGIDO CON MANEJO DE ERRORES) ----------
+        // ---------- CARGAR CAUSAS ----------
         async function cargarCausas(reset = true, direction = null) {
             if (!dbActiva) return;
             tbody.innerHTML = "<tr><td colspan='10' style='text-align: center;'><i class='fas fa-spinner fa-spin'></i> Cargando expedientes...</td></tr>";
@@ -361,7 +360,6 @@
                 const periodo = $("filtroPeriodo").value;
                 const busqueda = buscador.value.trim().toLowerCase();
 
-                // --- RESTRICCIÓN POR USUARIO (si no es admin) ---
                 if (!isAdmin && currentDisplayName) {
                     baseQuery = baseQuery.where("usuarioAsignado", "==", currentDisplayName);
                 }
@@ -391,12 +389,17 @@
                     pageSnapshots = [];
                     lastVisibleDoc = null;
                     const currentFilterKey = getFilterKey();
+                    
+                    // --- SOLUCIÓN COMPATIBLE APLICADA ---
                     if (cachedTotalCount === null || currentFilterKey !== lastFilterKeys) {
-                        const snapshotCount = await baseQuery.count().get();
-                        totalRecords = snapshotCount.data().count;
+                        const snapshotCount = await baseQuery.get();
+                        totalRecords = snapshotCount.size;
                         cachedTotalCount = totalRecords;
                         lastFilterKeys = currentFilterKey;
-                    } else { totalRecords = cachedTotalCount; }
+                    } else { 
+                        totalRecords = cachedTotalCount; 
+                    }
+                    
                     totalPages = Math.ceil(totalRecords / recordsPerPage) || 1;
                 }
 
@@ -419,7 +422,6 @@
                 
                 let errorMsg = "Ocurrió un error al consultar la base de datos.";
                 
-                // Muestra un mensaje claro si es por permisos o falta un índice
                 if (error.code === 'permission-denied') {
                     errorMsg = "Error de Permisos: Revisa las Reglas de Firestore, tu usuario no tiene acceso a esta colección.";
                     mostrarAlertaFlotante("Acceso denegado por reglas de seguridad.", "danger");
