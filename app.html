@@ -309,7 +309,7 @@
         .edit-icon { cursor: pointer; margin-left: 8px; color: #64748b; transition: color 0.2s; }
         .edit-icon:hover { color: #00BFFF; }
 
-        /* CONTENEDOR ORIGINAL DE LA IMAGEN - ESTÁTICO, SIN ANIMACIÓN VIBRANTE */
+        /* CONTENEDOR DE LA IMAGEN CON TEXTOS PEGADOS */
         .top-image-container {
             display: flex;
             justify-content: center;
@@ -318,31 +318,71 @@
             flex: 1;
             cursor: pointer;
             margin: 0;
-            padding: 20px;
+            padding: 10px 20px 20px 20px;
         }
+
+        .image-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 65vw;
+            max-height: 50vh;
+        }
+
+        .image-header,
+        .image-footer {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: 1.8rem; /* mismo tamaño que el mensaje de bienvenida */
+            text-align: center;
+            color: #003366;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(4px);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            width: 100%;
+            box-sizing: border-box;
+            line-height: 1.2;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+            transition: color 0.3s ease;
+            /* Permitir que el texto se divida en varias líneas si es necesario */
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .image-header {
+            margin-bottom: 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .image-footer {
+            margin-top: 0;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
         .image-large {
-            width: auto;
-            max-width: 90vw;
-            max-height: 70vh;
+            width: 100%;
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 191, 255, 0.6);   /* Borde celeste fijo estático */
-            border-radius: 1rem;
-            padding: 0.75rem;
+            border: 3px solid #00BFFF;
+            border-radius: 0;
+            padding: 0.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s ease;
-            /* Luz celeste estática, sin animación */
-            box-shadow: 0 0 15px 5px rgba(0, 191, 255, 0.3);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 20px 8px rgba(0, 191, 255, 0.3);
+            border-top: 3px solid #00BFFF;
+            border-bottom: 3px solid #00BFFF;
         }
+
         .image-large img {
             width: 100%;
             height: auto;
-            max-height: calc(70vh - 1.5rem);
+            max-height: calc(50vh - 4rem);
             object-fit: contain;
             display: block;
-            border-radius: 0.5rem;
+            border-radius: 0.25rem;
         }
 
         .birthday-modal { display: none; position: fixed; z-index: 11000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
@@ -426,12 +466,16 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* RESPONSIVE MÓVIL */
         @media (max-width: 768px) {
             .welcome-message { font-size: 1.4rem; }
             .sistema-digital-text { display: none; }
             .left-group { gap: 0.5rem; }
-            .image-large { max-height: 50vh; }
-            .top-image-container { padding: 15px; }
+            .top-image-container { padding: 5px 12px 12px 12px; }
+            .image-wrapper { max-width: 85vw; max-height: 45vh; }
+            .image-header, .image-footer { font-size: 1.4rem; padding: 0.2rem 0.4rem; }
+            .image-large { padding: 0.3rem; border-width: 2px; }
+            .image-large img { max-height: calc(45vh - 3rem); }
 
             footer {
                 height: auto;
@@ -467,6 +511,9 @@
             .menu-icon-img { width: 26px; }
             .event-banner { max-width: 120px; padding: 3px 8px; }
             .event-banner p { font-size: 0.65rem; }
+            .image-wrapper { max-width: 92vw; max-height: 40vh; }
+            .image-header, .image-footer { font-size: 1.2rem; }
+            .image-large img { max-height: calc(40vh - 2.5rem); }
         }
     </style>
 </head>
@@ -491,8 +538,12 @@
             </div>
 
             <div class="top-image-container" id="imagenCentralContainer">
-                <div class="image-large">
-                    <img src="https://github.com/sistema-secretarios/imagenes-sistema/blob/main/MP6.png?raw=true" alt="Ministerio Público">
+                <div class="image-wrapper">
+                    <div class="image-header">Defensoría Oficial Civil y Comercial</div>
+                    <div class="image-large">
+                        <img src="https://github.com/sistemadigital/iconos/blob/main/1.png?raw=true" alt="Ministerio Público">
+                    </div>
+                    <div class="image-footer">Ministerio Público de Misiones</div>
                 </div>
             </div>
         </div>
@@ -787,6 +838,18 @@
             const sistemaDigital = document.querySelector('.sistema-digital-text');
             if (welcomeMsg) welcomeMsg.style.color = color;
             if (sistemaDigital) sistemaDigital.style.color = color;
+
+            // --- ACTUALIZAR BORDE Y SOMBRA DE LA IMAGEN CENTRAL ---
+            const imgContainer = document.querySelector('.image-large');
+            if (imgContainer) {
+                imgContainer.style.borderColor = color;
+                imgContainer.style.boxShadow = `0 0 20px 8px ${color}66`;
+            }
+            // También actualizar color de los textos del header/footer
+            const header = document.querySelector('.image-header');
+            const footerText = document.querySelector('.image-footer');
+            if (header) header.style.color = color;
+            if (footerText) footerText.style.color = color;
         }
         
         async function launchConfetti() { try { const module = await import('https://cdn.skypack.dev/canvas-confetti'); const confetti = module.default; var duration = 3 * 1000; var animationEnd = Date.now() + duration; var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 }; function randomInRange(min, max) { return Math.random() * (max - min) + min; } var interval = setInterval(function() { var timeLeft = animationEnd - Date.now(); if (timeLeft <= 0) return clearInterval(interval); var particleCount = 50 * (timeLeft / duration); confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } })); confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } })); }, 250); } catch (e) { console.warn("No se pudo cargar la animación de confeti."); } }
