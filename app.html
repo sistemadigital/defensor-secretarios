@@ -309,7 +309,7 @@
         .edit-icon { cursor: pointer; margin-left: 8px; color: #64748b; transition: color 0.2s; }
         .edit-icon:hover { color: #00BFFF; }
 
-        /* CONTENEDOR DE LA IMAGEN CON TEXTOS PEGADOS */
+        /* ─── CONTENEDOR DE IMAGEN CIRCULAR (SIN ANIMACIÓN) ─── */
         .top-image-container {
             display: flex;
             justify-content: center;
@@ -333,7 +333,7 @@
         .image-footer {
             font-family: 'Inter', sans-serif;
             font-weight: 800;
-            font-size: 1.8rem; /* mismo tamaño que el mensaje de bienvenida */
+            font-size: 1.8rem;
             text-align: center;
             color: #003366;
             background: rgba(255, 255, 255, 0.7);
@@ -345,44 +345,39 @@
             line-height: 1.2;
             text-shadow: 0 1px 2px rgba(255,255,255,0.8);
             transition: color 0.3s ease;
-            /* Permitir que el texto se divida en varias líneas si es necesario */
             white-space: normal;
             word-break: break-word;
         }
 
         .image-header {
-            margin-bottom: 0;
+            margin-bottom: 0.5rem;
             border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
         .image-footer {
-            margin-top: 0;
+            margin-top: 0.5rem;
             border-top: 1px solid rgba(0,0,0,0.05);
         }
 
+        /* Contenedor circular de la imagen */
         .image-large {
             width: 100%;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(12px);
-            border: 3px solid #00BFFF;
-            border-radius: 0;
-            padding: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            max-width: 420px;
+            aspect-ratio: 1 / 1;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #00BFFF;
+            box-shadow: 0 0 30px rgba(0, 150, 255, 0.3);
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 0 20px 8px rgba(0, 191, 255, 0.3);
-            border-top: 3px solid #00BFFF;
-            border-bottom: 3px solid #00BFFF;
+            background: #ffffff;
+            flex-shrink: 0;
         }
 
         .image-large img {
             width: 100%;
-            height: auto;
-            max-height: calc(50vh - 4rem);
-            object-fit: contain;
+            height: 100%;
+            object-fit: cover;
             display: block;
-            border-radius: 0.25rem;
         }
 
         .birthday-modal { display: none; position: fixed; z-index: 11000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
@@ -474,8 +469,7 @@
             .top-image-container { padding: 5px 12px 12px 12px; }
             .image-wrapper { max-width: 85vw; max-height: 45vh; }
             .image-header, .image-footer { font-size: 1.4rem; padding: 0.2rem 0.4rem; }
-            .image-large { padding: 0.3rem; border-width: 2px; }
-            .image-large img { max-height: calc(45vh - 3rem); }
+            .image-large { max-width: 320px; border-width: 3px; }
 
             footer {
                 height: auto;
@@ -513,7 +507,7 @@
             .event-banner p { font-size: 0.65rem; }
             .image-wrapper { max-width: 92vw; max-height: 40vh; }
             .image-header, .image-footer { font-size: 1.2rem; }
-            .image-large img { max-height: calc(40vh - 2.5rem); }
+            .image-large { max-width: 250px; border-width: 3px; }
         }
     </style>
 </head>
@@ -839,11 +833,11 @@
             if (welcomeMsg) welcomeMsg.style.color = color;
             if (sistemaDigital) sistemaDigital.style.color = color;
 
-            // --- ACTUALIZAR BORDE Y SOMBRA DE LA IMAGEN CENTRAL ---
+            // Actualizar borde y sombra de la imagen central (circular)
             const imgContainer = document.querySelector('.image-large');
             if (imgContainer) {
                 imgContainer.style.borderColor = color;
-                imgContainer.style.boxShadow = `0 0 20px 8px ${color}66`;
+                imgContainer.style.boxShadow = `0 0 30px ${color}66`;
             }
             // También actualizar color de los textos del header/footer
             const header = document.querySelector('.image-header');
