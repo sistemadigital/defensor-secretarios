@@ -996,26 +996,22 @@
         setInterval(actualizarBannerEventos, 30 * 60 * 1000);
 
         // ============================================================
-        // RESTO DEL CÓDIGO DE PERFIL DE USUARIO (sin cambios)
+        // FUNCIONES AUXILIARES PARA COLORES
         // ============================================================
-        const AVATAR_HOMBRE = 'https://github.com/sistemadigital/iconos/blob/main/hombre.png?raw=true';
-        const AVATAR_MUJER = 'https://github.com/sistemadigital/iconos/blob/main/mujer.png?raw=true';
-        let currentUser = null; let birthdayModalShown = false; let userDataCache = {};
-        
-        function formatDate(timestamp) { if (!timestamp) return 'Desconocido'; const date = new Date(timestamp); return `${date.getDate().toString().padStart(2,'0')}/${(date.getMonth()+1).toString().padStart(2,'0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`; }
-        
-        async function updateUserAvatar(photoURL) { if (!currentUser) return; try { await updateProfile(currentUser, { photoURL }); userDataCache.photoURL = photoURL; showWelcomeMessage(currentUser, true); } catch (error) { console.error('Error al actualizar avatar:', error); } }
-        async function updateDisplayName(newName) { if (!currentUser || !newName.trim()) return; try { const safeEmail = currentUser.email || 'anonimo'; await updateProfile(currentUser, { displayName: newName.trim() }); await setDoc(doc(dbPerfil, "usuarios", safeEmail), { nombreCompleto: newName.trim() }, { merge: true }); userDataCache.displayName = newName.trim(); showWelcomeMessage(currentUser, true); } catch (error) { console.error('Error al actualizar nombre:', error); } }
-        async function updateFechaNacimiento(newFecha) { if (!currentUser) return; try { const safeEmail = currentUser.email || 'anonimo'; await setDoc(doc(dbPerfil, "usuarios", safeEmail), { fechaNacimiento: newFecha }, { merge: true }); userDataCache.fechaNacimiento = newFecha; showWelcomeMessage(currentUser, true); } catch (error) { console.error('Error al actualizar fecha:', error); } }
-        
-        async function updateColorPersonalizado(newColor) {
-            if (!currentUser) return;
-            try {
-                const safeEmail = currentUser.email || 'anonimo';
-                await setDoc(doc(dbPerfil, "usuarios", safeEmail), { colorPersonalizado: newColor }, { merge: true });
-                userDataCache.colorPersonalizado = newColor;
-            } catch (error) { console.error('Error al actualizar color personalizado:', error); }
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
         }
+
+        // ============================================================
+        // APLICAR COLOR PERSONALIZADO (incluye fondo suave)
+        // ============================================================
+        const DEFAULT_FOOTER_COLOR = '#001f3f';
+        const DEFAULT_BACKGROUND = '#d4eafc';
 
         function aplicarColorPersonalizado(color) {
             if (!color) return;
@@ -1068,7 +1064,49 @@
                 imgContainer.style.borderColor = color;
                 imgContainer.style.boxShadow = `0 0 30px ${color}66`;
             }
+
+            // ===== NUEVO: Cambiar el fondo de <main> con un tono suave =====
+            const mainEl = document.querySelector('main');
+            if (mainEl) {
+                if (color === DEFAULT_FOOTER_COLOR) {
+                    // Color por defecto: restaurar fondo original
+                    mainEl.style.backgroundColor = DEFAULT_BACKGROUND;
+                } else {
+                    const rgb = hexToRgb(color);
+                    if (rgb) {
+                        // Mezclar con blanco (85% blanco) para obtener un pastel suave
+                        const lightR = Math.round(rgb.r + (255 - rgb.r) * 0.85);
+                        const lightG = Math.round(rgb.g + (255 - rgb.g) * 0.85);
+                        const lightB = Math.round(rgb.b + (255 - rgb.b) * 0.85);
+                        mainEl.style.backgroundColor = `rgb(${lightR}, ${lightG}, ${lightB})`;
+                    }
+                }
+            }
         }
+
+        // ============================================================
+        // RESTO DEL CÓDIGO DE PERFIL DE USUARIO (sin cambios)
+        // ============================================================
+        const AVATAR_HOMBRE = 'https://github.com/sistemadigital/iconos/blob/main/hombre.png?raw=true';
+        const AVATAR_MUJER = 'https://github.com/sistemadigital/iconos/blob/main/mujer.png?raw=true';
+        let currentUser = null; let birthdayModalShown = false; let userDataCache = {};
+        
+        function formatDate(timestamp) { if (!timestamp) return 'Desconocido'; const date = new Date(timestamp); return `${date.getDate().toString().padStart(2,'0')}/${(date.getMonth()+1).toString().padStart(2,'0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`; }
+        
+        async function updateUserAvatar(photoURL) { if (!currentUser) return; try { await updateProfile(currentUser, { photoURL }); userDataCache.photoURL = photoURL; showWelcomeMessage(currentUser, true); } catch (error) { console.error('Error al actualizar avatar:', error); } }
+        async function updateDisplayName(newName) { if (!currentUser || !newName.trim()) return; try { const safeEmail = currentUser.email || 'anonimo'; await updateProfile(currentUser, { displayName: newName.trim() }); await setDoc(doc(dbPerfil, "usuarios", safeEmail), { nombreCompleto: newName.trim() }, { merge: true }); userDataCache.displayName = newName.trim(); showWelcomeMessage(currentUser, true); } catch (error) { console.error('Error al actualizar nombre:', error); } }
+        async function updateFechaNacimiento(newFecha) { if (!currentUser) return; try { const safeEmail = currentUser.email || 'anonimo'; await setDoc(doc(dbPerfil, "usuarios", safeEmail), { fechaNacimiento: newFecha }, { merge: true }); userDataCache.fechaNacimiento = newFecha; showWelcomeMessage(currentUser, true); } catch (error) { console.error('Error al actualizar fecha:', error); } }
+        
+        async function updateColorPersonalizado(newColor) {
+            if (!currentUser) return;
+            try {
+                const safeEmail = currentUser.email || 'anonimo';
+                await setDoc(doc(dbPerfil, "usuarios", safeEmail), { colorPersonalizado: newColor }, { merge: true });
+                userDataCache.colorPersonalizado = newColor;
+            } catch (error) { console.error('Error al actualizar color personalizado:', error); }
+        }
+
+        // (La función aplicarColorPersonalizado ya está definida arriba)
         
         async function launchConfetti() { try { const module = await import('https://cdn.skypack.dev/canvas-confetti'); const confetti = module.default; var duration = 3 * 1000; var animationEnd = Date.now() + duration; var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 }; function randomInRange(min, max) { return Math.random() * (max - min) + min; } var interval = setInterval(function() { var timeLeft = animationEnd - Date.now(); if (timeLeft <= 0) return clearInterval(interval); var particleCount = 50 * (timeLeft / duration); confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } })); confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } })); }, 250); } catch (e) { console.warn("No se pudo cargar la animación de confeti."); } }
         
