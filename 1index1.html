@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <title>⚖️ Sistema Digital 6</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800;900&family=Montserrat:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        /* ── RESET ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #dceaf5;
+            color: #0a1e2f;
+            font-size: 16px;
+            line-height: 1.5;
+            overflow: hidden;
+        }
+
+        /* ── CONTENEDOR PRINCIPAL ── */
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100%;
+            padding: 2rem 5rem;
+            gap: 4rem;
+            background: #dceaf5;
+        }
+
+        /* ── COLUMNA IZQUIERDA ── */
+        .left-col {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0;
+            max-width: 600px;
+        }
+
+        /* ── CONTENEDOR CIRCULAR PARA LA IMAGEN DECORATIVA ── */
+        .imagen-decorativa-wrapper {
+            width: clamp(140px, 30vw, 240px); /* tamaño aumentado */
+            height: clamp(140px, 30vw, 240px);
+            border-radius: 50%;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 8px 24px rgba(0, 100, 200, 0.15);
+            border: 3px solid rgba(0, 180, 216, 0.3);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .imagen-decorativa-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* para que llene el círculo sin deformarse */
+            display: block;
+            opacity: 0.9;
+            transition: transform 0.3s ease;
+        }
+
+        .imagen-decorativa-wrapper:hover img {
+            transform: scale(1.05); /* ligero zoom al pasar el ratón */
+        }
+
+        /* ── TEXTO DE LA COLUMNA IZQUIERDA ── */
+        .left-col .greeting {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+            color: #0077b6;
+            margin-bottom: 0.8rem;
+            line-height: 1.2;
+        }
+
+        .left-col .description {
+            font-size: clamp(1rem, 1.2vw, 1.2rem);
+            color: #0a2b3e;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .left-col .description .bold {
+            font-weight: 700;
+        }
+
+        .left-col .btn-email {
+            background: #0a2b3e;
+            border: none;
+            border-radius: 60px;
+            padding: 0.9rem 2.2rem;
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: 0 4px 12px rgba(10, 43, 62, 0.15);
+            text-align: center;
+        }
+
+        .left-col .btn-email:hover {
+            background: #005f8c;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 95, 140, 0.25);
+        }
+
+        .left-col .register-link {
+            margin-top: 1.2rem;
+            font-size: 0.9rem;
+            color: #0a2b3e;
+        }
+
+        .left-col .register-link a {
+            color: #0077b6;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .left-col .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── COLUMNA DERECHA ── */
+        .right-col {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 0;
+        }
+
+        .image-rotator {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: 700px;
+            max-height: 100%;
+            border: 4px solid #00b4d8;
+            border-radius: 2rem;
+            background: white;
+            box-shadow: 0 20px 40px rgba(0, 100, 200, 0.12);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-rotator img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 1.5rem;
+            display: block;
+            background: white;
+            transition: opacity 0.3s ease;
+        }
+
+        /* ── MODALES ── */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 30, 47, 0.75);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0.2s, opacity 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-contenido {
+            background: #ffffff;
+            max-width: 460px;
+            width: 90%;
+            border-radius: 2rem;
+            padding: 2rem 1.8rem;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.2);
+            position: relative;
+            transform: scale(0.96);
+            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 1px solid rgba(0, 180, 216, 0.2);
+            text-align: center;
+        }
+
+        .modal-overlay.active .modal-contenido {
+            transform: scale(1);
+        }
+
+        .btn-cerrar-modal {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.4rem;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #8ba0b5;
+            transition: 0.2s;
+            line-height: 1;
+        }
+
+        .btn-cerrar-modal:hover {
+            color: #0a2b3e;
+        }
+
+        .modal-contenido h3 {
+            font-weight: 800;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #0a2b3e, #0077b6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .modal-contenido .modal-sub {
+            color: #4a627a;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+        }
+
+        .grupo-input {
+            margin-bottom: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .grupo-input label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #4a627a;
+        }
+
+        .grupo-input input {
+            padding: 14px 16px;
+            border: 1.5px solid #e2edf7;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-family: 'Inter', monospace;
+            background: white;
+            transition: all 0.2s;
+            width: 100%;
+            max-width: 320px;
+            color: #0a2b3e;
+            text-align: center;
+        }
+
+        .grupo-input input:focus {
+            outline: none;
+            border-color: #00b4d8;
+            box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.2);
+        }
+
+        .mostrar-clave {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #2c4c6e;
+            margin: -5px 0 12px 0;
+            cursor: pointer;
+        }
+
+        .btn-modal-primario {
+            width: 100%;
+            max-width: 320px;
+            padding: 14px;
+            background: #0a2b3e;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-modal-primario:hover {
+            background: #005f8c;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0, 120, 180, 0.25);
+        }
+
+        .enlace-modal {
+            text-align: center;
+            margin-top: 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #4a627a;
+        }
+
+        .enlace-modal span {
+            color: #0077b6;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .enlace-modal span:hover {
+            text-decoration: underline;
+        }
+
+        .auth-message-global {
+            position: fixed;
+            bottom: 130px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0a2b3e;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            z-index: 2100;
+            display: none;
+            backdrop-filter: blur(12px);
+            background: rgba(10, 43, 62, 0.95);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            max-width: 85vw;
+        }
+
+        .auth-message-global.error {
+            background: #bc4742;
+        }
+
+        .auth-message-global.success {
+            background: #2a9d8f;
+        }
+
+        /* ── CRÉDITOS ── */
+        .creditos-footer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            background: #0a2b3e;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            pointer-events: none;
+            user-select: none;
+            max-width: 200px;
+            opacity: 0;
+            transform: translateX(120%) scale(0.9);
+            transition: opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+                transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .creditos-footer.mostrar {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+
+        .creditos-footer.ocultar {
+            opacity: 0;
+            transform: translateX(120%) scale(0.9);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            pointer-events: none;
+        }
+
+        .creditos-footer .nombre {
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .creditos-footer .version {
+            font-weight: 300;
+            opacity: 0.8;
+            font-size: 0.65rem;
+            margin-top: 2px;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1024px) {
+            .main-container {
+                padding: 2rem 3rem;
+                gap: 3rem;
+            }
+            .image-rotator {
+                max-width: 600px;
+            }
+            .imagen-decorativa-wrapper {
+                width: clamp(120px, 28vw, 200px);
+                height: clamp(120px, 28vw, 200px);
+            }
+        }
+
+        @media (max-width: 900px) {
+            html, body {
+                overflow: auto;
+            }
+
+            .main-container {
+                flex-direction: column-reverse;
+                height: auto;
+                min-height: 100vh;
+                padding: 2rem 1.5rem;
+                gap: 2rem;
+                justify-content: center;
+            }
+
+            .left-col {
+                align-items: center;
+                text-align: center;
+                max-width: 100%;
+                padding: 0;
+            }
+
+            .left-col .greeting {
+                font-size: 2rem;
+            }
+
+            .left-col .description {
+                max-width: 100%;
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .left-col .btn-email {
+                max-width: 100%;
+            }
+
+            .imagen-decorativa-wrapper {
+                width: clamp(120px, 35vw, 200px);
+                height: clamp(120px, 35vw, 200px);
+                margin-bottom: 1rem;
+            }
+
+            .right-col {
+                width: 100%;
+                max-width: 450px;
+                margin: 0 auto;
+                height: auto;
+                max-height: 60vh;
+                padding: 0;
+            }
+
+            .image-rotator {
+                max-width: 100%;
+                height: 100%;
+                aspect-ratio: 1 / 1;
+                border-width: 3px;
+                border-radius: 1.5rem;
+            }
+
+            .image-rotator img {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 1rem;
+                gap: 1.5rem;
+            }
+
+            .left-col .greeting {
+                font-size: 1.6rem;
+            }
+
+            .left-col .description {
+                font-size: 0.95rem;
+            }
+
+            .btn-email {
+                font-size: 0.9rem;
+                padding: 0.8rem 1.2rem;
+            }
+
+            .right-col {
+                max-width: 100%;
+            }
+
+            .imagen-decorativa-wrapper {
+                width: clamp(100px, 40vw, 160px);
+                height: clamp(100px, 40vw, 160px);
+                margin-bottom: 0.8rem;
+            }
+
+            .creditos-footer {
+                bottom: 12px;
+                right: 12px;
+                padding: 6px 12px;
+                font-size: 0.6rem;
+                max-width: 160px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ─── CONTENEDOR PRINCIPAL ─── -->
+    <div class="main-container">
+        <!-- Columna izquierda -->
+        <div class="left-col">
+            <!-- Imagen decorativa en contenedor circular -->
+            <div class="imagen-decorativa-wrapper">
+                <img src="https://github.com/sistemadigital/iconos/blob/main/1.png?raw=true" alt="decoración" />
+            </div>
+
+            <div class="greeting">Hola, ingresa tus credenciales para comenzar</div>
+            <div class="description">
+                Defensoría Civil y Comercial 6<br />
+                Ministerio Publico de Misiones<br />
+                <span class="bold">Acceso Defensor Oficial y Secretarios</span>
+            </div>
+            <button class="btn-email" id="btnAbrirLoginDirecto">Ingresar con correo electrónico</button>
+            <div class="register-link">
+                ¿No tienes cuenta? <a id="abrirRegistroDirecto">Regístrate aquí</a>
+            </div>
+        </div>
+
+        <!-- Columna derecha: rotador de imágenes -->
+        <div class="right-col">
+            <div class="image-rotator" id="imageRotator">
+                <img id="rotatingImage" src="https://github.com/sistemadigital/iconos/blob/main/logo/logo.png?raw=true" alt="Logo Defensoría" />
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── CRÉDITOS ─── -->
+    <div class="creditos-footer" id="creditosFooter">
+        <div class="nombre">Diseño y Programación: Rómulo Fioravante</div>
+        <div class="version">Versión 5.1.2026</div>
+    </div>
+
+    <!-- ─── MODAL LOGIN ─── -->
+    <div id="modalLogin" class="modal-overlay">
+        <div class="modal-contenido">
+            <button class="btn-cerrar-modal" id="cerrarModalLoginBtn">&times;</button>
+            <h3>Sistema Digital</h3>
+            <p class="modal-sub">Defensoría Oficial Civil y Comercial 6<br><span style="font-weight:400;font-size:0.85rem;">Ministerio Público de Misiones</span></p>
+            <div>
+                <div class="grupo-input">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="loginEmail" placeholder="usuario@mpmisiones.gob.ar" autocomplete="email" />
+                </div>
+                <div class="grupo-input">
+                    <label>Contraseña</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" />
+                </div>
+                <label class="mostrar-clave">
+                    <input type="checkbox" id="mostrarLoginPass" /> Mostrar contraseña
+                </label>
+                <button class="btn-modal-primario" id="btnLoginAction">Entrar al sistema</button>
+                <div class="enlace-modal">
+                    ¿No tienes cuenta? <span id="cambiarARegistroDesdeLogin">Regístrate aquí</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── MODAL REGISTRO ─── -->
+    <div id="modalRegistro" class="modal-overlay">
+        <div class="modal-contenido">
+            <button class="btn-cerrar-modal" id="cerrarModalRegistroBtn">&times;</button>
+            <h3>Sistema Digital</h3>
+            <p class="modal-sub">Defensoría Oficial Civil y Comercial 6<br><span style="font-weight:400;font-size:0.85rem;">Ministerio Público de Misiones</span></p>
+            <div>
+                <div class="grupo-input">
+                    <label>Nombre completo</label>
+                    <input type="text" id="registerName" placeholder="Nombre y apellido" autocomplete="name" />
+                </div>
+                <div class="grupo-input">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="registerEmail" placeholder="usuario@mpmisiones.gob.ar" autocomplete="email" />
+                </div>
+                <div class="grupo-input">
+                    <label>Contraseña</label>
+                    <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
+                </div>
+                <label class="mostrar-clave">
+                    <input type="checkbox" id="mostrarRegPass" /> Mostrar contraseña
+                </label>
+                <button class="btn-modal-primario" id="btnRegisterAction">Registrarse</button>
+                <div class="enlace-modal">
+                    ¿Ya tienes cuenta? <span id="cambiarALoginDesdeRegistro">Inicia sesión</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="globalAuthMessage" class="auth-message-global"></div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDXZYAxWsvMiMGCrPRp3EBVuU0dzuWF4M",
+            authDomain: "sistemadefensoria6.firebaseapp.com",
+            projectId: "sistemadefensoria6",
+            storageBucket: "sistemadefensoria6.firebasestorage.app",
+            messagingSenderId: "1024631392849",
+            appId: "1:1024631392849:web:1dc13292e690e2ed100670"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const DEFAULT_DOMAIN = "@mpmisiones.gob.ar";
+
+        // ─── ELEMENTOS DOM ───
+        const rotatingImg = document.getElementById('rotatingImage');
+        const modalLogin = document.getElementById('modalLogin');
+        const modalRegistro = document.getElementById('modalRegistro');
+        const creditosFooter = document.getElementById('creditosFooter');
+
+        // ─── LISTA DE IMÁGENES PARA ROTAR ───
+        const imageList = [
+            'https://github.com/sistemadigital/iconos/blob/main/logo/logo.png?raw=true',
+            'https://github.com/sistemadigital/iconos/blob/main/logo/logo1.png?raw=true',
+            'https://github.com/sistemadigital/iconos/blob/main/logo/logo2.png?raw=true',
+            'https://github.com/sistemadigital/iconos/blob/main/logo/logo3.png?raw=true',
+            'https://github.com/sistemadigital/iconos/blob/main/logo/logo4.png?raw=true',
+            'https://github.com/sistemadigital/iconos/blob/main/logo/logo5.png?raw=true',
+            'https://github.com/sistemadigital/iconos/blob/main/logo/logo6.png?raw=true',
+            'https://github.com/sistemadigital/iconos/blob/main/logo/logo7.png?raw=true'
+        ];
+
+        let currentIndex = 0;
+        let rotatorInterval = null;
+
+        function startImageRotation() {
+            if (rotatorInterval) clearInterval(rotatorInterval);
+            rotatorInterval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % imageList.length;
+                rotatingImg.src = imageList[currentIndex];
+            }, 2000);
+        }
+        startImageRotation();
+
+        // ─── ESTADO ───
+        let currentState = 'idle';
+
+        // ─── CRÉDITOS ───
+        function gestionarCreditos() {
+            setTimeout(() => {
+                creditosFooter.classList.add('mostrar');
+            }, 300);
+            setTimeout(() => {
+                creditosFooter.classList.remove('mostrar');
+                creditosFooter.classList.add('ocultar');
+                setTimeout(() => {
+                    creditosFooter.style.display = 'none';
+                }, 600);
+            }, 4300);
+        }
+
+        // ─── FUNCIONES DE NAVEGACIÓN ───
+        function resetToInitial() {
+            modalLogin.classList.remove('active');
+            modalRegistro.classList.remove('active');
+            currentState = 'idle';
+        }
+
+        function abrirLogin() {
+            if (currentState === 'idle') {
+                modalLogin.classList.add('active');
+                currentState = 'modalOpen';
+                document.getElementById('loginEmail').focus();
+            }
+        }
+
+        function abrirRegistro() {
+            if (currentState === 'idle') {
+                modalRegistro.classList.add('active');
+                currentState = 'modalOpen';
+                document.getElementById('registerName').focus();
+            }
+        }
+
+        function handleCloseModalAndReset() {
+            if (currentState === 'modalOpen') {
+                resetToInitial();
+            }
+        }
+
+        // ─── CONFIGURACIÓN DE MODALES ───
+        function setupModalEvents() {
+            const cerrarLogin = document.getElementById('cerrarModalLoginBtn');
+            const cerrarRegistro = document.getElementById('cerrarModalRegistroBtn');
+            cerrarLogin.addEventListener('click', handleCloseModalAndReset);
+            cerrarRegistro.addEventListener('click', handleCloseModalAndReset);
+
+            modalLogin.addEventListener('click', (e) => {
+                if (e.target === modalLogin) handleCloseModalAndReset();
+            });
+            modalRegistro.addEventListener('click', (e) => {
+                if (e.target === modalRegistro) handleCloseModalAndReset();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && currentState === 'modalOpen') {
+                    handleCloseModalAndReset();
+                }
+            });
+
+            const switchToReg = document.getElementById('cambiarARegistroDesdeLogin');
+            const switchToLogin = document.getElementById('cambiarALoginDesdeRegistro');
+            switchToReg.addEventListener('click', () => {
+                if (currentState === 'modalOpen') {
+                    modalLogin.classList.remove('active');
+                    modalRegistro.classList.add('active');
+                    document.getElementById('registerName').focus();
+                }
+            });
+            switchToLogin.addEventListener('click', () => {
+                if (currentState === 'modalOpen') {
+                    modalRegistro.classList.remove('active');
+                    modalLogin.classList.add('active');
+                    document.getElementById('loginEmail').focus();
+                }
+            });
+
+            document.getElementById('btnAbrirLoginDirecto').addEventListener('click', () => {
+                if (currentState === 'idle') abrirLogin();
+            });
+
+            document.getElementById('abrirRegistroDirecto').addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentState === 'idle') abrirRegistro();
+            });
+        }
+
+        // ─── HELPERS DE AUTENTICACIÓN ───
+        function formatEmail(input) {
+            let email = input.trim();
+            if (email && !email.includes('@')) email += DEFAULT_DOMAIN;
+            return email;
+        }
+
+        function showMessage(msg, type) {
+            const div = document.getElementById('globalAuthMessage');
+            div.textContent = msg;
+            div.className = 'auth-message-global';
+            if (type === 'error') div.classList.add('error');
+            else if (type === 'success') div.classList.add('success');
+            div.style.display = 'block';
+            setTimeout(() => {
+                div.style.display = 'none';
+                div.classList.remove('error', 'success');
+            }, 4000);
+        }
+
+        window.loginUser = async function() {
+            const rawEmail = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const email = formatEmail(rawEmail);
+            if (!email || !password) {
+                showMessage('Completa todos los campos', 'error');
+                return;
+            }
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showMessage('Acceso concedido. Iniciando sistema...', 'success');
+                setTimeout(() => window.location.href = 'app.html', 2000);
+            } catch (error) {
+                showMessage('Credenciales inválidas', 'error');
+            }
+        };
+
+        window.registerUser = async function() {
+            const name = document.getElementById('registerName').value.trim();
+            const rawEmail = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const email = formatEmail(rawEmail);
+            if (!name || !email || !password) {
+                showMessage('Completa todos los campos', 'error');
+                return;
+            }
+            if (password.length < 6) {
+                showMessage('La contraseña debe tener al menos 6 caracteres', 'error');
+                return;
+            }
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, email, password);
+                await updateProfile(cred.user, { displayName: name });
+                showMessage('Cuenta creada con éxito', 'success');
+                setTimeout(() => window.location.href = 'app.html', 2000);
+            } catch (error) {
+                if (error.code === 'auth/email-already-in-use') {
+                    showMessage('El correo ya está registrado', 'error');
+                } else {
+                    showMessage('Error al crear la cuenta', 'error');
+                }
+            }
+        };
+
+        document.getElementById('btnLoginAction').addEventListener('click', () => loginUser());
+        document.getElementById('btnRegisterAction').addEventListener('click', () => registerUser());
+
+        const mostrarLogin = document.getElementById('mostrarLoginPass');
+        const loginPass = document.getElementById('loginPassword');
+        mostrarLogin.addEventListener('change', () => {
+            loginPass.type = mostrarLogin.checked ? 'text' : 'password';
+        });
+        const mostrarReg = document.getElementById('mostrarRegPass');
+        const regPass = document.getElementById('registerPassword');
+        mostrarReg.addEventListener('change', () => {
+            regPass.type = mostrarReg.checked ? 'text' : 'password';
+        });
+
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassInput = document.getElementById('loginPassword');
+        const handleLoginEnter = (e) => { if (e.key === 'Enter') loginUser(); };
+        loginEmail.addEventListener('keypress', handleLoginEnter);
+        loginPassInput.addEventListener('keypress', handleLoginEnter);
+
+        const regName = document.getElementById('registerName');
+        const regEmail = document.getElementById('registerEmail');
+        const regPassword = document.getElementById('registerPassword');
+        const handleRegEnter = (e) => { if (e.key === 'Enter') registerUser(); };
+        regName.addEventListener('keypress', handleRegEnter);
+        regEmail.addEventListener('keypress', handleRegEnter);
+        regPassword.addEventListener('keypress', handleRegEnter);
+
+        // ─── MONITOREO DE AUTENTICACIÓN ───
+        onAuthStateChanged(auth, (user) => {
+            if (user && (window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname === '')) {
+                window.location.href = 'app.html';
+            }
+        });
+
+        // ─── INICIALIZACIÓN ───
+        resetToInitial();
+        setupModalEvents();
+        gestionarCreditos();
+    </script>
+</body>
+</html>
