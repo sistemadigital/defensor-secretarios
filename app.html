@@ -1028,48 +1028,75 @@
         }
 
         // ============================================================
-        // OBTENER DATOS DE FERIA JUDICIAL (próxima feria)
+        // OBTENER EMPLEADOS DE FERIA EN LA SEMANA SIGUIENTE
         // ============================================================
-        async function obtenerProximaFeria() {
+        async function obtenerEmpleadosFeriaSemanaSiguiente() {
             try {
                 const snapshot = await getDocs(collection(dbFeria, "ferias"));
-                if (snapshot.empty) return null;
+                if (snapshot.empty) return [];
 
                 const hoy = new Date();
                 hoy.setHours(0,0,0,0);
-                let mejorFeria = null;
-                let menorDiferencia = Infinity;
+                const dentroDe7Dias = new Date(hoy);
+                dentroDe7Dias.setDate(hoy.getDate() + 7);
 
-                snapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    const inicio = data.inicio ? new Date(data.inicio + 'T00:00:00') : null;
-                    const fin = data.fin ? new Date(data.fin + 'T00:00:00') : null;
-                    if (!inicio || !fin) return;
-
-                    // Si la feria ya pasó (fin < hoy), la ignoramos
-                    if (fin < hoy) return;
-
-                    // Si está vigente (inicio <= hoy <= fin), es la mejor
-                    if (inicio <= hoy && fin >= hoy) {
-                        mejorFeria = data;
-                        mejorFeria.id = docSnap.id;
-                        menorDiferencia = 0;
-                        return;
-                    }
-
-                    // Si no está vigente, buscamos la que comience más pronto
-                    const diff = inicio - hoy;
-                    if (diff > 0 && diff < menorDiferencia) {
-                        menorDiferencia = diff;
-                        mejorFeria = data;
-                        mejorFeria.id = docSnap.id;
+                // Filtrar documentos cuyo inicio esté en la semana siguiente
+                const empleadosSemana = [];
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.inicio) {
+                        const fechaInicio = new Date(data.inicio + 'T00:00:00');
+                        if (fechaInicio >= hoy && fechaInicio <= dentroDe7Dias) {
+                            empleadosSemana.push({
+                                id: doc.id,
+                                periodo: data.periodo || 'Sin período',
+                                defensor: data.defensor || 'Sin defensor',
+                                encargado: data.encargado || 'Sin encargado',
+                                personal: data.personal || '',
+                                inicio: data.inicio,
+                                fin: data.fin
+                            });
+                        }
                     }
                 });
 
-                return mejorFeria;
+                // Agrupar por período
+                const grupos = {};
+                empleadosSemana.forEach(emp => {
+                    if (!grupos[emp.periodo]) {
+                        grupos[emp.periodo] = {
+                            periodo: emp.periodo,
+                            defensor: emp.defensor,
+                            encargado: emp.encargado,
+                            empleados: []
+                        };
+                    }
+                    grupos[emp.periodo].empleados.push({
+                        nombre: emp.personal,
+                        inicio: emp.inicio,
+                        fin: emp.fin
+                    });
+                });
+
+                // Convertir a array y formatear fechas
+                const resultado = Object.values(grupos).map(grupo => {
+                    const empleadosConFechas = grupo.empleados.map(emp => ({
+                        nombre: emp.nombre,
+                        inicio: formatFecha(emp.inicio),
+                        fin: formatFecha(emp.fin)
+                    }));
+                    return {
+                        periodo: grupo.periodo,
+                        defensor: grupo.defensor,
+                        encargado: grupo.encargado,
+                        empleados: empleadosConFechas
+                    };
+                });
+
+                return resultado;
             } catch (error) {
-                console.error("Error obteniendo próxima feria:", error);
-                return null;
+                console.error("Error obteniendo empleados de feria semana siguiente:", error);
+                return [];
             }
         }
 
@@ -1101,7 +1128,6 @@
                         });
                     }
                 }
-                // Ordenar por fecha
                 licencias.sort((a,b) => new Date(a.inicio) - new Date(b.inicio));
                 return licencias;
             } catch (error) {
@@ -1111,36 +1137,37 @@
         }
 
         // ============================================================
-        // ACTUALIZAR EL MODAL DE NOVEDADES (si está visible)
+        // ACTUALIZAR EL MODAL DE NOVEDADES
         // ============================================================
         async function actualizarNovedades() {
             const contenedor = document.getElementById('novedadesContenido');
             if (!contenedor) return;
 
             try {
-                const [feria, licencias] = await Promise.all([
-                    obtenerProximaFeria(),
+                const [gruposFeria, licencias] = await Promise.all([
+                    obtenerEmpleadosFeriaSemanaSiguiente(),
                     obtenerLicenciasSemanaProxima()
                 ]);
 
                 let html = '';
 
-                // SECCIÓN FERIA JUDICIAL
+                // SECCIÓN FERIA JUDICIAL - Semana Próxima
                 html += `<div class="seccion">`;
-                html += `<div class="seccion-titulo"><i class="fas fa-gavel"></i> Feria Judicial Próxima</div>`;
-                if (feria) {
-                    const periodo = feria.periodo || 'Sin período';
-                    const personal = feria.personal || 'Sin asignar';
-                    const defensor = feria.defensor || 'Sin defensor';
-                    const encargado = feria.encargado || 'Sin encargado';
-                    const inicio = feria.inicio ? formatFecha(feria.inicio) : '?';
-                    const fin = feria.fin ? formatFecha(feria.fin) : '?';
-                    html += `<div class="item-lista"><span class="nombre"><strong>${periodo}</strong> (${inicio} - ${fin})</span></div>`;
-                    html += `<div class="item-lista"><span class="nombre">👤 ${personal}</span></div>`;
-                    html += `<div class="item-lista"><span class="nombre">⚖️ Defensor: ${defensor}</span></div>`;
-                    html += `<div class="item-lista"><span class="nombre">📋 Encargado: ${encargado}</span></div>`;
+                html += `<div class="seccion-titulo"><i class="fas fa-gavel"></i> Feria Judicial - Semana Próxima</div>`;
+
+                if (gruposFeria.length > 0) {
+                    // Mostrar cada grupo (normalmente uno solo)
+                    gruposFeria.forEach(grupo => {
+                        html += `<div class="item-lista"><span class="nombre"><strong>${grupo.periodo}</strong></span></div>`;
+                        html += `<div class="item-lista"><span class="nombre">⚖️ Defensor: ${grupo.defensor}</span></div>`;
+                        html += `<div class="item-lista"><span class="nombre">📋 Encargado: ${grupo.encargado}</span></div>`;
+                        html += `<div style="font-size:0.8rem; font-weight:600; color:#1e293b; padding:0.2rem 0 0.2rem 1.2rem; border-bottom:1px dashed #e2e8f0;">👥 Empleados en semana próxima:</div>`;
+                        grupo.empleados.forEach(emp => {
+                            html += `<div class="item-lista"><span class="nombre">${emp.nombre}</span><span class="fecha">${emp.inicio} - ${emp.fin}</span></div>`;
+                        });
+                    });
                 } else {
-                    html += `<div class="sin-datos">No hay feria próxima registrada.</div>`;
+                    html += `<div class="sin-datos">No hay empleados de feria en la semana próxima.</div>`;
                 }
                 html += `</div>`;
 
@@ -1175,7 +1202,6 @@
             if (modalNovedades.classList.contains('visible')) {
                 modalNovedades.classList.remove('visible');
             } else {
-                // Actualizar contenido antes de mostrar
                 actualizarNovedades();
                 modalNovedades.classList.add('visible');
             }
@@ -1191,8 +1217,7 @@
             modalNovedades.classList.remove('visible');
         });
 
-        // También se puede cerrar haciendo clic fuera del modal (manejado en el event listener global)
-        // Se actualiza periódicamente cada hora para mantener los datos frescos si el modal está abierto
+        // Actualización periódica cada 30 minutos si el modal está abierto
         setInterval(() => {
             if (modalNovedades.classList.contains('visible')) {
                 actualizarNovedades();
