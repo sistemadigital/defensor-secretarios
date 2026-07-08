@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* ========== (El CSS es el mismo que antes, solo se añade el botón y ajustes menores) ========== */
         * {
             margin: 0;
             padding: 0;
@@ -47,7 +48,7 @@
             height: 100%;
             width: 100%;
             overflow: hidden;
-            position: relative; /* Para posicionar el módulo absoluto */
+            position: relative;
         }
 
         #dynamicContent {
@@ -126,7 +127,6 @@
             transition: color 0.2s ease;
         }
 
-        /* ─── CONTENEDOR DE IMAGEN CENTRADO ─── */
         .top-image-container {
             flex: 1;
             display: flex;
@@ -170,7 +170,7 @@
         /* ─── MÓDULO DE BOTONES SUPERIOR DERECHA ─── */
         .module-botones {
             position: absolute;
-            top: 80px;          /* Debajo del panel de bienvenida */
+            top: 80px;
             right: 20px;
             z-index: 500;
             background: rgba(255, 255, 255, 0.85);
@@ -185,7 +185,8 @@
             transition: background 0.2s, border-color 0.2s;
         }
 
-        .module-botones a {
+        .module-botones a,
+        .module-botones .btn-novedades {
             display: inline-block;
             padding: 0.4rem 1rem;
             background: white;
@@ -198,9 +199,12 @@
             transition: all 0.2s;
             white-space: nowrap;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
         }
 
-        .module-botones a:hover {
+        .module-botones a:hover,
+        .module-botones .btn-novedades:hover {
             background: #f0faff;
             border-color: #00BFFF;
             color: #00BFFF;
@@ -208,7 +212,117 @@
             box-shadow: 0 4px 10px rgba(0,191,255,0.2);
         }
 
-        /* Footer (sin cambios estructurales) */
+        /* ─── MODAL DE NOVEDADES ─── */
+        .novedades-modal {
+            position: absolute;
+            top: 140px;
+            right: 20px;
+            z-index: 600;
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(8px);
+            border: 1px solid #cbd5e1;
+            border-radius: 16px;
+            padding: 1rem 1.2rem;
+            width: 340px;
+            max-height: 420px;
+            overflow-y: auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            display: none; /* oculto por defecto */
+        }
+
+        .novedades-modal.visible {
+            display: block;
+        }
+
+        .novedades-modal .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #00BFFF;
+            padding-bottom: 0.3rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .novedades-modal .modal-titulo {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #003366;
+            letter-spacing: 0.3px;
+        }
+
+        .novedades-modal .cerrar-modal-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+
+        .novedades-modal .cerrar-modal-btn:hover {
+            color: #ef4444;
+        }
+
+        .novedades-modal .seccion {
+            margin-bottom: 1rem;
+        }
+
+        .novedades-modal .seccion-titulo {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #1e293b;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .novedades-modal .seccion-titulo i {
+            color: #00BFFF;
+            font-size: 0.9rem;
+        }
+
+        .novedades-modal .item-lista {
+            font-size: 0.8rem;
+            color: #334155;
+            padding: 0.2rem 0 0.2rem 1.2rem;
+            border-bottom: 1px dashed #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .novedades-modal .item-lista .nombre {
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .novedades-modal .item-lista .fecha {
+            color: #64748b;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        .novedades-modal .sin-datos {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-style: italic;
+            padding: 0.2rem 0 0.2rem 1.2rem;
+        }
+
+        .novedades-modal .badge-feria {
+            background: #dbeafe;
+            color: #1e40af;
+            border-radius: 20px;
+            padding: 0.1rem 0.6rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+
+        /* Footer (sin cambios) */
         footer {
             height: 70px;
             background-color: #001f3f;
@@ -521,7 +635,7 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* RESPONSIVE MÓVIL */
+        /* RESPONSIVE */
         @media (max-width: 768px) {
             .welcome-message { font-size: 1.4rem; }
             .sistema-digital-text { display: none; }
@@ -531,15 +645,24 @@
             .image-large { max-width: 320px; border-width: 3px; }
 
             .module-botones {
-                top: 70px;          /* Ajuste para móvil */
+                top: 70px;
                 right: 10px;
                 padding: 0.4rem 0.6rem;
                 gap: 0.4rem;
                 border-radius: 10px;
             }
-            .module-botones a {
+            .module-botones a,
+            .module-botones .btn-novedades {
                 padding: 0.3rem 0.7rem;
                 font-size: 0.75rem;
+            }
+
+            .novedades-modal {
+                top: 120px;
+                right: 10px;
+                width: 280px;
+                max-height: 300px;
+                padding: 0.8rem;
             }
 
             footer {
@@ -584,9 +707,21 @@
                 padding: 0.3rem 0.4rem;
                 gap: 0.3rem;
             }
-            .module-botones a {
+            .module-botones a,
+            .module-botones .btn-novedades {
                 padding: 0.2rem 0.5rem;
                 font-size: 0.65rem;
+            }
+            .novedades-modal {
+                top: 110px;
+                right: 6px;
+                width: 220px;
+                max-height: 250px;
+                padding: 0.6rem;
+                font-size: 0.75rem;
+            }
+            .novedades-modal .item-lista {
+                font-size: 0.7rem;
             }
         }
     </style>
@@ -597,10 +732,23 @@
         <iframe id="appIframe"></iframe>
 
         <div id="homeContent">
-            <!-- Módulo de botones superior derecha (debajo del panel de bienvenida) -->
+            <!-- Módulo de botones superior derecha -->
             <div class="module-botones">
                 <a href="https://defensoria6.github.io/pase-digital/" target="_blank">Pase Digital</a>
                 <a href="https://defensorialocal-seis.github.io/protocolo/" target="_blank">Protocolo de Actuación</a>
+                <!-- NUEVO BOTÓN NOVEDADES -->
+                <button class="btn-novedades" id="btnNovedades"><i class="fas fa-bullhorn"></i> Novedades</button>
+            </div>
+
+            <!-- MODAL DE NOVEDADES -->
+            <div class="novedades-modal" id="novedadesModal">
+                <div class="modal-header">
+                    <span class="modal-titulo"><i class="fas fa-bullhorn" style="margin-right:8px;"></i>Novedades</span>
+                    <button class="cerrar-modal-btn" id="cerrarNovedadesBtn">&times;</button>
+                </div>
+                <div id="novedadesContenido">
+                    <!-- Se llena dinámicamente con JS -->
+                </div>
             </div>
 
             <div id="dynamicContent">
@@ -759,13 +907,20 @@
             document.getElementById('sistemaInfoModal')?.classList.remove('show');
             const dropdown = document.getElementById('userDropdown');
             if(dropdown) dropdown.classList.remove('show');
+            // Cerramos también el modal de novedades
+            document.getElementById('novedadesModal')?.classList.remove('visible');
         }
         document.addEventListener('click', (e) => {
             const isClickInsideMenu = document.getElementById('btnMainMenu')?.contains(e.target);
             const isClickInsideCalendar = document.getElementById('dateTimeWeatherBtn')?.contains(e.target);
             const isClickInsideDevInfo = document.getElementById('btnSistemaInfoContainer')?.contains(e.target);
             const isClickInsideBanner = document.getElementById('eventBanner')?.contains(e.target);
-            if (!isClickInsideMenu && !isClickInsideCalendar && !isClickInsideDevInfo && !isClickInsideBanner) closeAllModals();
+            // Novedades: si se hace clic fuera del modal y fuera del botón, cerrar
+            const isClickInsideNovedades = document.getElementById('novedadesModal')?.contains(e.target);
+            const isClickOnNovedadesBtn = document.getElementById('btnNovedades')?.contains(e.target);
+            if (!isClickInsideMenu && !isClickInsideCalendar && !isClickInsideDevInfo && !isClickInsideBanner && !isClickInsideNovedades && !isClickOnNovedadesBtn) {
+                closeAllModals();
+            }
         });
         document.getElementById('mainFooter').addEventListener('click', function(e) {
             if (e.target.closest('#eventBanner')) return;
@@ -820,7 +975,8 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, signOut, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-        
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
         // ============================================================
         // CONFIGURACIONES DE FIREBASE
         // ============================================================
@@ -835,7 +991,217 @@
         const app = initializeApp(firebaseConfigPerfil);
         const auth = getAuth(app);
         const dbPerfil = getFirestore(app);
-        
+
+        // Configuración para Feria Judicial (Firestore)
+        const feriaApp = initializeApp({
+            apiKey: "AIzaSyCxct5wrF6yGrGyWCwcI5J6F_bbzTOcr4w",
+            authDomain: "feriajudicial6.firebaseapp.com",
+            projectId: "feriajudicial6",
+            storageBucket: "feriajudicial6.firebasestorage.app",
+            messagingSenderId: "426494712242",
+            appId: "1:426494712242:web:a04a98a5f7f088ac656cab"
+        }, "feria");
+        const dbFeria = getFirestore(feriaApp);
+
+        // Configuración para Licencias (Realtime Database)
+        const licenciasApp = initializeApp({
+            apiKey: "AIzaSyDDIbbbuorx96B02O-gmZ60oAs7bb7fjfM",
+            authDomain: "defensoria6rpj.firebaseapp.com",
+            projectId: "defensoria6rpj",
+            storageBucket: "defensoria6rpj.appspot.com",
+            messagingSenderId: "388530292853",
+            appId: "1:388530292853:web:3161b40c0f7b1eb01fd03c",
+            databaseURL: "https://defensoria6rpj-default-rtdb.firebaseio.com/"
+        }, "licencias");
+        const dbLicencias = getDatabase(licenciasApp);
+
+        // ============================================================
+        // FUNCIÓN PARA FORMATEAR FECHAS (DD/MM/YYYY)
+        // ============================================================
+        function formatFecha(fechaStr) {
+            if (!fechaStr) return '';
+            const partes = fechaStr.split('-');
+            if (partes.length === 3) {
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+            return fechaStr;
+        }
+
+        // ============================================================
+        // OBTENER DATOS DE FERIA JUDICIAL (próxima feria)
+        // ============================================================
+        async function obtenerProximaFeria() {
+            try {
+                const snapshot = await getDocs(collection(dbFeria, "ferias"));
+                if (snapshot.empty) return null;
+
+                const hoy = new Date();
+                hoy.setHours(0,0,0,0);
+                let mejorFeria = null;
+                let menorDiferencia = Infinity;
+
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const inicio = data.inicio ? new Date(data.inicio + 'T00:00:00') : null;
+                    const fin = data.fin ? new Date(data.fin + 'T00:00:00') : null;
+                    if (!inicio || !fin) return;
+
+                    // Si la feria ya pasó (fin < hoy), la ignoramos
+                    if (fin < hoy) return;
+
+                    // Si está vigente (inicio <= hoy <= fin), es la mejor
+                    if (inicio <= hoy && fin >= hoy) {
+                        mejorFeria = data;
+                        mejorFeria.id = docSnap.id;
+                        menorDiferencia = 0;
+                        return;
+                    }
+
+                    // Si no está vigente, buscamos la que comience más pronto
+                    const diff = inicio - hoy;
+                    if (diff > 0 && diff < menorDiferencia) {
+                        menorDiferencia = diff;
+                        mejorFeria = data;
+                        mejorFeria.id = docSnap.id;
+                    }
+                });
+
+                return mejorFeria;
+            } catch (error) {
+                console.error("Error obteniendo próxima feria:", error);
+                return null;
+            }
+        }
+
+        // ============================================================
+        // OBTENER LICENCIAS DE LA SEMANA SIGUIENTE (próximos 7 días)
+        // ============================================================
+        async function obtenerLicenciasSemanaProxima() {
+            try {
+                const snapshot = await get(ref(dbLicencias, "registros"));
+                const data = snapshot.val();
+                if (!data) return [];
+
+                const hoy = new Date();
+                hoy.setHours(0,0,0,0);
+                const dentroDe7Dias = new Date(hoy);
+                dentroDe7Dias.setDate(hoy.getDate() + 7);
+
+                const licencias = [];
+                for (const key in data) {
+                    const reg = data[key];
+                    if (!reg.inicio) continue;
+                    const fechaInicio = new Date(reg.inicio + 'T00:00:00');
+                    if (fechaInicio >= hoy && fechaInicio <= dentroDe7Dias) {
+                        licencias.push({
+                            nombre: reg.nombre || 'Sin nombre',
+                            articulo: reg.articulo || 'Sin artículo',
+                            inicio: reg.inicio,
+                            dias: reg.dias || 0
+                        });
+                    }
+                }
+                // Ordenar por fecha
+                licencias.sort((a,b) => new Date(a.inicio) - new Date(b.inicio));
+                return licencias;
+            } catch (error) {
+                console.error("Error obteniendo licencias:", error);
+                return [];
+            }
+        }
+
+        // ============================================================
+        // ACTUALIZAR EL MODAL DE NOVEDADES (si está visible)
+        // ============================================================
+        async function actualizarNovedades() {
+            const contenedor = document.getElementById('novedadesContenido');
+            if (!contenedor) return;
+
+            try {
+                const [feria, licencias] = await Promise.all([
+                    obtenerProximaFeria(),
+                    obtenerLicenciasSemanaProxima()
+                ]);
+
+                let html = '';
+
+                // SECCIÓN FERIA JUDICIAL
+                html += `<div class="seccion">`;
+                html += `<div class="seccion-titulo"><i class="fas fa-gavel"></i> Feria Judicial Próxima</div>`;
+                if (feria) {
+                    const periodo = feria.periodo || 'Sin período';
+                    const personal = feria.personal || 'Sin asignar';
+                    const defensor = feria.defensor || 'Sin defensor';
+                    const encargado = feria.encargado || 'Sin encargado';
+                    const inicio = feria.inicio ? formatFecha(feria.inicio) : '?';
+                    const fin = feria.fin ? formatFecha(feria.fin) : '?';
+                    html += `<div class="item-lista"><span class="nombre"><strong>${periodo}</strong> (${inicio} - ${fin})</span></div>`;
+                    html += `<div class="item-lista"><span class="nombre">👤 ${personal}</span></div>`;
+                    html += `<div class="item-lista"><span class="nombre">⚖️ Defensor: ${defensor}</span></div>`;
+                    html += `<div class="item-lista"><span class="nombre">📋 Encargado: ${encargado}</span></div>`;
+                } else {
+                    html += `<div class="sin-datos">No hay feria próxima registrada.</div>`;
+                }
+                html += `</div>`;
+
+                // SECCIÓN LICENCIAS SEMANA PRÓXIMA
+                html += `<div class="seccion">`;
+                html += `<div class="seccion-titulo"><i class="fas fa-calendar-week"></i> Licencias en la semana próxima</div>`;
+                if (licencias.length > 0) {
+                    licencias.forEach(lic => {
+                        const fecha = lic.inicio ? formatFecha(lic.inicio) : '?';
+                        html += `<div class="item-lista"><span class="nombre">${lic.nombre}</span><span class="fecha">${fecha} (${lic.dias} d)</span></div>`;
+                    });
+                } else {
+                    html += `<div class="sin-datos">No hay licencias en los próximos 7 días.</div>`;
+                }
+                html += `</div>`;
+
+                contenedor.innerHTML = html;
+            } catch (error) {
+                console.error("Error actualizando novedades:", error);
+                contenedor.innerHTML = `<div class="sin-datos">Error al cargar novedades.</div>`;
+            }
+        }
+
+        // ============================================================
+        // MANEJO DEL BOTÓN Y MODAL DE NOVEDADES
+        // ============================================================
+        const btnNovedades = document.getElementById('btnNovedades');
+        const modalNovedades = document.getElementById('novedadesModal');
+        const cerrarNovedadesBtn = document.getElementById('cerrarNovedadesBtn');
+
+        function toggleNovedades() {
+            if (modalNovedades.classList.contains('visible')) {
+                modalNovedades.classList.remove('visible');
+            } else {
+                // Actualizar contenido antes de mostrar
+                actualizarNovedades();
+                modalNovedades.classList.add('visible');
+            }
+        }
+
+        btnNovedades.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleNovedades();
+        });
+
+        cerrarNovedadesBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            modalNovedades.classList.remove('visible');
+        });
+
+        // También se puede cerrar haciendo clic fuera del modal (manejado en el event listener global)
+        // Se actualiza periódicamente cada hora para mantener los datos frescos si el modal está abierto
+        setInterval(() => {
+            if (modalNovedades.classList.contains('visible')) {
+                actualizarNovedades();
+            }
+        }, 30 * 60 * 1000);
+
+        // ============================================================
+        // RESTO DEL CÓDIGO DE PERFIL DE USUARIO (sin cambios)
+        // ============================================================
         const causasConfigHistorica = {
             apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
             authDomain: "causas-defensoria.firebaseapp.com",
@@ -864,45 +1230,31 @@
             console.error("Error al inicializar bases de eventos:", e);
         }
 
-        // ============================================================
-        // FUNCIÓN PARA CONVERTIR FECHAS (maneja múltiples formatos)
-        // ============================================================
         function toDate(val) {
             if (!val) return null;
-            // Si es un objeto con método toDate (Firestore Timestamp)
             if (val.toDate) return val.toDate();
-            // Si tiene segundos (timestamp en segundos)
             if (val.seconds !== undefined) return new Date(val.seconds * 1000);
-            // Si ya es Date
             if (val instanceof Date) return val;
-            // Si es string, intentar varios formatos
             if (typeof val === 'string') {
-                // Formato DD/MM/YYYY o DD/MM/YY
                 const match = val.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}|\d{2})$/);
                 if (match) {
                     let year = parseInt(match[3]);
                     if (year < 100) year += 2000;
                     return new Date(year, parseInt(match[2]) - 1, parseInt(match[1]));
                 }
-                // Formato YYYY-MM-DD
                 const matchIso = val.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
                 if (matchIso) {
                     return new Date(parseInt(matchIso[1]), parseInt(matchIso[2]) - 1, parseInt(matchIso[3]));
                 }
-                // Intentar parseo genérico
                 const d = new Date(val);
                 if (!isNaN(d)) return d;
             }
-            // Si es un objeto con propiedad 'fecha' (para arrays de objetos)
             if (typeof val === 'object' && val !== null && 'fecha' in val) {
                 return toDate(val.fecha);
             }
             return null;
         }
 
-        // ============================================================
-        // DETECCIÓN DE EVENTOS HOY (consulta ambas bases)
-        // ============================================================
         async function hayEventosHoy() {
             try {
                 if (!dbHistorica || !dbNueva) {
@@ -911,16 +1263,15 @@
                 }
 
                 const [snapHistorica, snapNueva] = await Promise.all([
-    getDocs(collection(dbHistorica, "causas")),
-    getDocs(collection(dbNueva, "causas"))
-]);
+                    getDocs(collection(dbHistorica, "causas")),
+                    getDocs(collection(dbNueva, "causas"))
+                ]);
 
                 const hoy = new Date();
                 const year = hoy.getFullYear();
                 const month = hoy.getMonth();
                 const day = hoy.getDate();
 
-                // Función para comprobar si una fecha es hoy (solo año, mes, día)
                 function esHoy(fecha) {
                     if (!fecha) return false;
                     const d = toDate(fecha);
@@ -928,21 +1279,15 @@
                     return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
                 }
 
-                // Procesar una causa y extraer todas las fechas
                 function procesarCausa(causa) {
-                    // Audiencias (array de fechas o array de objetos con fecha)
                     if (Array.isArray(causa.audiencias)) {
                         for (const item of causa.audiencias) {
                             if (esHoy(item)) return true;
                         }
                     }
-                    // Cámara Gesell
                     if (causa.audienciaGesell && esHoy(causa.audienciaGesell)) return true;
-                    // Vencimiento
                     if (causa.vencimiento && esHoy(causa.vencimiento)) return true;
-                    // Vencimiento Recursos
                     if (causa.vencimientoRecursos && esHoy(causa.vencimientoRecursos)) return true;
-                    // Diligencias
                     if (Array.isArray(causa.diligencias)) {
                         for (const d of causa.diligencias) {
                             if (d.fecha && esHoy(d.fecha)) return true;
@@ -951,7 +1296,6 @@
                     return false;
                 }
 
-                // Recorrer ambas colecciones
                 for (const docSnap of snapHistorica.docs) {
                     if (procesarCausa(docSnap.data())) return true;
                 }
@@ -966,9 +1310,6 @@
             }
         }
 
-        // ============================================================
-        // ACTUALIZAR EL BANNER
-        // ============================================================
         async function actualizarBannerEventos() {
             const bannerDiv = document.getElementById('eventBanner');
             const bannerText = document.getElementById('bannerText');
@@ -991,13 +1332,9 @@
             }
         }
 
-        // Ejecutar al cargar y luego cada 30 minutos
         actualizarBannerEventos();
         setInterval(actualizarBannerEventos, 30 * 60 * 1000);
 
-        // ============================================================
-        // FUNCIONES AUXILIARES PARA COLORES
-        // ============================================================
         function hexToRgb(hex) {
             const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
             return result ? {
@@ -1007,9 +1344,6 @@
             } : null;
         }
 
-        // ============================================================
-        // APLICAR COLOR PERSONALIZADO (incluye fondo suave)
-        // ============================================================
         const DEFAULT_FOOTER_COLOR = '#001f3f';
         const DEFAULT_BACKGROUND = '#d4eafc';
 
@@ -1065,16 +1399,13 @@
                 imgContainer.style.boxShadow = `0 0 30px ${color}66`;
             }
 
-            // ===== NUEVO: Cambiar el fondo de <main> con un tono suave =====
             const mainEl = document.querySelector('main');
             if (mainEl) {
                 if (color === DEFAULT_FOOTER_COLOR) {
-                    // Color por defecto: restaurar fondo original
                     mainEl.style.backgroundColor = DEFAULT_BACKGROUND;
                 } else {
                     const rgb = hexToRgb(color);
                     if (rgb) {
-                        // Mezclar con blanco (85% blanco) para obtener un pastel suave
                         const lightR = Math.round(rgb.r + (255 - rgb.r) * 0.85);
                         const lightG = Math.round(rgb.g + (255 - rgb.g) * 0.85);
                         const lightB = Math.round(rgb.b + (255 - rgb.b) * 0.85);
@@ -1084,9 +1415,6 @@
             }
         }
 
-        // ============================================================
-        // RESTO DEL CÓDIGO DE PERFIL DE USUARIO (sin cambios)
-        // ============================================================
         const AVATAR_HOMBRE = 'https://github.com/sistemadigital/iconos/blob/main/hombre.png?raw=true';
         const AVATAR_MUJER = 'https://github.com/sistemadigital/iconos/blob/main/mujer.png?raw=true';
         let currentUser = null; let birthdayModalShown = false; let userDataCache = {};
@@ -1106,8 +1434,6 @@
             } catch (error) { console.error('Error al actualizar color personalizado:', error); }
         }
 
-        // (La función aplicarColorPersonalizado ya está definida arriba)
-        
         async function launchConfetti() { try { const module = await import('https://cdn.skypack.dev/canvas-confetti'); const confetti = module.default; var duration = 3 * 1000; var animationEnd = Date.now() + duration; var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 }; function randomInRange(min, max) { return Math.random() * (max - min) + min; } var interval = setInterval(function() { var timeLeft = animationEnd - Date.now(); if (timeLeft <= 0) return clearInterval(interval); var particleCount = 50 * (timeLeft / duration); confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } })); confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } })); }, 250); } catch (e) { console.warn("No se pudo cargar la animación de confeti."); } }
         
         async function checkBirthdays(isCurrentUserBirthday) { if (!currentUser || isCurrentUserBirthday) return; const today = new Date(); const hoy = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}`; try { const q = query(collection(dbPerfil, "usuarios"), where("fechaNacimiento", "==", hoy)); const querySnapshot = await getDocs(q); const birthdayUsers = []; querySnapshot.forEach(doc => { if (doc.data().email !== (currentUser?.email || '')) birthdayUsers.push(doc.data().nombreCompleto); }); if (birthdayUsers.length > 0 && !birthdayModalShown) { const list = document.getElementById('birthdayList'); list.innerHTML = ''; birthdayUsers.forEach(nombre => { const li = document.createElement('li'); li.textContent = nombre; list.appendChild(li); }); document.getElementById('birthdayModal').style.display = 'flex'; birthdayModalShown = true; } } catch (error) { console.error("Error al consultar cumpleaños:", error); } }
