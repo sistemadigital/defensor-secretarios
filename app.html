@@ -212,6 +212,13 @@
             box-shadow: 0 4px 10px rgba(0,191,255,0.2);
         }
 
+        /* BORDE VERDE LUMINOSO CUANDO HAY DATOS */
+        .btn-novedades.hay-datos {
+            border-color: #22c55e;
+            box-shadow: 0 0 12px #22c55e, 0 0 20px rgba(34, 197, 94, 0.3);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
         /* ─── MODAL DE NOVEDADES ─── */
         .novedades-modal {
             position: absolute;
@@ -1137,10 +1144,11 @@
         }
 
         // ============================================================
-        // ACTUALIZAR EL MODAL DE NOVEDADES
+        // ACTUALIZAR EL MODAL DE NOVEDADES Y EL BOTÓN
         // ============================================================
         async function actualizarNovedades() {
             const contenedor = document.getElementById('novedadesContenido');
+            const btnNovedades = document.getElementById('btnNovedades');
             if (!contenedor) return;
 
             try {
@@ -1148,6 +1156,16 @@
                     obtenerEmpleadosFeriaSemanaSiguiente(),
                     obtenerLicenciasSemanaProxima()
                 ]);
+
+                // Determinar si hay datos para mostrar
+                const hayDatos = (gruposFeria.length > 0) || (licencias.length > 0);
+                if (btnNovedades) {
+                    if (hayDatos) {
+                        btnNovedades.classList.add('hay-datos');
+                    } else {
+                        btnNovedades.classList.remove('hay-datos');
+                    }
+                }
 
                 let html = '';
 
@@ -1217,12 +1235,13 @@
             modalNovedades.classList.remove('visible');
         });
 
-        // Actualización periódica cada 30 minutos si el modal está abierto
+        // Actualización periódica cada 30 minutos (siempre para refrescar el botón)
         setInterval(() => {
-            if (modalNovedades.classList.contains('visible')) {
-                actualizarNovedades();
-            }
+            actualizarNovedades();
         }, 30 * 60 * 1000);
+
+        // Cargar datos al inicio para mostrar borde verde si corresponde
+        actualizarNovedades();
 
         // ============================================================
         // RESTO DEL CÓDIGO DE PERFIL DE USUARIO (sin cambios)
