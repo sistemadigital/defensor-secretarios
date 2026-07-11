@@ -1242,6 +1242,55 @@
             await cargarCatalagosConCache();
             await cargarCausas(true);
             
+            // ----- VALIDACIÓN DEL CAMPO CARÁTULA: debe comenzar con texto (letra) -----
+            const caratulaField = document.getElementById('caratula');
+            if (caratulaField) {
+                // Función común de validación
+                function validarCaratula(valor) {
+                    // 1. Convertir a mayúsculas
+                    valor = valor.toUpperCase();
+                    // 2. Eliminar comillas dobles
+                    valor = valor.replace(/"/g, '');
+                    
+                    const trimmed = valor.trim();
+                    // 3. Verificar que no comience con "EXPTE"
+                    if (trimmed.startsWith('EXPTE')) {
+                        mostrarAlertaFlotante('La carátula no debe comenzar con el número de expediente. Escriba solo la carátula en mayúsculas.', 'danger');
+                        return { valido: false, valor: '' };
+                    }
+                    
+                    // 4. Verificar que el primer carácter sea una letra (A-Z)
+                    if (trimmed.length > 0 && !/^[A-Z]/.test(trimmed)) {
+                        mostrarAlertaFlotante('La carátula debe comenzar con una letra (texto).', 'danger');
+                        return { valido: false, valor: '' };
+                    }
+                    
+                    // Si todo está bien, devolver el valor normalizado
+                    return { valido: true, valor: valor };
+                }
+
+                caratulaField.addEventListener('input', function(e) {
+                    const resultado = validarCaratula(this.value);
+                    if (!resultado.valido) {
+                        this.value = '';
+                    } else {
+                        this.value = resultado.valor;
+                    }
+                });
+
+                caratulaField.addEventListener('paste', function(e) {
+                    // Dejar que el navegador procese el pegado, luego validamos
+                    setTimeout(() => {
+                        const resultado = validarCaratula(this.value);
+                        if (!resultado.valido) {
+                            this.value = '';
+                        } else {
+                            this.value = resultado.valor;
+                        }
+                    }, 10);
+                });
+            }
+
             $("btnToggleFiltros").onclick = function() {
                 const panel = $("advancedFiltersPanel");
                 panel.classList.toggle("show");
@@ -1268,7 +1317,6 @@
             $("btnAgregarNota").onclick = agregarNota;
             document.getElementById("cargarMasNotas").onclick = () => cargarNotas(currentCausaId, false);
             
-            // Evento para cerrar el modal de nuevo/editar con la X
             document.getElementById("btnCloseModal").onclick = function() {
                 modal.style.display = "none";
                 resetFormCausa();
