@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario de Eventos</title>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2563eb;        /* Azul moderno (Fecha actual) */
+            --future: #0369a1;         /* Celeste oscuro (Fechas futuras) */
+            --past: #9ca3af;           /* Gris (Fechas pasadas) */
+            --bg-body: #f9fafb;
+            --border-color: #e5e7eb;
+            --text-main: #1f2937;
+            --white: #ffffff;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ===== HEADER CALENDARIO ===== */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--white);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .controls button {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .controls button:hover {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .month-display {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: capitalize;
+        }
+
+        /* ===== CUADRICULA DEL CALENDARIO ===== */
+        .calendar-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--white);
+            padding: 1rem;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: 700;
+            color: var(--primary);
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-auto-rows: 1fr; /* Para que todas las semanas midan lo mismo */
+            flex: 1;
+            gap: 4px;
+        }
+
+        .day-cell {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            background-color: var(--white);
+            position: relative;
+        }
+
+        .day-cell:hover:not(.empty) {
+            background-color: #eff6ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .day-cell.empty {
+            background-color: transparent;
+            border: none;
+            cursor: default;
+        }
+
+        .day-number {
+            font-size: 1.25rem;
+            text-align: right;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Estilos requeridos para las fechas */
+        .past .day-number {
+            color: var(--past);
+            font-weight: bold;
+        }
+
+        .today {
+            background-color: #f0fdf4;
+            border-color: var(--primary);
+        }
+
+        .today .day-number {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .future .day-number {
+            color: var(--future);
+            font-weight: bold;
+        }
+
+        /* Indicador de que hay eventos ese día */
+        .event-indicator {
+            background-color: var(--primary);
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: auto;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--past);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: var(--text-main);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .event-item {
+            background-color: #f8fafc;
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .event-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .event-type {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .event-expediente {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .event-details {
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+
+        .no-events {
+            text-align: center;
+            color: var(--past);
+            font-style: italic;
+            padding: 2rem 0;
+        }
+
+        /* Cargando overlay */
+        .loading-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255,255,255,0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Pantalla de carga inicial -->
+    <div id="loadingScreen" class="loading-screen">
+        <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 1rem;"></i>
+        <p>Cargando eventos desde la base de datos...</p>
+    </div>
+
+    <!-- Encabezado superior -->
+    <header>
+        <div class="controls">
+            <button id="btnPrev" title="Mes Anterior"><i class="fas fa-chevron-left"></i> Pasado</button>
+            <button id="btnToday" title="Ir a hoy"><i class="fas fa-calendar-day"></i> Hoy</button>
+            <button id="btnNext" title="Mes Siguiente">Futuro <i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="month-display" id="monthDisplay">Mes Año</div>
+    </header>
+
+    <!-- Área del Calendario -->
+    <div class="calendar-container">
+        <div class="weekdays">
+            <div>Domingo</div>
+            <div>Lunes</div>
+            <div>Martes</div>
+            <div>Miércoles</div>
+            <div>Jueves</div>
+            <div>Viernes</div>
+            <div>Sábado</div>
+        </div>
+        <div class="days-grid" id="calendarGrid">
+            <!-- Los días se inyectan mediante JS -->
+        </div>
+    </div>
+
+    <!-- Modal de Eventos del Día -->
+    <div class="modal-overlay" id="eventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalDateTitle">Eventos del Día</h3>
+                <button class="close-btn" id="closeModalBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Los eventos del día se inyectan aquí -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====================================================
+        // 1. Configuración de Bases de Datos Firebase (Original)
+        // ====================================================
+        const firebaseConfigHistorica = {
+            apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
+            authDomain: "causas-defensoria.firebaseapp.com",
+            projectId: "causas-defensoria",
+            storageBucket: "causas-defensoria.appspot.com",
+            messagingSenderId: "186064671470",
+            appId: "1:186064671470:web:b58bae5eadbe6e469f19ff"
+        };
+        const firebaseConfigNueva = {
+            apiKey: "AIzaSyBevCwkh4iOWVqhp3gG2ae1eCUMkFpnr6I",
+            authDomain: "causas-2defensoria.firebaseapp.com",
+            projectId: "causas-2defensoria",
+            storageBucket: "causas-2defensoria.firebasestorage.app",
+            messagingSenderId: "663905632804",
+            appId: "1:663905632804:web:4f686a88004dc642ad0eb1"
+        };
+
+        let dbHistorica, dbNueva;
+        try {
+            let appHistorica, appNueva;
+            if (firebase.apps.length === 0) {
+                appHistorica = firebase.initializeApp(firebaseConfigHistorica, "historica");
+                appNueva = firebase.initializeApp(firebaseConfigNueva, "nueva");
+            } else {
+                appHistorica = firebase.app("historica") || firebase.initializeApp(firebaseConfigHistorica, "historica");
+                appNueva = firebase.app("nueva") || firebase.initializeApp(firebaseConfigNueva, "nueva");
+            }
+            dbHistorica = appHistorica.firestore();
+            dbNueva = appNueva.firestore();
+        } catch (e) {
+            console.error("Error inicializando Firebase:", e);
+        }
+
+        // ====================================================
+        // 2. Variables Globales para Calendario y Eventos
+        // ====================================================
+        let eventosPlanos = [];
+        let currentDate = new Date(); // Fecha actual real
+        let navDate = new Date();     // Fecha que controla el mes visible (se traslada en el tiempo)
+
+        const monthDisplay = document.getElementById('monthDisplay');
+        const calendarGrid = document.getElementById('calendarGrid');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const eventModal = document.getElementById('eventModal');
+        const modalBody = document.getElementById('modalBody');
+        const modalDateTitle = document.getElementById('modalDateTitle');
+
+        // ====================================================
+        // 3. Funciones de Extracción y Formateo (Idénticas a tu origen)
+        // ====================================================
+        function toDate(val) {
+            if (!val) return null;
+            if (val.toDate) return val.toDate();
+            if (val.seconds) return new Date(val.seconds * 1000);
+            if (val instanceof Date) return val;
+            return new Date(val);
+        }
+
+        function formatearHora(fecha) {
+            const d = toDate(fecha);
+            if (!d || isNaN(d)) return "";
+            return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        }
+
+        // ====================================================
+        // 4. Lógica de Carga de Eventos
+        // ====================================================
+        async function cargarEventos() {
+            try {
+                const [snapshotHistorica, snapshotNueva] = await Promise.all([
+                    dbHistorica.collection("causas").get(),
+                    dbNueva.collection("causas").get()
+                ]);
+
+                const eventos = [];
+                const procesarCausa = (causa) => {
+                    const juzgado = causa.juzgado || '';
+                    
+                    // Helper para pushear eventos
+                    const agregar = (fechaRaw, tipoId, tipoLabel) => {
+                        const fechaObj = toDate(fechaRaw);
+                        if (fechaObj) {
+                            eventos.push({
+                                tipo: tipoId,
+                                tipoLabel: tipoLabel,
+                                fecha: fechaObj,
+                                numCausa: causa.numCausa || 'S/N',
+                                caratula: causa.caratula || '',
+                                juzgado: juzgado
+                            });
+                        }
+                    };
+
+                    if (Array.isArray(causa.audiencias)) causa.audiencias.forEach(f => agregar(f, 'audiencia', 'Audiencia'));
+                    if (causa.audienciaGesell) agregar(causa.audienciaGesell, 'gesell', 'C. Gesell');
+                    if (causa.vencimiento) agregar(causa.vencimiento, 'vencimiento', 'Vencimiento');
+                    if (causa.vencimientoRecursos) agregar(causa.vencimientoRecursos, 'recurso', 'Recurso');
+                    if (Array.isArray(causa.diligencias)) causa.diligencias.forEach(d => agregar(d.fecha, 'diligencia', 'Diligencia'));
+                };
+
+                snapshotHistorica.forEach(doc => procesarCausa({ id: doc.id, ...doc.data() }));
+                snapshotNueva.forEach(doc => procesarCausa({ id: doc.id, ...doc.data() }));
+
+                return eventos;
+            } catch (error) {
+                console.error("Error cargando eventos:", error);
+                return [];
+            }
+        }
+
+        // ====================================================
+        // 5. Motor del Calendario Mensual
+        // ====================================================
+        function renderizarCalendario() {
+            calendarGrid.innerHTML = '';
+            
+            const year = navDate.getFullYear();
+            const month = navDate.getMonth();
+            
+            // Textos superior derecho
+            const options = { month: 'long', year: 'numeric' };
+            monthDisplay.textContent = navDate.toLocaleDateString('es-ES', options);
+
+            // Obtener primer día del mes (0=Domingo ... 6=Sábado)
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+            
+            // Cantidad de días en el mes actual
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Fechas de control (a media noche para evitar problemas de horas)
+            const todayReset = new Date();
+            todayReset.setHours(0,0,0,0);
+
+            // Celdas vacías previas (padding)
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'day-cell empty';
+                calendarGrid.appendChild(emptyCell);
+            }
+
+            // Días del mes
+            for (let i = 1; i <= daysInMonth; i++) {
+                const cellDate = new Date(year, month, i);
+                cellDate.setHours(0,0,0,0);
+                
+                const cell = document.createElement('div');
+                cell.className = 'day-cell';
+                
+                // Aplicar estilos requeridos (Negrita y Colores específicos según el prompt)
+                if (cellDate.getTime() === todayReset.getTime()) {
+                    cell.classList.add('today');
+                } else if (cellDate < todayReset) {
+                    cell.classList.add('past');
+                } else {
+                    cell.classList.add('future');
+                }
+
+                // Número del día
+                const numberDiv = document.createElement('div');
+                numberDiv.className = 'day-number';
+                numberDiv.textContent = i;
+                cell.appendChild(numberDiv);
+
+                // Buscar eventos para este día
+                const eventosDelDia = eventosPlanos.filter(ev => {
+                    const evDate = new Date(ev.fecha);
+                    evDate.setHours(0,0,0,0);
+                    return evDate.getTime() === cellDate.getTime();
+                });
+
+                // Si hay eventos, mostrar indicador
+                if (eventosDelDia.length > 0) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'event-indicator';
+                    indicator.textContent = `${eventosDelDia.length} evento${eventosDelDia.length > 1 ? 's' : ''}`;
+                    cell.appendChild(indicator);
+                }
+
+                // Evento click para abrir modal
+                cell.addEventListener('click', () => abrirModal(cellDate, eventosDelDia));
+
+                calendarGrid.appendChild(cell);
+            }
+        }
+
+        // ====================================================
+        // 6. Lógica del Modal
+        // ====================================================
+        function abrirModal(fechaObj, eventosDelDia) {
+            modalDateTitle.textContent = fechaObj.toLocaleDateString('es-ES', { 
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+            }).toUpperCase();
+
+            modalBody.innerHTML = '';
+
+            if (eventosDelDia.length === 0) {
+                modalBody.innerHTML = '<div class="no-events">No hay eventos registrados para esta fecha.</div>';
+            } else {
+                // Ordenar por hora
+                eventosDelDia.sort((a, b) => a.fecha - b.fecha);
+                
+                eventosDelDia.forEach(ev => {
+                    const hora = formatearHora(ev.fecha);
+                    const horaTxt = hora ? `<i class="fas fa-clock"></i> ${hora}` : '';
+                    
+                    modalBody.innerHTML += `
+                        <div class="event-item">
+                            <div class="event-type">${ev.tipoLabel}</div>
+                            <div class="event-expediente">Expediente: ${ev.numCausa}</div>
+                            <div class="event-details">
+                                ${horaTxt} | <i class="fas fa-gavel"></i> ${ev.juzgado}<br>
+                                <strong>Carátula:</strong> ${ev.caratula}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            eventModal.classList.add('active');
+        }
+
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            eventModal.classList.remove('active');
+        });
+
+        // Cerrar modal al clickear afuera
+        eventModal.addEventListener('click', (e) => {
+            if (e.target === eventModal) eventModal.classList.remove('active');
+        });
+
+        // ====================================================
+        // 7. Controles de Navegación del Calendario
+        // ====================================================
+        document.getElementById('btnPrev').addEventListener('click', () => {
+            navDate.setMonth(navDate.getMonth() - 1);
+            renderizarCalendario();
+        });
+
+        document.getElementById('btnNext').addEventListener('click', () => {
+            navDate.setMonth(navDate.getMonth() + 1);
+            renderizarCalendario();
+        });
+
+        document.getElementById('btnToday').addEventListener('click', () => {
+            navDate = new Date(); // Resetear a hoy
+            renderizarCalendario();
+        });
+
+        // ====================================================
+        // 8. Inicialización
+        // ====================================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Cargar datos de ambas bases de datos
+            eventosPlanos = await cargarEventos();
+            
+            // Ocultar pantalla de carga
+            loadingScreen.style.display = 'none';
+            
+            // Dibujar el calendario inicial
+            renderizarCalendario();
+        });
+
+    </script>
+</body>
+</html>
