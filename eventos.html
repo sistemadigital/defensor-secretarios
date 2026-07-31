@@ -43,6 +43,7 @@
             --radius: 0.5rem;
             --radius-lg: 0.75rem;
             --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --header-height: 0px; /* se actualiza con JS */
         }
 
         /* ===== RESET ===== */
@@ -59,6 +60,9 @@
             line-height: 1.5;
             min-height: 100vh;
         }
+        body.calendar-open {
+            overflow: hidden !important;
+        }
 
         /* ===== HEADER ===== */
         .header {
@@ -66,9 +70,13 @@
             border-bottom: 1px solid var(--gray-200);
             padding: 0.75rem 1.5rem;
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
+            gap: 0.5rem;
             box-shadow: var(--shadow-sm);
+            position: relative;
+            z-index: 1000;
         }
 
         .logo {
@@ -78,6 +86,13 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .btn-refresh {
@@ -94,11 +109,38 @@
             gap: 0.5rem;
             transition: background-color 0.15s, border-color 0.15s;
             box-shadow: var(--shadow-sm);
+            white-space: nowrap;
         }
 
         .btn-refresh:hover {
             background-color: var(--gray-50);
             border-color: var(--gray-400);
+        }
+
+        /* Botón calendario */
+        .btn-calendar {
+            background-color: var(--primary);
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--gray-200);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.15s;
+            box-shadow: var(--shadow-sm);
+            white-space: nowrap;
+        }
+
+        .btn-calendar:hover {
+            background-color: var(--primary-light);
+        }
+        .btn-calendar.active {
+            background-color: var(--gray-700);
+            color: white;
         }
 
         /* ===== LAYOUT PRINCIPAL ===== */
@@ -110,6 +152,7 @@
             max-width: 1600px;
             margin: 0 auto;
             width: 100%;
+            height: calc(100vh - var(--header-height));
         }
 
         /* ===== PANEL IZQUIERDO ===== */
@@ -121,6 +164,10 @@
             position: sticky;
             top: 1.5rem;
             height: fit-content;
+            transition: display 0.2s;
+        }
+        .left-panel.hidden {
+            display: none;
         }
 
         .time-panel {
@@ -322,9 +369,16 @@
             padding: 1rem;
         }
 
-        /* ===== PANEL DERECHO ===== */
-        .events-panel {
+        /* ===== PANEL DERECHO: contenedor de tabla y calendario ===== */
+        .right-content {
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+            position: relative;
+        }
+
+        .events-panel {
             background-color: var(--white);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow);
@@ -332,6 +386,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            flex: 1;
         }
 
         .panel-header {
@@ -759,6 +814,35 @@
             font-style: italic;
         }
 
+        /* ===== CONTENEDOR DEL CALENDARIO (pantalla completa) ===== */
+        .calendar-container {
+            display: none;
+            background-color: var(--white);
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            width: 100%;
+            height: calc(100vh - var(--header-height));
+            z-index: 999;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            border: none;
+            box-shadow: none;
+            border-radius: 0;
+        }
+        .calendar-container.active {
+            display: flex;
+            flex-direction: column;
+        }
+        .calendar-frame {
+            flex: 1;
+            border: none;
+            width: 100%;
+            height: 100%;
+            display: block;
+            min-width: 100%;
+        }
+
         /* ===== ALERTA FLOTANTE ===== */
         .floating-alert {
             position: fixed;
@@ -775,7 +859,7 @@
             transform: translateY(100px);
             opacity: 0;
             transition: all 0.3s ease;
-            z-index: 1000;
+            z-index: 1001;
             font-weight: 500;
             font-size: 0.875rem;
         }
@@ -797,28 +881,126 @@
         @media (max-width: 1000px) {
             .main-layout {
                 flex-direction: column;
+                height: auto;
             }
             .left-panel {
                 position: static;
                 width: 100%;
+                flex: unset;
+            }
+            .left-panel.hidden {
+                display: none;
+            }
+            .right-content {
+                min-height: 400px;
+            }
+            .calendar-container {
+                top: var(--header-height);
+                height: calc(100vh - var(--header-height));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 0.5rem 0.75rem;
+            }
+            .logo {
+                font-size: 1rem;
+            }
+            .btn-refresh,
+            .btn-calendar {
+                padding: 0.35rem 0.75rem;
+                font-size: 0.75rem;
+                white-space: nowrap;
+            }
+            .btn-calendar i,
+            .btn-refresh i {
+                font-size: 0.75rem;
+            }
+            .header-actions {
+                gap: 0.3rem;
+            }
+            .panel-header {
+                padding: 0.75rem 1rem;
+            }
+            .panel-header h2 {
+                font-size: 1rem;
+            }
+            .filters-row {
+                gap: 0.5rem;
+            }
+            .search-box input {
+                width: 120px;
+                font-size: 0.75rem;
+            }
+            .search-box button {
+                font-size: 0.7rem;
+                padding: 0.3rem 0.6rem;
+            }
+            .date-filter input[type="date"] {
+                width: 110px;
+                font-size: 0.75rem;
+            }
+            .type-filter select,
+            .process-filter select,
+            .quarter-filter select,
+            .year-filter select {
+                width: 110px;
+                font-size: 0.75rem;
+            }
+            .time-panel .day-number {
+                font-size: 3rem;
+            }
+            .time-panel .time {
+                font-size: 1.25rem;
+            }
+            .events-table {
+                min-width: 600px;
+                font-size: 0.75rem;
+            }
+            .events-table th,
+            .events-table td {
+                padding: 0.6rem 0.75rem;
+            }
+            .pagination {
+                flex-direction: column;
+                gap: 0.75rem;
+                padding: 0.75rem 1rem;
+            }
+            .calendar-container {
+                top: var(--header-height);
+                height: calc(100vh - var(--header-height));
+                /* Permitir scroll horizontal en móviles */
+                overflow: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .calendar-frame {
+                min-width: 100%;
+                width: 100%;
+                height: 100%;
             }
         }
     </style>
 </head>
 <body>
 
-    <header class="header">
+    <header class="header" id="mainHeader">
         <div class="logo">
             <span>Eventos Agendados</span>
         </div>
-        <button class="btn-refresh" id="btnRefresh">
-            <i class="fas fa-sync-alt"></i> Actualizar
-        </button>
+        <div class="header-actions">
+            <button class="btn-calendar" id="btnCalendar">
+                <i class="fas fa-calendar-alt"></i> <span id="btnCalendarText">Ver Calendario mensual</span>
+            </button>
+            <button class="btn-refresh" id="btnRefresh">
+                <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+        </div>
     </header>
 
-    <div class="main-layout">
+    <div class="main-layout" id="mainLayout">
         <!-- Panel izquierdo: fecha + eventos de hoy + estadísticas -->
-        <div class="left-panel">
+        <div class="left-panel" id="leftPanel">
             <aside class="time-panel" id="timePanel">
                 <div class="month-year" id="currentMonthYear">MAYO 2026</div>
                 <div class="day-number" id="currentDay">13</div>
@@ -846,84 +1028,92 @@
             </div>
         </div>
 
-        <!-- Panel derecho: tabla de eventos -->
-        <section class="events-panel">
-            <div class="panel-header">
-                <h2><i class="fas fa-calendar-alt" style="color:#2563eb;"></i> Todos los eventos (Base Histórica + Activos)</h2>
-                <div class="filters-row">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Buscar N° o carátula...">
-                        <button id="btnSearch"><i class="fas fa-arrow-right"></i></button>
-                    </div>
-                    <div class="date-filter">
-                        <i class="fas fa-calendar-day"></i>
-                        <input type="date" id="filterDate">
-                        <button id="btnClearDate" title="Limpiar filtro de fecha"><i class="fas fa-times"></i></button>
-                    </div>
-                    <div class="type-filter">
-                        <i class="fas fa-tag"></i>
-                        <select id="filterType">
-                            <option value="">Todos los tipos</option>
-                            <option value="audiencia">Audiencias</option>
-                            <option value="gesell">C. Gesell</option>
-                            <option value="vencimiento">Vencimientos</option>
-                            <option value="recurso">Recursos</option>
-                            <option value="diligencia">Diligencias</option>
-                        </select>
-                        <button id="btnClearType" title="Limpiar filtro de tipo"><i class="fas fa-times"></i></button>
-                    </div>
-                    <div class="process-filter">
-                        <i class="fas fa-gavel"></i>
-                        <select id="filterProcess">
-                            <option value="">Todos los procesos</option>
-                        </select>
-                        <button id="btnClearProcess" title="Limpiar filtro de proceso"><i class="fas fa-times"></i></button>
-                    </div>
-                    <div class="quarter-filter">
-                        <i class="fas fa-calendar-alt"></i>
-                        <select id="filterQuarter">
-                            <option value="">Trimestre</option>
-                            <option value="1">1T (Ene-Mar)</option>
-                            <option value="2">2T (Abr-Jun)</option>
-                            <option value="3">3T (Jul-Sep)</option>
-                            <option value="4">4T (Oct-Dic)</option>
-                        </select>
-                        <button id="btnClearQuarter" title="Limpiar trimestre"><i class="fas fa-times"></i></button>
-                    </div>
-                    <div class="year-filter">
-                        <i class="fas fa-calendar"></i>
-                        <select id="filterYear">
-                            <option value="">Año</option>
-                        </select>
-                        <button id="btnClearYear" title="Limpiar año"><i class="fas fa-times"></i></button>
+        <!-- Panel derecho: alterna entre tabla y calendario -->
+        <div class="right-content">
+            <!-- TABLA DE EVENTOS (visible por defecto) -->
+            <section class="events-panel" id="eventsPanel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-calendar-alt" style="color:#2563eb;"></i> Todos los eventos (Base Histórica + Activos)</h2>
+                    <div class="filters-row">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Buscar N° o carátula...">
+                            <button id="btnSearch"><i class="fas fa-arrow-right"></i></button>
+                        </div>
+                        <div class="date-filter">
+                            <i class="fas fa-calendar-day"></i>
+                            <input type="date" id="filterDate">
+                            <button id="btnClearDate" title="Limpiar filtro de fecha"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="type-filter">
+                            <i class="fas fa-tag"></i>
+                            <select id="filterType">
+                                <option value="">Todos los tipos</option>
+                                <option value="audiencia">Audiencias</option>
+                                <option value="gesell">C. Gesell</option>
+                                <option value="vencimiento">Vencimientos</option>
+                                <option value="recurso">Recursos</option>
+                                <option value="diligencia">Diligencias</option>
+                            </select>
+                            <button id="btnClearType" title="Limpiar filtro de tipo"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="process-filter">
+                            <i class="fas fa-gavel"></i>
+                            <select id="filterProcess">
+                                <option value="">Todos los procesos</option>
+                            </select>
+                            <button id="btnClearProcess" title="Limpiar filtro de proceso"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="quarter-filter">
+                            <i class="fas fa-calendar-alt"></i>
+                            <select id="filterQuarter">
+                                <option value="">Trimestre</option>
+                                <option value="1">1T (Ene-Mar)</option>
+                                <option value="2">2T (Abr-Jun)</option>
+                                <option value="3">3T (Jul-Sep)</option>
+                                <option value="4">4T (Oct-Dic)</option>
+                            </select>
+                            <button id="btnClearQuarter" title="Limpiar trimestre"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="year-filter">
+                            <i class="fas fa-calendar"></i>
+                            <select id="filterYear">
+                                <option value="">Año</option>
+                            </select>
+                            <button id="btnClearYear" title="Limpiar año"><i class="fas fa-times"></i></button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="table-responsive">
-                <table class="events-table">
-                    <thead>
-                        <tr>
-                            <th>Tipo</th>
-                            <th>Fecha y hora</th>
-                            <th>Expediente</th>
-                            <th>Carátula</th>
-                            <th>Juzgado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaEventos">
-                        <tr class="loading-row">
-                            <td colspan="5"><i class="fas fa-spinner fa-pulse"></i> Cargando eventos...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                <div class="table-responsive">
+                    <table class="events-table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Fecha y hora</th>
+                                <th>Expediente</th>
+                                <th>Carátula</th>
+                                <th>Juzgado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaEventos">
+                            <tr class="loading-row">
+                                <td colspan="5"><i class="fas fa-spinner fa-pulse"></i> Cargando eventos...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-            <div class="pagination" id="paginacionContainer">
-                <!-- se llena con JS -->
+                <div class="pagination" id="paginacionContainer">
+                    <!-- se llena con JS -->
+                </div>
+            </section>
+
+            <!-- CALENDARIO (oculto por defecto) -->
+            <div class="calendar-container" id="calendarContainer">
+                <iframe class="calendar-frame" src="https://sistemadigital.github.io/defensor-secretarios/calendario-eventos" title="Calendario mensual" scrolling="yes"></iframe>
             </div>
-        </section>
+        </div>
     </div>
 
     <div class="floating-alert" id="floatingAlert">
@@ -1006,6 +1196,12 @@
         const filterYear = $("filterYear");
         const btnClearYear = $("btnClearYear");
         const statsContainer = $("statsContainer");
+        const btnCalendar = $("btnCalendar");
+        const btnCalendarText = $("btnCalendarText");
+        const eventsPanel = $("eventsPanel");
+        const calendarContainer = $("calendarContainer");
+        const leftPanel = $("leftPanel");
+        const mainHeader = $("mainHeader");
 
         // ====================================================
         // Utilidades de fecha
@@ -1490,10 +1686,38 @@
         }
 
         // ====================================================
+        // Alternar vista (tabla <-> calendario) con pantalla completa
+        // ====================================================
+        function actualizarAlturaHeader() {
+            const headerHeight = mainHeader.offsetHeight;
+            document.documentElement.style.setProperty('--header-height', headerHeight + 'px');
+        }
+
+        function mostrarCalendario() {
+            actualizarAlturaHeader();
+            eventsPanel.style.display = 'none';
+            calendarContainer.classList.add('active');
+            btnCalendarText.textContent = 'Volver a Eventos';
+            btnCalendar.classList.add('active');
+            leftPanel.classList.add('hidden');
+            document.body.classList.add('calendar-open');
+        }
+
+        function mostrarEventos() {
+            eventsPanel.style.display = 'flex';
+            calendarContainer.classList.remove('active');
+            btnCalendarText.textContent = 'Ver Calendario mensual';
+            btnCalendar.classList.remove('active');
+            leftPanel.classList.remove('hidden');
+            document.body.classList.remove('calendar-open');
+        }
+
+        // ====================================================
         // Event listeners
         // ====================================================
         document.addEventListener('DOMContentLoaded', () => {
             refreshEventos();
+            actualizarAlturaHeader();
 
             btnSearch.addEventListener('click', aplicarFiltros);
             searchInput.addEventListener('keypress', e => {
@@ -1529,6 +1753,16 @@
                 filterYear.value = '';
                 aplicarFiltros();
             });
+
+            btnCalendar.addEventListener('click', () => {
+                if (calendarContainer.classList.contains('active')) {
+                    mostrarEventos();
+                } else {
+                    mostrarCalendario();
+                }
+            });
+
+            window.addEventListener('resize', actualizarAlturaHeader);
         });
     </script>
 </body>
