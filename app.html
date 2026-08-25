@@ -173,20 +173,19 @@
             top: 80px;
             right: 20px;
             z-index: 500;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(6px);
-            border: 1px solid #cbd5e1;
-            border-radius: 12px;
-            padding: 0.6rem 0.8rem;
+            /* Fondo, borde y sombra transparentes */
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            padding: 0;
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             gap: 0.6rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transition: background 0.2s, border-color 0.2s;
+            align-items: flex-end;
         }
 
-        .module-botones a,
-        .module-botones .btn-novedades {
+        /* Botones individuales (incluido Novedades y Aplicativos) */
+        .module-botones > * {
             display: inline-block;
             padding: 0.4rem 1rem;
             background: white;
@@ -201,10 +200,10 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             cursor: pointer;
             font-family: 'Inter', sans-serif;
+            line-height: normal;
         }
 
-        .module-botones a:hover,
-        .module-botones .btn-novedades:hover {
+        .module-botones > *:hover {
             background: #f0faff;
             border-color: #00BFFF;
             color: #00BFFF;
@@ -212,23 +211,89 @@
             box-shadow: 0 4px 10px rgba(0,191,255,0.2);
         }
 
-        /* Botón Caja Chica con borde celeste */
-        .module-botones .caja-chica {
-            border-color: #00BFFF;
-            box-shadow: 0 0 8px rgba(0,191,255,0.3);
-        }
-        .module-botones .caja-chica:hover {
-            border-color: #00BFFF;
-            box-shadow: 0 0 12px rgba(0,191,255,0.5);
-            background: #f0faff;
-            color: #00BFFF;
-        }
-
-        /* BORDE VERDE LUMINOSO CUANDO HAY DATOS */
+        /* Botón Novedades con borde verde cuando hay datos */
         .btn-novedades.hay-datos {
             border-color: #22c55e;
             box-shadow: 0 0 12px #22c55e, 0 0 20px rgba(34, 197, 94, 0.3);
             transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        /* Botón Aplicativos */
+        .btn-aplicativos {
+            background: white;
+            border: 1px solid #94a3b8;
+            border-radius: 30px;
+            padding: 0.4rem 1rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #003366;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-aplicativos:hover {
+            background: #f0faff;
+            border-color: #00BFFF;
+            color: #00BFFF;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0,191,255,0.2);
+        }
+
+        /* Contenedor del desplegable de aplicativos */
+        .aplicativos-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .aplicativos-list {
+            display: none;
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            padding: 0.5rem 0;
+            min-width: 180px;
+            z-index: 550;
+            border: 1px solid #e2e8f0;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .aplicativos-list.show {
+            display: flex;
+        }
+
+        .aplicativos-list a {
+            display: block;
+            padding: 0.4rem 1.2rem;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            color: #003366;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: background 0.2s, color 0.2s;
+            white-space: nowrap;
+            box-shadow: none;
+            cursor: pointer;
+        }
+
+        .aplicativos-list a:hover {
+            background: #f0faff;
+            color: #00BFFF;
+        }
+
+        /* Los enlaces dentro del listado pueden tener un borde inferior sutil */
+        .aplicativos-list a:not(:last-child) {
+            border-bottom: 1px solid #f1f5f9;
         }
 
         /* ─── MODAL DE NOVEDADES ─── */
@@ -666,13 +731,19 @@
             .module-botones {
                 top: 70px;
                 right: 10px;
-                padding: 0.4rem 0.6rem;
                 gap: 0.4rem;
-                border-radius: 10px;
             }
-            .module-botones a,
-            .module-botones .btn-novedades {
+            .module-botones > * {
                 padding: 0.3rem 0.7rem;
+                font-size: 0.75rem;
+            }
+            .aplicativos-list {
+                min-width: 150px;
+                right: 0;
+                left: auto;
+            }
+            .aplicativos-list a {
+                padding: 0.3rem 1rem;
                 font-size: 0.75rem;
             }
 
@@ -723,13 +794,18 @@
             .module-botones {
                 top: 60px;
                 right: 6px;
-                padding: 0.3rem 0.4rem;
                 gap: 0.3rem;
             }
-            .module-botones a,
-            .module-botones .btn-novedades {
+            .module-botones > * {
                 padding: 0.2rem 0.5rem;
                 font-size: 0.65rem;
+            }
+            .aplicativos-list {
+                min-width: 130px;
+            }
+            .aplicativos-list a {
+                padding: 0.2rem 0.8rem;
+                font-size: 0.7rem;
             }
             .novedades-modal {
                 top: 110px;
@@ -751,14 +827,21 @@
         <iframe id="appIframe"></iframe>
 
         <div id="homeContent">
-            <!-- Módulo de botones superior derecha -->
+            <!-- Módulo de botones superior derecha (con Novedades y Aplicativos) -->
             <div class="module-botones">
-                <a href="https://defensoria6.github.io/pase-digital/" target="_blank" class="caja-chica">Pase Digital</a>
-                <!-- NUEVO BOTÓN CAJA CHICA con borde celeste -->
-                <a onclick="loadPage('https://fioravanteweb.github.io/cajachica/')" class="caja-chica">Caja Chica</a>
-                <a href="https://defensorialocal-seis.github.io/protocolo/" target="_blank">Protocolo de Actuación</a>
-                <!-- NUEVO BOTÓN NOVEDADES -->
+                <!-- Botón Novedades (siempre visible, primero) -->
                 <button class="btn-novedades" id="btnNovedades"><i class="fas fa-bullhorn"></i> Novedades</button>
+
+                <!-- Botón Aplicativos con su listado desplegable -->
+                <div class="aplicativos-wrapper">
+                    <button class="btn-aplicativos" id="btnAplicativos"><i class="fas fa-th"></i> Aplicativos</button>
+                    <div class="aplicativos-list" id="aplicativosList">
+                        <a onclick="loadPage('https://fioravanteweb.github.io/cajachica/')">Caja Chica</a>
+                        <a onclick="loadPage('https://defensoria6.github.io/CEJUME/')">Cejume-Audiencias</a>
+                        <a href="https://defensoria6.github.io/pase-digital/" target="_blank">Pase Digital</a>
+                        <a href="https://defensorialocal-seis.github.io/protocolo/" target="_blank">Protocolo de Actuación</a>
+                    </div>
+                </div>
             </div>
 
             <!-- MODAL DE NOVEDADES -->
@@ -816,10 +899,8 @@
                         <li><a onclick="loadPage('https://sistemadigital.github.io/reporte/')">Reporte de Sistema</a></li>
                         <li><a onclick="loadPage('https://sistemadigital.github.io/defensor-secretarios/gestor-defensoria.html')">Feria-Inasistencia y Licencia</a></li>
                         <li><a onclick="loadPage('https://sistemadigital.github.io/consultas-turnos/interno')">Consultas y Turnos</a></li>
-                        <!-- NUEVO ÍTEM MAPAS -->
                         <li><a onclick="loadPage('https://sistemadigital.github.io/defensor-secretarios/mapoteca')">Mapas</a></li>
                         <li><a onclick="loadPage('https://defensorialocal-seis.github.io/agenda/')">Agenda Defensor</a></li>
-                        <!-- NUEVO ÍTEM MANUAL DE USO (con negrita y color celeste) -->
                         <li><a onclick="loadPage('https://sistemadigital.github.io/ingreso-sistema/sistema-manual')" style="font-weight: bold; color: #00BFFF;">Manual de Uso</a></li>
                     </ul>
                 </div>
@@ -932,18 +1013,24 @@
             document.getElementById('sistemaInfoModal')?.classList.remove('show');
             const dropdown = document.getElementById('userDropdown');
             if(dropdown) dropdown.classList.remove('show');
-            // Cerramos también el modal de novedades
+            // Cerramos el modal de novedades y el listado de aplicativos
             document.getElementById('novedadesModal')?.classList.remove('visible');
+            document.getElementById('aplicativosList')?.classList.remove('show');
         }
         document.addEventListener('click', (e) => {
             const isClickInsideMenu = document.getElementById('btnMainMenu')?.contains(e.target);
             const isClickInsideCalendar = document.getElementById('dateTimeWeatherBtn')?.contains(e.target);
             const isClickInsideDevInfo = document.getElementById('btnSistemaInfoContainer')?.contains(e.target);
             const isClickInsideBanner = document.getElementById('eventBanner')?.contains(e.target);
-            // Novedades: si se hace clic fuera del modal y fuera del botón, cerrar
+            // Novedades
             const isClickInsideNovedades = document.getElementById('novedadesModal')?.contains(e.target);
             const isClickOnNovedadesBtn = document.getElementById('btnNovedades')?.contains(e.target);
-            if (!isClickInsideMenu && !isClickInsideCalendar && !isClickInsideDevInfo && !isClickInsideBanner && !isClickInsideNovedades && !isClickOnNovedadesBtn) {
+            // Aplicativos
+            const isClickInsideAplicativos = document.getElementById('aplicativosList')?.contains(e.target);
+            const isClickOnAplicativosBtn = document.getElementById('btnAplicativos')?.contains(e.target);
+            if (!isClickInsideMenu && !isClickInsideCalendar && !isClickInsideDevInfo && !isClickInsideBanner && 
+                !isClickInsideNovedades && !isClickOnNovedadesBtn &&
+                !isClickInsideAplicativos && !isClickOnAplicativosBtn) {
                 closeAllModals();
             }
         });
@@ -953,6 +1040,25 @@
         });
         document.getElementById('btnMainMenu').addEventListener('click', (e) => { if (e.target.closest('a')) return; e.stopPropagation(); const menu = document.getElementById('mainMenuPopup'); const isShow = menu.classList.contains('show'); closeAllModals(); if(!isShow) menu.classList.add('show'); });
         document.getElementById('btnSistemaInfoText')?.addEventListener('click', (e) => { e.stopPropagation(); const modal = document.getElementById('sistemaInfoModal'); const isShow = modal.classList.contains('show'); closeAllModals(); if(!isShow) modal.classList.add('show'); });
+
+        // Toggle del listado de aplicativos
+        document.getElementById('btnAplicativos').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const list = document.getElementById('aplicativosList');
+            const isShow = list.classList.contains('show');
+            // Cerramos otros modales abiertos (excepto novedades quizás)
+            // Pero no cerramos novedades porque puede estar abierto junto con este.
+            // Simplemente toggle.
+            if (isShow) {
+                list.classList.remove('show');
+            } else {
+                // Opcional: cerrar otros desplegables como el menú, calendario, etc.
+                document.getElementById('mainMenuPopup')?.classList.remove('show');
+                document.getElementById('calendarPopup')?.classList.remove('show');
+                document.getElementById('sistemaInfoModal')?.classList.remove('show');
+                list.classList.add('show');
+            }
+        });
         
         const dtwBtn = document.getElementById('dateTimeWeatherBtn');
         const calPopup = document.getElementById('calendarPopup');
@@ -1590,7 +1696,7 @@
                 link.target = '_blank';
                 link.rel = 'noopener noreferrer';
                 link.className = 'btn-asistente-ia';
-                link.innerHTML = 'Asistente IA';  // sin ícono
+                link.innerHTML = 'Asistente IA';
                 footerRight.insertBefore(link, eventBanner);
 
                 const style = document.createElement('style');
