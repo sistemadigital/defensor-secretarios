@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>⚖️Sistema Defensor</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
-        /* ========== (El CSS es el mismo que antes, solo se añade el botón y ajustes menores) ========== */
+        /* ===== RESET Y BASE ===== */
         * {
             margin: 0;
             padding: 0;
@@ -56,6 +56,7 @@
             flex-shrink: 0;
         }
 
+        /* ===== WELCOME BAR ===== */
         .welcome-container {
             display: flex;
             flex-direction: column;
@@ -77,26 +78,35 @@
             backdrop-filter: blur(4px);
             padding: 0.75rem 1.5rem;
             border-radius: 50px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             cursor: pointer;
             transition: background-color 0.2s;
             width: 100%;
             justify-content: space-between;
         }
 
-        .welcome-bar:hover { background: rgba(255, 255, 255, 0.85); }
-        .left-group { display: flex; align-items: center; gap: 1rem; }
+        .welcome-bar:hover {
+            background: rgba(255, 255, 255, 0.85);
+        }
 
-        .avatar-medium, .avatar-placeholder-medium {
+        .left-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .avatar-medium,
+        .avatar-placeholder-medium {
             width: 50px;
             height: 50px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid #00BFFF;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             background-color: white;
         }
+
         .avatar-placeholder-medium {
             background-color: #003366;
             color: white;
@@ -112,7 +122,7 @@
             font-size: 1.8rem;
             font-weight: 800;
             color: #003366;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
             white-space: nowrap;
             transition: color 0.2s ease;
         }
@@ -121,182 +131,108 @@
             font-size: 1.8rem;
             font-weight: 800;
             color: #003366;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
             white-space: nowrap;
             margin-left: auto;
             transition: color 0.2s ease;
         }
 
-        .top-image-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 10px;
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .image-wrapper {
+        /* ===== MÓDULOS ===== */
+        .modules-container {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            max-width: 80%;
-            max-height: 80%;
-            justify-content: center;
-        }
-
-        .image-large {
-            width: 100%;
-            max-width: 420px;
-            aspect-ratio: 1 / 1;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 4px solid #00BFFF;
-            box-shadow: 0 0 30px rgba(0, 150, 255, 0.3);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            background: #ffffff;
-            flex-shrink: 0;
-        }
-
-        .image-large img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        /* ─── MÓDULO DE BOTONES SUPERIOR DERECHA ─── */
-        .module-botones {
-            position: absolute;
-            top: 80px;
-            right: 20px;
-            z-index: 500;
-            /* Fondo, borde y sombra transparentes */
-            background: transparent;
-            border: none;
-            box-shadow: none;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
             align-items: flex-end;
+            gap: 0.7rem;
+            width: 100%;
+            padding-right: 1.5rem;
+            margin-top: 0.25rem;
         }
 
-        /* Botones individuales (incluido Novedades y Aplicativos) */
-        .module-botones > * {
-            display: inline-block;
-            padding: 0.4rem 1rem;
-            background: white;
-            border: 1px solid #94a3b8;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: #003366;
-            text-decoration: none;
-            transition: all 0.2s;
-            white-space: nowrap;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            line-height: normal;
-        }
-
-        .module-botones > *:hover {
-            background: #f0faff;
-            border-color: #00BFFF;
-            color: #00BFFF;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(0,191,255,0.2);
-        }
-
-        /* Botón Novedades con borde verde cuando hay datos */
-        .btn-novedades.hay-datos {
-            border-color: #22c55e;
-            box-shadow: 0 0 12px #22c55e, 0 0 20px rgba(34, 197, 94, 0.3);
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        /* Botón Aplicativos */
-        .btn-aplicativos {
-            background: white;
-            border: 1px solid #94a3b8;
-            border-radius: 30px;
-            padding: 0.4rem 1rem;
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: #003366;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            font-family: 'Inter', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-aplicativos:hover {
-            background: #f0faff;
-            border-color: #00BFFF;
-            color: #00BFFF;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(0,191,255,0.2);
-        }
-
-        /* Contenedor del desplegable de aplicativos */
-        .aplicativos-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-
-        .aplicativos-list {
-            display: none;
-            position: absolute;
-            top: calc(100% + 0.5rem);
-            right: 0;
-            background: white;
+        .module-item {
+            background: #f1f5f9;
+            border: 2.5px solid;
             border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-            padding: 0.5rem 0;
-            min-width: 180px;
-            z-index: 550;
-            border: 1px solid #e2e8f0;
-            flex-direction: column;
-            gap: 0.3rem;
-        }
-
-        .aplicativos-list.show {
-            display: flex;
-        }
-
-        .aplicativos-list a {
-            display: block;
-            padding: 0.4rem 1.2rem;
-            background: transparent;
-            border: none;
-            border-radius: 0;
-            color: #003366;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.85rem;
-            transition: background 0.2s, color 0.2s;
-            white-space: nowrap;
-            box-shadow: none;
+            padding: 0.9rem 1.8rem;
+            font-weight: 700;
+            font-size: 1.1rem;
             cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+            width: 260px;
+            min-width: 220px;
+            max-width: 320px;
+            white-space: nowrap;
+            letter-spacing: 0.4px;
+            text-align: center;
         }
 
-        .aplicativos-list a:hover {
-            background: #f0faff;
-            color: #00BFFF;
+        .module-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
         }
 
-        /* Los enlaces dentro del listado pueden tener un borde inferior sutil */
-        .aplicativos-list a:not(:last-child) {
-            border-bottom: 1px solid #f1f5f9;
+        .module-novedades {
+            border-color: #22c55e;
+        }
+        .module-novedades.hay-datos {
+            box-shadow: 0 0 16px #22c55e, 0 0 28px rgba(34, 197, 94, 0.35);
+        }
+        .module-caja {
+            border-color: #3b82f6;
+        }
+        .module-cejume {
+            border-color: #f59e0b;
+        }
+        .module-pase {
+            border-color: #8b5cf6;
+        }
+        .module-protocolo {
+            border-color: #ef4444;
         }
 
-        /* ─── MODAL DE NOVEDADES ─── */
+        /* ===== ESCRITORIO: módulos en horizontal ===== */
+        @media (min-width: 769px) {
+            .modules-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: center;
+                padding: 0 1.5rem;
+                gap: 0.7rem;
+            }
+            .module-item {
+                flex: 0 1 auto;
+                width: auto;
+                min-width: auto;
+                max-width: none;
+                padding: 0.9rem 1.8rem;
+                font-size: 1rem;
+            }
+        }
+
+        /* ===== MÓVIL: se mantiene vertical ===== */
+        @media (max-width: 768px) {
+            .modules-container {
+                flex-direction: column;
+                align-items: flex-end;
+                padding-right: 1.5rem;
+                gap: 0.5rem;
+            }
+            .module-item {
+                width: 200px;
+                min-width: 160px;
+                max-width: 240px;
+                font-size: 0.95rem;
+                padding: 0.7rem 1.2rem;
+                border-radius: 10px;
+            }
+        }
+
+        /* ===== MODAL DE NOVEDADES ===== */
         .novedades-modal {
             position: absolute;
             top: 140px;
@@ -310,9 +246,9 @@
             width: 340px;
             max-height: 420px;
             overflow-y: auto;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
             transition: opacity 0.2s ease, transform 0.2s ease;
-            display: none; /* oculto por defecto */
+            display: none;
         }
 
         .novedades-modal.visible {
@@ -396,17 +332,49 @@
             padding: 0.2rem 0 0.2rem 1.2rem;
         }
 
-        .novedades-modal .badge-feria {
-            background: #dbeafe;
-            color: #1e40af;
-            border-radius: 20px;
-            padding: 0.1rem 0.6rem;
-            font-size: 0.7rem;
-            font-weight: 700;
-            margin-left: 6px;
+        /* ===== CONTENEDOR DE LA IMAGEN – SIEMPRE CENTRADO ===== */
+        .top-image-container {
+            flex: 1 1 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 10px 20px;
+            overflow: hidden;
+            min-height: 0;
+            cursor: pointer;
         }
 
-        /* Footer (sin cambios) */
+        .image-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            max-width: 80%;
+            max-height: 80%;
+        }
+
+        .image-large {
+            width: 100%;
+            max-width: 420px;
+            aspect-ratio: 1 / 1;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #00BFFF;
+            box-shadow: 0 0 30px rgba(0, 150, 255, 0.3);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .image-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* ===== FOOTER ===== */
         footer {
             height: 70px;
             background-color: #001f3f;
@@ -415,7 +383,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 30px;
-            box-shadow: 0 -4px 12px rgba(0,31,63,0.2);
+            box-shadow: 0 -4px 12px rgba(0, 31, 63, 0.2);
             border-top: 3px solid #00BFFF;
             z-index: 3000;
             cursor: pointer;
@@ -423,7 +391,8 @@
             flex-shrink: 0;
         }
 
-        footer > div, footer > .logout-button {
+        footer>div,
+        footer>.logout-button {
             cursor: default;
         }
 
@@ -443,7 +412,9 @@
             position: relative;
         }
 
-        .footer-content:hover { opacity: 0.8; }
+        .footer-content:hover {
+            opacity: 0.8;
+        }
 
         .menu-popup {
             display: none;
@@ -453,7 +424,7 @@
             margin-bottom: 15px;
             background: white;
             border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             padding: 10px 0;
             width: 220px;
             z-index: 2000;
@@ -462,19 +433,45 @@
             cursor: default;
         }
 
-        .menu-popup.show { display: block; }
-        .menu-popup ul { list-style: none; padding: 0; margin: 0; }
-        .menu-popup li { margin: 0; padding: 0; }
+        .menu-popup.show {
+            display: block;
+        }
+
+        .menu-popup ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-popup li {
+            margin: 0;
+            padding: 0;
+        }
+
         .menu-popup li a {
-            display: block; padding: 10px 20px; text-decoration: none;
-            color: #003366; font-size: 0.85rem; font-weight: 600;
-            transition: background 0.2s, color 0.2s; text-align: left;
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #003366;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: background 0.2s, color 0.2s;
+            text-align: left;
             cursor: pointer;
         }
-        .menu-popup li a:hover { background-color: #f0faff; color: #00BFFF; }
+
+        .menu-popup li a:hover {
+            background-color: #f0faff;
+            color: #00BFFF;
+        }
 
         .footer-right {
-            display: flex; align-items: center; gap: 20px; z-index: 10; height: 100%; cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 10;
+            height: 100%;
+            cursor: pointer;
         }
 
         .event-banner {
@@ -482,7 +479,7 @@
             padding: 6px 18px;
             background-color: #1e40af;
             transition: background-color 0.3s ease;
-            box-shadow: 0 0 12px rgba(0,0,0,0.3);
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
             font-weight: 600;
             text-align: center;
             white-space: nowrap;
@@ -491,10 +488,12 @@
             align-items: center;
             gap: 8px;
         }
+
         .event-banner.hay-eventos {
             background-color: #ea580c;
-            box-shadow: 0 0 14px rgba(234,88,12,0.6);
+            box-shadow: 0 0 14px rgba(234, 88, 12, 0.6);
         }
+
         .event-banner p {
             margin: 0;
             font-size: 0.85rem;
@@ -509,33 +508,86 @@
             margin-left: 10px;
             white-space: nowrap;
             z-index: 10;
-            border-left: 1px solid rgba(255,255,255,0.3);
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
             padding-left: 15px;
             display: inline-flex;
             align-items: center;
             gap: 6px;
         }
 
-        .sistema-info-text-container { position: relative; display: flex; align-items: center; height: 100%; }
-        .sistema-info-text { color: white; font-weight: bold; cursor: pointer; font-size: 0.95rem; transition: color 0.2s; }
-        .sistema-info-text:hover { color: #00BFFF; }
-        .sistema-info-modal {
-            display: none; position: absolute; bottom: 100%; right: -10px; margin-bottom: 15px;
-            background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            padding: 15px 20px; width: max-content; z-index: 2000; border: 1px solid #e2e8f0;
-            text-align: center; animation: fadeIn 0.2s ease-in-out; cursor: default;
+        .sistema-info-text-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 100%;
         }
-        .sistema-info-modal.show { display: block; }
-        .sistema-info-modal p { margin: 6px 0; font-size: 0.85rem; color: #334155; font-weight: 500; }
-        .sistema-info-modal p strong { color: #003366; font-size: 0.95rem; font-weight: 700; }
+
+        .sistema-info-text {
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .sistema-info-text:hover {
+            color: #00BFFF;
+        }
+
+        .sistema-info-modal {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            right: -10px;
+            margin-bottom: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 15px 20px;
+            width: max-content;
+            z-index: 2000;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            animation: fadeIn 0.2s ease-in-out;
+            cursor: default;
+        }
+
+        .sistema-info-modal.show {
+            display: block;
+        }
+
+        .sistema-info-modal p {
+            margin: 6px 0;
+            font-size: 0.85rem;
+            color: #334155;
+            font-weight: 500;
+        }
+
+        .sistema-info-modal p strong {
+            color: #003366;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
 
         .logout-button {
-            display: flex; align-items: center; gap: 8px; background-color: transparent;
-            border: 1px solid rgba(255,255,255,0.3); border-radius: 8px;
-            padding: 8px 16px; color: white; cursor: pointer;
-            transition: all 0.2s; font-size: 0.95rem; z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 8px 16px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            z-index: 10;
         }
-        .logout-button:hover { background-color: rgba(0,191,255,0.2); border-color: #00BFFF; }
+
+        .logout-button:hover {
+            background-color: rgba(0, 191, 255, 0.2);
+            border-color: #00BFFF;
+        }
 
         .menu-icon-img {
             width: 32px;
@@ -544,118 +596,463 @@
             cursor: pointer;
             transition: transform 0.2s ease;
         }
+
         .menu-icon-img:hover {
             transform: scale(1.05);
         }
 
         .footer-defensoria {
-            text-align: left; font-size: 0.85rem; color: white;
-            line-height: 1.4; cursor: pointer; z-index: 10;
+            text-align: left;
+            font-size: 0.85rem;
+            color: white;
+            line-height: 1.4;
+            cursor: pointer;
+            z-index: 10;
             display: inline-flex;
             align-items: center;
             gap: 10px;
         }
-        .footer-defensoria strong { color: #00BFFF; font-weight: 700; }
+
+        .footer-defensoria strong {
+            color: #00BFFF;
+            font-weight: 700;
+        }
 
         .datetime-weather-container {
-            position: relative; color: white; font-size: 0.85rem;
-            cursor: pointer; margin-left: 10px; padding-left: 15px;
-            border-left: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; z-index: 10;
+            position: relative;
+            color: white;
+            font-size: 0.85rem;
+            cursor: pointer;
+            margin-left: 10px;
+            padding-left: 15px;
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            z-index: 10;
         }
+
         .dtw-content {
-            display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.1);
-            padding: 6px 12px; border-radius: 8px; transition: background 0.2s; font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            font-weight: 600;
         }
-        .dtw-content:hover { background: rgba(255,255,255,0.2); }
+
+        .dtw-content:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
 
         .calendar-popup {
-            display: none; position: absolute; bottom: 100%; left: 0; margin-bottom: 15px;
-            background: white; color: #333; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            padding: 15px; width: 260px; z-index: 2000; cursor: default; border: 1px solid #e2e8f0;
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            margin-bottom: 15px;
+            background: white;
+            color: #333;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            width: 260px;
+            z-index: 2000;
+            cursor: default;
+            border: 1px solid #e2e8f0;
             animation: fadeIn 0.2s ease-in-out;
         }
-        .calendar-popup.show { display: block; }
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: bold; color: #003366; }
-        .calendar-header button { background: #f0faff; border: 1px solid #00BFFF; color: #003366; border-radius: 6px; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .calendar-header button:hover { background: #00BFFF; color: white; }
-        .calendar-days-header { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.75rem; font-weight: bold; color: #64748b; margin-bottom: 8px; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 0.85rem; }
-        .calendar-day { padding: 6px 0; border-radius: 6px; font-weight: 500; }
-        .calendar-day:hover:not(.empty) { background-color: #f1f5f9; cursor: pointer; }
-        .calendar-day.current { background-color: #22c55e; color: white; font-weight: bold; box-shadow: 0 2px 6px rgba(34, 197, 94, 0.4); }
-        .calendar-day.empty { color: transparent; pointer-events: none; }
+
+        .calendar-popup.show {
+            display: block;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-weight: bold;
+            color: #003366;
+        }
+
+        .calendar-header button {
+            background: #f0faff;
+            border: 1px solid #00BFFF;
+            color: #003366;
+            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-header button:hover {
+            background: #00BFFF;
+            color: white;
+        }
+
+        .calendar-days-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .calendar-day {
+            padding: 6px 0;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .calendar-day:hover:not(.empty) {
+            background-color: #f1f5f9;
+            cursor: pointer;
+        }
+
+        .calendar-day.current {
+            background-color: #22c55e;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(34, 197, 94, 0.4);
+        }
+
+        .calendar-day.empty {
+            color: transparent;
+            pointer-events: none;
+        }
 
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
-            z-index: 4000; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 4000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
         }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
         .modal-alerta {
-            background-color: #f1f5f9; color: #d32f2f; border-radius: 12px; padding: 25px 30px;
-            max-width: 320px; width: 90%; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            transform: scale(0.9); transition: transform 0.3s; border: 2px solid #d32f2f;
+            background-color: #f1f5f9;
+            color: #d32f2f;
+            border-radius: 12px;
+            padding: 25px 30px;
+            max-width: 320px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s;
+            border: 2px solid #d32f2f;
         }
-        .modal-overlay.active .modal-alerta { transform: scale(1); }
-        .modal-alerta h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 12px; color: #d32f2f; display: flex; align-items: center; justify-content: center; gap: 12px; }
-        .modal-alerta p { font-size: 1rem; margin-bottom: 25px; font-weight: 700; color: #d32f2f; }
-        .modal-botones { display: flex; gap: 15px; justify-content: center; }
+
+        .modal-overlay.active .modal-alerta {
+            transform: scale(1);
+        }
+
+        .modal-alerta h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: #d32f2f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .modal-alerta p {
+            font-size: 1rem;
+            margin-bottom: 25px;
+            font-weight: 700;
+            color: #d32f2f;
+        }
+
+        .modal-botones {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
         .btn-modal {
-            padding: 10px 20px; border: none; border-radius: 30px; font-weight: 700; font-size: 0.95rem;
-            cursor: pointer; transition: 0.2s; background-color: #d32f2f; color: white; box-shadow: 0 4px 10px rgba(211,47,47,0.3);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+            background-color: #d32f2f;
+            color: white;
+            box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3);
         }
-        .btn-modal:hover { background-color: #b71c1c; transform: translateY(-2px); }
-        .btn-modal.cancelar { background-color: #94a3b8; color: white; box-shadow: none; }
-        .btn-modal.cancelar:hover { background-color: #64748b; }
+
+        .btn-modal:hover {
+            background-color: #b71c1c;
+            transform: translateY(-2px);
+        }
+
+        .btn-modal.cancelar {
+            background-color: #94a3b8;
+            color: white;
+            box-shadow: none;
+        }
+
+        .btn-modal.cancelar:hover {
+            background-color: #64748b;
+        }
 
         .user-dropdown {
-            display: none; background: white; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            padding: 1.5rem; width: 320px; max-width: 90vw; border: 1px solid #e2e8f0; z-index: 1001;
-            position: absolute; top: calc(100% + 5px); left: 20px; margin-top: 0;
+            display: none;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            width: 320px;
+            max-width: 90vw;
+            border: 1px solid #e2e8f0;
+            z-index: 1001;
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 20px;
+            margin-top: 0;
         }
-        .user-dropdown.show { display: block; }
+
+        .user-dropdown.show {
+            display: block;
+        }
+
         .dropdown-avatar-placeholder {
-            width: 60px; height: 60px; border-radius: 50%; background-color: #003366; color: white;
-            display: flex; align-items: center; justify-content: center; font-size: 2rem;
-            font-weight: bold; border: 2px solid #00BFFF; margin: 0 auto 10px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #003366;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            border: 2px solid #00BFFF;
+            margin: 0 auto 10px;
         }
-        .avatar-options { display: flex; gap: 1rem; margin-top: 0.5rem; justify-content: center; }
+
+        .avatar-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            justify-content: center;
+        }
+
         .avatar-option {
-            width: 60px; height: 60px; border-radius: 50%; cursor: pointer; border: 3px solid transparent;
-            transition: border-color 0.2s, transform 0.2s; object-fit: cover;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: border-color 0.2s, transform 0.2s;
+            object-fit: cover;
         }
-        .avatar-option:hover { transform: scale(1.1); border-color: #00BFFF; }
+
+        .avatar-option:hover {
+            transform: scale(1.1);
+            border-color: #00BFFF;
+        }
+
         .info-item {
-            margin-bottom: 0.75rem; font-size: 0.95rem; color: #1e293b; border-bottom: 1px dashed #cbd5e1;
-            padding-bottom: 0.5rem; display: flex; align-items: center; flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            color: #1e293b;
+            border-bottom: 1px dashed #cbd5e1;
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
         }
-        .info-item strong { color: #003366; font-weight: 600; display: inline-block; min-width: 110px; }
-        .version-badge { background: #e0f2fe; color: #003366; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.9rem; font-weight: 600; text-align: center; margin-top: 0.5rem; }
 
-        .edit-row input { padding: 0.3rem 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; font-size: 0.95rem; flex: 1; margin-right: 0.5rem; }
-        .edit-row button { background: none; border: none; cursor: pointer; font-size: 1rem; padding: 0.3rem 0.6rem; border-radius: 0.375rem; transition: background 0.2s; }
-        .save-btn { color: #10b981; } .save-btn:hover { background: #e9f9f1; }
-        .cancel-btn { color: #ef4444; } .cancel-btn:hover { background: #fee2e2; }
-        .edit-icon { cursor: pointer; margin-left: 8px; color: #64748b; transition: color 0.2s; }
-        .edit-icon:hover { color: #00BFFF; }
+        .info-item strong {
+            color: #003366;
+            font-weight: 600;
+            display: inline-block;
+            min-width: 110px;
+        }
 
-        .birthday-modal { display: none; position: fixed; z-index: 11000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
-        .birthday-modal-content { background-color: #fff; margin: auto; padding: 2rem; border-radius: 2rem; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #ff6f61; animation: fadeIn 0.3s; position: relative; }
-        .birthday-modal-content .close-birthday { position: absolute; top: 10px; right: 15px; font-size: 1.8rem; cursor: pointer; color: #aaa; }
-        .birthday-modal-content .close-birthday:hover { color: #ff6f61; }
-        .birthday-modal-content i { font-size: 4rem; color: #ff6f61; margin-bottom: 0.5rem; }
-        .birthday-modal-content h3 { color: #1e293b; margin-bottom: 1rem; }
-        #birthdayList { list-style: none; padding: 0; margin: 1rem 0; max-height: 200px; overflow-y: auto; color: #334155; font-weight: 500; }
-        #birthdayList li { padding: 0.3rem 0; border-bottom: 1px dashed #e2e8f0; font-size: 1.2rem; }
-        .btn-cerrar { background-color: #003366; color: white; border: none; padding: 0.6rem 2rem; border-radius: 2rem; cursor: pointer; font-weight: 600; transition: background 0.2s; margin-top: 1rem; }
-        .btn-cerrar:hover { background-color: #002244; }
+        .version-badge {
+            background: #e0f2fe;
+            color: #003366;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .edit-row input {
+            padding: 0.3rem 0.5rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
+            font-size: 0.95rem;
+            flex: 1;
+            margin-right: 0.5rem;
+        }
+
+        .edit-row button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.375rem;
+            transition: background 0.2s;
+        }
+
+        .save-btn {
+            color: #10b981;
+        }
+        .save-btn:hover {
+            background: #e9f9f1;
+        }
+        .cancel-btn {
+            color: #ef4444;
+        }
+        .cancel-btn:hover {
+            background: #fee2e2;
+        }
+        .edit-icon {
+            cursor: pointer;
+            margin-left: 8px;
+            color: #64748b;
+            transition: color 0.2s;
+        }
+        .edit-icon:hover {
+            color: #00BFFF;
+        }
+
+        .birthday-modal {
+            display: none;
+            position: fixed;
+            z-index: 11000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .birthday-modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 2rem;
+            border-radius: 2rem;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid #ff6f61;
+            animation: fadeIn 0.3s;
+            position: relative;
+        }
+
+        .birthday-modal-content .close-birthday {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .birthday-modal-content .close-birthday:hover {
+            color: #ff6f61;
+        }
+
+        .birthday-modal-content i {
+            font-size: 4rem;
+            color: #ff6f61;
+            margin-bottom: 0.5rem;
+        }
+
+        .birthday-modal-content h3 {
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        #birthdayList {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+            max-height: 200px;
+            overflow-y: auto;
+            color: #334155;
+            font-weight: 500;
+        }
+
+        #birthdayList li {
+            padding: 0.3rem 0;
+            border-bottom: 1px dashed #e2e8f0;
+            font-size: 1.2rem;
+        }
+
+        .btn-cerrar {
+            background-color: #003366;
+            color: white;
+            border: none;
+            padding: 0.6rem 2rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+            margin-top: 1rem;
+        }
+
+        .btn-cerrar:hover {
+            background-color: #002244;
+        }
 
         .modal-festividad-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 15000; animation: fadeInFestModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 15000;
+            animation: fadeInFestModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
+
         .modal-festividad-contenido {
             background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
             backdrop-filter: blur(20px);
@@ -669,14 +1066,46 @@
             overflow: hidden;
             animation: slideUpFestModal 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
+
         .modal-festividad-contenido::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(0,191,255,0.08) 0%, transparent 60%);
-            z-index: -1; animation: rotateGlow 15s linear infinite; pointer-events: none;
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 191, 255, 0.08) 0%, transparent 60%);
+            z-index: -1;
+            animation: rotateGlow 15s linear infinite;
+            pointer-events: none;
         }
-        @keyframes rotateGlow { 100% { transform: rotate(360deg); } }
-        @keyframes slideUpFestModal { from { transform: translateY(30px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
-        @keyframes fadeInFestModal { from { opacity: 0; } to { opacity: 1; } }
+
+        @keyframes rotateGlow {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes slideUpFestModal {
+            from {
+                transform: translateY(30px) scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInFestModal {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
         .modal-festividad-titulo {
             font-size: 1.8rem;
             font-weight: 800;
@@ -689,21 +1118,33 @@
             background-clip: text;
             text-transform: uppercase;
         }
+
         .modal-festividad-imagen {
             width: 100%;
             max-width: 240px;
             margin: 0 auto 1.8rem auto;
             border-radius: 24px;
-            box-shadow: 0 15px 35px -10px rgba(0,0,0,0.2), 0 0 0 4px rgba(255,255,255,0.8);
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.2), 0 0 0 4px rgba(255, 255, 255, 0.8);
             display: block;
             object-fit: cover;
             animation: pulseImgFest 3s infinite ease-in-out;
         }
+
         @keyframes pulseImgFest {
-            0% { transform: scale(1); box-shadow: 0 15px 35px -10px rgba(0,0,0,0.2), 0 0 0 4px rgba(255,255,255,0.8); }
-            50% { transform: scale(1.05); box-shadow: 0 25px 45px -12px rgba(2,132,199,0.35), 0 0 0 6px rgba(255,255,255,0.9); }
-            100% { transform: scale(1); box-shadow: 0 15px 35px -10px rgba(0,0,0,0.2), 0 0 0 4px rgba(255,255,255,0.8); }
+            0% {
+                transform: scale(1);
+                box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.2), 0 0 0 4px rgba(255, 255, 255, 0.8);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 25px 45px -12px rgba(2, 132, 199, 0.35), 0 0 0 6px rgba(255, 255, 255, 0.9);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.2), 0 0 0 4px rgba(255, 255, 255, 0.8);
+            }
         }
+
         .modal-festividad-fecha {
             font-size: 1.1rem;
             font-weight: 700;
@@ -712,39 +1153,44 @@
             display: inline-block;
             padding: 0.5rem 1.8rem;
             border-radius: 999px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
             border: 1px solid #e2e8f0;
             letter-spacing: 0.3px;
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-        /* RESPONSIVE */
+        /* ===== RESPONSIVE – IMAGEN CENTRADA Y AJUSTADA ===== */
         @media (max-width: 768px) {
-            .welcome-message { font-size: 1.4rem; }
-            .sistema-digital-text { display: none; }
-            .left-group { gap: 0.5rem; }
-            .top-image-container { padding: 5px 12px; }
-            .image-wrapper { max-width: 85%; max-height: 75%; }
-            .image-large { max-width: 320px; border-width: 3px; }
+            .welcome-message {
+                font-size: 1.4rem;
+            }
+            .sistema-digital-text {
+                display: none;
+            }
+            .left-group {
+                gap: 0.5rem;
+            }
 
-            .module-botones {
-                top: 70px;
-                right: 10px;
-                gap: 0.4rem;
+            .top-image-container {
+                padding: 8px 16px;
             }
-            .module-botones > * {
-                padding: 0.3rem 0.7rem;
-                font-size: 0.75rem;
+            .image-wrapper {
+                max-width: 70%;
+                max-height: 70%;
             }
-            .aplicativos-list {
-                min-width: 150px;
-                right: 0;
-                left: auto;
-            }
-            .aplicativos-list a {
-                padding: 0.3rem 1rem;
-                font-size: 0.75rem;
+            .image-large {
+                max-width: 320px;
+                border-width: 3px;
             }
 
             .novedades-modal {
@@ -766,47 +1212,123 @@
                 flex-wrap: nowrap;
                 gap: 6px;
             }
-            .footer-left { display: flex; align-items: center; gap: 6px; flex: 1 1 auto; justify-content: flex-start; flex-wrap: nowrap; width: auto; min-width: 0; }
-            .footer-content { display: flex; align-items: center; gap: 4px; flex-shrink: 1; min-width: 0; }
-            .menu-icon-img { width: 28px; }
-            .footer-defensoria { display: none; }
-            .datetime-weather-container { display: none; }
-            .acceso-defensor-text { display: none; }
-            .footer-right { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; width: auto; justify-content: flex-end; flex-shrink: 0; }
-            .event-banner { padding: 4px 12px; white-space: normal; text-align: center; max-width: 140px; }
-            .event-banner p { font-size: 0.7rem; white-space: normal; line-height: 1.2; }
-            .sistema-info-text-container { display: flex; align-items: center; flex-shrink: 1; min-width: 0; }
-            .sistema-info-text { font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
-            .logout-button { padding: 5px 10px; font-size: 0.85rem; gap: 4px; flex-shrink: 0; }
-            .menu-popup { width: 200px; left: 0; right: auto; }
-            .calendar-popup { width: 240px; left: 0; right: auto; }
-            .sistema-info-modal { width: 200px; right: 0; left: auto; }
+            .footer-left {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                flex: 1 1 auto;
+                justify-content: flex-start;
+                flex-wrap: nowrap;
+                width: auto;
+                min-width: 0;
+            }
+            .footer-content {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                flex-shrink: 1;
+                min-width: 0;
+            }
+            .menu-icon-img {
+                width: 28px;
+            }
+            .footer-defensoria {
+                display: none;
+            }
+            .datetime-weather-container {
+                display: none;
+            }
+            .acceso-defensor-text {
+                display: none;
+            }
+            .footer-right {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                flex-wrap: nowrap;
+                width: auto;
+                justify-content: flex-end;
+                flex-shrink: 0;
+            }
+            .event-banner {
+                padding: 4px 12px;
+                white-space: normal;
+                text-align: center;
+                max-width: 140px;
+            }
+            .event-banner p {
+                font-size: 0.7rem;
+                white-space: normal;
+                line-height: 1.2;
+            }
+            .sistema-info-text-container {
+                display: flex;
+                align-items: center;
+                flex-shrink: 1;
+                min-width: 0;
+            }
+            .sistema-info-text {
+                font-size: 0.85rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 110px;
+            }
+            .logout-button {
+                padding: 5px 10px;
+                font-size: 0.85rem;
+                gap: 4px;
+                flex-shrink: 0;
+            }
+            .menu-popup {
+                width: 200px;
+                left: 0;
+                right: auto;
+            }
+            .calendar-popup {
+                width: 240px;
+                left: 0;
+                right: auto;
+            }
+            .sistema-info-modal {
+                width: 200px;
+                right: 0;
+                left: auto;
+            }
         }
 
         @media (max-width: 360px) {
-            .sistema-info-text { font-size: 0.75rem; max-width: 90px; }
-            .logout-button { padding: 4px 8px; font-size: 0.75rem; }
-            .menu-icon-img { width: 26px; }
-            .event-banner { max-width: 120px; padding: 3px 8px; }
-            .event-banner p { font-size: 0.65rem; }
-            .image-wrapper { max-width: 90%; max-height: 70%; }
-            .image-large { max-width: 250px; border-width: 3px; }
-            .module-botones {
-                top: 60px;
-                right: 6px;
-                gap: 0.3rem;
+            .sistema-info-text {
+                font-size: 0.75rem;
+                max-width: 90px;
             }
-            .module-botones > * {
-                padding: 0.2rem 0.5rem;
+            .logout-button {
+                padding: 4px 8px;
+                font-size: 0.75rem;
+            }
+            .menu-icon-img {
+                width: 26px;
+            }
+            .event-banner {
+                max-width: 120px;
+                padding: 3px 8px;
+            }
+            .event-banner p {
                 font-size: 0.65rem;
             }
-            .aplicativos-list {
-                min-width: 130px;
+
+            .top-image-container {
+                padding: 4px 10px;
             }
-            .aplicativos-list a {
-                padding: 0.2rem 0.8rem;
-                font-size: 0.7rem;
+            .image-wrapper {
+                max-width: 80%;
+                max-height: 70%;
             }
+            .image-large {
+                max-width: 250px;
+                border-width: 3px;
+            }
+
             .novedades-modal {
                 top: 110px;
                 right: 6px;
@@ -819,6 +1341,37 @@
                 font-size: 0.7rem;
             }
         }
+
+        /* Botón Asistente IA (solo escritorio) */
+        .btn-asistente-ia {
+            display: inline-flex;
+            align-items: center;
+            background: #22c55e;
+            border: 2px solid #15803d;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+            margin-right: 8px;
+        }
+
+        .btn-asistente-ia:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .btn-asistente-ia {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -827,32 +1380,13 @@
         <iframe id="appIframe"></iframe>
 
         <div id="homeContent">
-            <!-- Módulo de botones superior derecha (con Novedades y Aplicativos) -->
-            <div class="module-botones">
-                <!-- Botón Novedades (siempre visible, primero) -->
-                <button class="btn-novedades" id="btnNovedades"><i class="fas fa-bullhorn"></i> Novedades</button>
-
-                <!-- Botón Aplicativos con su listado desplegable -->
-                <div class="aplicativos-wrapper">
-                    <button class="btn-aplicativos" id="btnAplicativos"><i class="fas fa-th"></i> Aplicativos</button>
-                    <div class="aplicativos-list" id="aplicativosList">
-                        <a onclick="loadPage('https://fioravanteweb.github.io/cajachica/')">Caja Chica</a>
-                        <a onclick="loadPage('https://defensoria6.github.io/CEJUME/')">Cejume-Audiencias</a>
-                        <a href="https://defensoria6.github.io/pase-digital/" target="_blank">Pase Digital</a>
-                        <a href="https://defensorialocal-seis.github.io/protocolo/" target="_blank">Protocolo de Actuación</a>
-                    </div>
-                </div>
-            </div>
-
             <!-- MODAL DE NOVEDADES -->
             <div class="novedades-modal" id="novedadesModal">
                 <div class="modal-header">
                     <span class="modal-titulo"><i class="fas fa-bullhorn" style="margin-right:8px;"></i>Novedades</span>
                     <button class="cerrar-modal-btn" id="cerrarNovedadesBtn">&times;</button>
                 </div>
-                <div id="novedadesContenido">
-                    <!-- Se llena dinámicamente con JS -->
-                </div>
+                <div id="novedadesContenido"></div>
             </div>
 
             <div id="dynamicContent">
@@ -869,10 +1403,11 @@
                 </div>
             </div>
 
+            <!-- CONTENEDOR DE LA IMAGEN – SIEMPRE CENTRADO -->
             <div class="top-image-container" id="imagenCentralContainer">
                 <div class="image-wrapper">
                     <div class="image-large">
-                        <img src="https://github.com/sistemadigital/iconos/blob/main/2.png?raw=true" alt="Ministerio Público">
+                        <img src="https://github.com/sistemadigital/iconos/blob/main/2.png?raw=true" alt="Ministerio Público" />
                     </div>
                 </div>
             </div>
@@ -882,7 +1417,7 @@
     <footer id="mainFooter">
         <div class="footer-left" id="footerLeftArea">
             <div class="footer-content" id="btnMainMenu">
-                <img src="https://github.com/sistemadigital/ingreso-sistema/blob/main/menu.gif?raw=true" alt="Menú" class="menu-icon-img">
+                <img src="https://github.com/sistemadigital/ingreso-sistema/blob/main/menu.gif?raw=true" alt="Menú" class="menu-icon-img" />
                 <div class="menu-popup" id="mainMenuPopup">
                     <ul>
                         <li><a onclick="loadPage('https://sistemadigital.github.io/defensor-secretarios/tabla.html')">Expedientes</a></li>
@@ -908,15 +1443,15 @@
 
             <div class="footer-defensoria" id="footerDefensoria">
                 <div>
-                    Defensoria Civil y Comercial 6<br>
+                    Defensoria Civil y Comercial 6<br />
                     <strong>Ministerio Público de Misiones</strong>
                 </div>
             </div>
 
             <div class="datetime-weather-container" id="dateTimeWeatherBtn">
                 <div class="dtw-content">
-                    <i class="far fa-clock"></i> <span id="currentDateTime">--/--/---- --:--:--</span> 
-                    <span style="color:rgba(255,255,255,0.3)">|</span> 
+                    <i class="far fa-clock"></i> <span id="currentDateTime">--/--/---- --:--:--</span>
+                    <span style="color:rgba(255,255,255,0.3)">|</span>
                     <span id="currentWeather"><i class="fas fa-spinner fa-spin"></i> Clima</span>
                 </div>
                 <div class="calendar-popup" id="calendarPopup">
@@ -947,12 +1482,12 @@
                 <div class="sistema-info-modal" id="sistemaInfoModal">
                     <p><strong>Diseño y Programación</strong></p>
                     <p>Rómulo Fioravante</p>
-                    <p>Fecha de Creación:</p> 
+                    <p>Fecha de Creación:</p>
                     <p>Septiembre 2025</p>
                     <p>Versión 5.2.2026</p>
                 </div>
             </div>
-            
+
             <div class="logout-button" id="btnSalir">
                 <span class="logout-icon">⏻</span>
                 <span>Salir</span>
@@ -982,124 +1517,187 @@
     </div>
 
     <script>
-        // Festividades (sin cambios)
+        // ============================================================
+        // FESTIVIDADES (sin cambios)
+        // ============================================================
         function isMayoWeek() { const hoy = new Date(); const mes = hoy.getMonth(); const dia = hoy.getDate(); return (mes === 4 && dia >= 18 && dia <= 25); }
+
         function isNueveJulio() { const hoy = new Date(); return (hoy.getMonth() === 6 && hoy.getDate() === 9); }
+
         function isVeinteJunio() { const hoy = new Date(); return (hoy.getMonth() === 5 && hoy.getDate() === 20); }
+
         function isFinDeAnioRange() { const hoy = new Date(); const mes = hoy.getMonth(); const dia = hoy.getDate(); if (mes === 11 && dia >= 8) return true; if (mes === 0 && dia <= 6) return true; return false; }
-        function mostrarModalSemanaMayo() { if (document.querySelector('.modal-festividad-overlay')) return; const modalDiv = document.createElement('div'); modalDiv.className = 'modal-festividad-overlay'; modalDiv.innerHTML = `<div class="modal-festividad-contenido"><div class="modal-festividad-titulo">Semana de Mayo</div><img src="https://github.com/sistemadigital/iconos/blob/main/argentina.jpg?raw=true" alt="Argentina" class="modal-festividad-imagen" loading="eager"><div class="modal-festividad-fecha">18 al 25 de Mayo</div></div>`; document.body.appendChild(modalDiv); let timeoutId = null; const cerrarModal = () => { if (modalDiv && modalDiv.parentNode) { if (timeoutId) clearTimeout(timeoutId); modalDiv.remove(); } }; modalDiv.addEventListener('click', (e) => { if (e.target === modalDiv) cerrarModal(); }); timeoutId = setTimeout(() => cerrarModal(), 5000); }
-        function mostrarModalIndependencia() { if (document.querySelector('.modal-festividad-overlay')) return; const modalDiv = document.createElement('div'); modalDiv.className = 'modal-festividad-overlay'; modalDiv.innerHTML = `<div class="modal-festividad-contenido"><div class="modal-festividad-titulo">Día de la Independencia</div><img src="https://github.com/sistemadigital/iconos/blob/main/argentina.jpg?raw=true" alt="Argentina" class="modal-festividad-imagen" loading="eager"><div class="modal-festividad-fecha">9 de Julio - Argentina</div></div>`; document.body.appendChild(modalDiv); let timeoutId = null; const cerrarModal = () => { if (modalDiv && modalDiv.parentNode) { if (timeoutId) clearTimeout(timeoutId); modalDiv.remove(); } }; modalDiv.addEventListener('click', (e) => { if (e.target === modalDiv) cerrarModal(); }); timeoutId = setTimeout(() => cerrarModal(), 5000); }
-        function mostrarModalBandera() { if (document.querySelector('.modal-festividad-overlay')) return; const modalDiv = document.createElement('div'); modalDiv.className = 'modal-festividad-overlay'; modalDiv.innerHTML = `<div class="modal-festividad-contenido"><div class="modal-festividad-titulo">Día de la Bandera</div><img src="https://github.com/sistemadigital/iconos/blob/main/argentina.jpg?raw=true" alt="Argentina" class="modal-festividad-imagen" loading="eager"><div class="modal-festividad-fecha">20 de Junio - Argentina</div></div>`; document.body.appendChild(modalDiv); let timeoutId = null; const cerrarModal = () => { if (modalDiv && modalDiv.parentNode) { if (timeoutId) clearTimeout(timeoutId); modalDiv.remove(); } }; modalDiv.addEventListener('click', (e) => { if (e.target === modalDiv) cerrarModal(); }); timeoutId = setTimeout(() => cerrarModal(), 5000); }
-        function mostrarModalFinDeAnio() { if (document.querySelector('.modal-festividad-overlay')) return; const modalDiv = document.createElement('div'); modalDiv.className = 'modal-festividad-overlay'; modalDiv.innerHTML = `<div class="modal-festividad-contenido"><div class="modal-festividad-titulo">Fiestas de Fin de Año</div><img src="https://github.com/sistemadigital/iconos/blob/main/navidad.png?raw=true" alt="Navidad" class="modal-festividad-imagen" loading="eager"><div class="modal-festividad-fecha">Navidad, Año Nuevo y Reyes</div></div>`; document.body.appendChild(modalDiv); let timeoutId = null; const cerrarModal = () => { if (modalDiv && modalDiv.parentNode) { if (timeoutId) clearTimeout(timeoutId); modalDiv.remove(); } }; modalDiv.addEventListener('click', (e) => { if (e.target === modalDiv) cerrarModal(); }); timeoutId = setTimeout(() => cerrarModal(), 5000); }
-        document.addEventListener('DOMContentLoaded', () => { if (isMayoWeek()) setTimeout(() => mostrarModalSemanaMayo(), 200); if (isNueveJulio()) setTimeout(() => mostrarModalIndependencia(), 250); if (isVeinteJunio()) setTimeout(() => mostrarModalBandera(), 300); if (isFinDeAnioRange()) setTimeout(() => mostrarModalFinDeAnio(), 350); });
-        
+
+        function mostrarModalSemanaMayo() { if (document.querySelector('.modal-festividad-overlay')) return; const modalDiv = document.createElement('div'); modalDiv.className = 'modal-festividad-overlay'; modalDiv.innerHTML =
+                `<div class="modal-festividad-contenido"><div class="modal-festividad-titulo">Semana de Mayo</div><img src="https://github.com/sistemadigital/iconos/blob/main/argentina.jpg?raw=true" alt="Argentina" class="modal-festividad-imagen" loading="eager"><div class="modal-festividad-fecha">18 al 25 de Mayo</div></div>`; document.body.appendChild(
+                modalDiv); let timeoutId = null; const cerrarModal = () => { if (modalDiv && modalDiv.parentNode) { if (timeoutId) clearTimeout(timeoutId); modalDiv.remove(); } }; modalDiv.addEventListener('click', (e) => { if (e
+                        .target === modalDiv) cerrarModal(); }); timeoutId = setTimeout(() => cerrarModal(), 5000); }
+
+        function mostrarModalIndependencia() { if (document.querySelector('.modal-festividad-overlay')) return; const modalDiv = document.createElement('div'); modalDiv.className = 'modal-festividad-overlay'; modalDiv.innerHTML =
+                `<div class="modal-festividad-contenido"><div class="modal-festividad-titulo">Día de la Independencia</div><img src="https://github.com/sistemadigital/iconos/blob/main/argentina.jpg?raw=true" alt="Argentina" class="modal-festividad-imagen" loading="eager"><div class="modal-festividad-fecha">9 de Julio - Argentina</div></div>`; document.body.appendChild(
+                modalDiv); let timeoutId = null; const cerrarModal = () => { if (modalDiv && modalDiv.parentNode) { if (timeoutId) clearTimeout(timeoutId); modalDiv.remove(); } }; modalDiv.addEventListener('click', (e) => { if (e
+                        .target === modalDiv) cerrarModal(); }); timeoutId = setTimeout(() => cerrarModal(), 5000); }
+
+        function mostrarModalBandera() { if (document.querySelector('.modal-festividad-overlay')) return; const modalDiv = document.createElement('div'); modalDiv.className = 'modal-festividad-overlay'; modalDiv.innerHTML =
+                `<div class="modal-festividad-contenido"><div class="modal-festividad-titulo">Día de la Bandera</div><img src="https://github.com/sistemadigital/iconos/blob/main/argentina.jpg?raw=true" alt="Argentina" class="modal-festividad-imagen" loading="eager"><div class="modal-festividad-fecha">20 de Junio - Argentina</div></div>`; document.body.appendChild(
+                modalDiv); let timeoutId = null; const cerrarModal = () => { if (modalDiv && modalDiv.parentNode) { if (timeoutId) clearTimeout(timeoutId); modalDiv.remove(); } }; modalDiv.addEventListener('click', (e) => { if (e
+                        .target === modalDiv) cerrarModal(); }); timeoutId = setTimeout(() => cerrarModal(), 5000); }
+
+        function mostrarModalFinDeAnio() { if (document.querySelector('.modal-festividad-overlay')) return; const modalDiv = document.createElement('div'); modalDiv.className = 'modal-festividad-overlay'; modalDiv.innerHTML =
+                `<div class="modal-festividad-contenido"><div class="modal-festividad-titulo">Fiestas de Fin de Año</div><img src="https://github.com/sistemadigital/iconos/blob/main/navidad.png?raw=true" alt="Navidad" class="modal-festividad-imagen" loading="eager"><div class="modal-festividad-fecha">Navidad, Año Nuevo y Reyes</div></div>`; document.body.appendChild(
+                modalDiv); let timeoutId = null; const cerrarModal = () => { if (modalDiv && modalDiv.parentNode) { if (timeoutId) clearTimeout(timeoutId); modalDiv.remove(); } }; modalDiv.addEventListener('click', (e) => { if (e
+                        .target === modalDiv) cerrarModal(); }); timeoutId = setTimeout(() => cerrarModal(), 5000); }
+
+        document.addEventListener('DOMContentLoaded', () => { if (isMayoWeek()) setTimeout(() => mostrarModalSemanaMayo(), 200); if (isNueveJulio()) setTimeout(() => mostrarModalIndependencia(), 250); if (isVeinteJunio())
+                setTimeout(() => mostrarModalBandera(), 300); if (isFinDeAnioRange()) setTimeout(() => mostrarModalFinDeAnio(), 350); });
+
+        // ============================================================
+        // FUNCIONES GLOBALES
+        // ============================================================
         function loadPage(url) {
             const iframe = document.getElementById('appIframe');
             const home = document.getElementById('homeContent');
             iframe.src = url;
             iframe.style.display = 'block';
             home.style.display = 'none';
-            closeAllModals(); 
+            closeAllModals();
         }
+
         window.mostrarHome = function() {
             document.getElementById('appIframe').style.display = 'none';
             document.getElementById('homeContent').style.display = 'flex';
             document.getElementById('appIframe').src = '';
             closeAllModals();
         };
+
         function closeAllModals() {
             document.getElementById('mainMenuPopup')?.classList.remove('show');
             document.getElementById('calendarPopup')?.classList.remove('show');
             document.getElementById('sistemaInfoModal')?.classList.remove('show');
             const dropdown = document.getElementById('userDropdown');
-            if(dropdown) dropdown.classList.remove('show');
-            // Cerramos el modal de novedades y el listado de aplicativos
+            if (dropdown) dropdown.classList.remove('show');
             document.getElementById('novedadesModal')?.classList.remove('visible');
-            document.getElementById('aplicativosList')?.classList.remove('show');
         }
+
         document.addEventListener('click', (e) => {
             const isClickInsideMenu = document.getElementById('btnMainMenu')?.contains(e.target);
             const isClickInsideCalendar = document.getElementById('dateTimeWeatherBtn')?.contains(e.target);
             const isClickInsideDevInfo = document.getElementById('btnSistemaInfoContainer')?.contains(e.target);
             const isClickInsideBanner = document.getElementById('eventBanner')?.contains(e.target);
-            // Novedades
             const isClickInsideNovedades = document.getElementById('novedadesModal')?.contains(e.target);
             const isClickOnNovedadesBtn = document.getElementById('btnNovedades')?.contains(e.target);
-            // Aplicativos
-            const isClickInsideAplicativos = document.getElementById('aplicativosList')?.contains(e.target);
-            const isClickOnAplicativosBtn = document.getElementById('btnAplicativos')?.contains(e.target);
-            if (!isClickInsideMenu && !isClickInsideCalendar && !isClickInsideDevInfo && !isClickInsideBanner && 
-                !isClickInsideNovedades && !isClickOnNovedadesBtn &&
-                !isClickInsideAplicativos && !isClickOnAplicativosBtn) {
+
+            if (!isClickInsideMenu && !isClickInsideCalendar && !isClickInsideDevInfo && !isClickInsideBanner &&
+                !isClickInsideNovedades && !isClickOnNovedadesBtn) {
                 closeAllModals();
             }
         });
+
         document.getElementById('mainFooter').addEventListener('click', function(e) {
             if (e.target.closest('#eventBanner')) return;
             if (e.target === this || e.target.id === 'footerLeftArea' || e.target.id === 'footerRightArea') window.mostrarHome();
         });
-        document.getElementById('btnMainMenu').addEventListener('click', (e) => { if (e.target.closest('a')) return; e.stopPropagation(); const menu = document.getElementById('mainMenuPopup'); const isShow = menu.classList.contains('show'); closeAllModals(); if(!isShow) menu.classList.add('show'); });
-        document.getElementById('btnSistemaInfoText')?.addEventListener('click', (e) => { e.stopPropagation(); const modal = document.getElementById('sistemaInfoModal'); const isShow = modal.classList.contains('show'); closeAllModals(); if(!isShow) modal.classList.add('show'); });
 
-        // Toggle del listado de aplicativos
-        document.getElementById('btnAplicativos').addEventListener('click', function(e) {
-            e.stopPropagation();
-            const list = document.getElementById('aplicativosList');
-            const isShow = list.classList.contains('show');
-            // Cerramos otros modales abiertos (excepto novedades quizás)
-            // Pero no cerramos novedades porque puede estar abierto junto con este.
-            // Simplemente toggle.
-            if (isShow) {
-                list.classList.remove('show');
-            } else {
-                // Opcional: cerrar otros desplegables como el menú, calendario, etc.
-                document.getElementById('mainMenuPopup')?.classList.remove('show');
-                document.getElementById('calendarPopup')?.classList.remove('show');
-                document.getElementById('sistemaInfoModal')?.classList.remove('show');
-                list.classList.add('show');
-            }
-        });
-        
+        document.getElementById('btnMainMenu').addEventListener('click', (e) => { if (e.target.closest('a')) return; e.stopPropagation();
+            const menu = document.getElementById('mainMenuPopup'); const isShow = menu.classList.contains('show');
+            closeAllModals(); if (!isShow) menu.classList.add('show'); });
+
+        document.getElementById('btnSistemaInfoText')?.addEventListener('click', (e) => { e.stopPropagation(); const modal =
+                document.getElementById('sistemaInfoModal'); const isShow = modal.classList.contains('show');
+            closeAllModals(); if (!isShow) modal.classList.add('show'); });
+
+        // ============================================================
+        // RELOJ Y CALENDARIO
+        // ============================================================
         const dtwBtn = document.getElementById('dateTimeWeatherBtn');
         const calPopup = document.getElementById('calendarPopup');
-        dtwBtn.addEventListener('click', (e) => { e.stopPropagation(); const isShow = calPopup.classList.contains('show'); closeAllModals(); if(!isShow) { calPopup.classList.add('show'); const today = new Date(); currentMonth = today.getMonth(); currentYear = today.getFullYear(); renderCalendar(currentMonth, currentYear); } });
-        
-        function updateDateTime() { const now = new Date(); const day = String(now.getDate()).padStart(2, '0'); const month = String(now.getMonth() + 1).padStart(2, '0'); const year = now.getFullYear(); const hours = String(now.getHours()).padStart(2, '0'); const minutes = String(now.getMinutes()).padStart(2, '0'); const seconds = String(now.getSeconds()).padStart(2, '0'); document.getElementById('currentDateTime').textContent = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`; }
-        setInterval(updateDateTime, 1000); updateDateTime();
-        let currentMonth = new Date().getMonth(); let currentYear = new Date().getFullYear();
-        function renderCalendar(month, year) { const grid = document.getElementById('calendarGrid'); const monthYearText = document.getElementById('monthYear'); grid.innerHTML = ''; const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']; monthYearText.textContent = `${monthNames[month]} ${year}`; const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate(); const today = new Date(); for (let i = 0; i < firstDay; i++) { grid.innerHTML += `<div class="calendar-day empty"></div>`; } for (let i = 1; i <= daysInMonth; i++) { const isToday = (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()); const classes = isToday ? 'calendar-day current' : 'calendar-day'; grid.innerHTML += `<div class="${classes}">${i}</div>`; } }
-        document.getElementById('prevMonth').addEventListener('click', (e) => { e.stopPropagation(); currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; } renderCalendar(currentMonth, currentYear); });
-        document.getElementById('nextMonth').addEventListener('click', (e) => { e.stopPropagation(); currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; } renderCalendar(currentMonth, currentYear); });
-        
-        async function fetchWeather() { try { const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-27.3671&longitude=-55.8961&current_weather=true'); const data = await res.json(); document.getElementById('currentWeather').innerHTML = `🌤️ ${data.current_weather.temperature}°C`; } catch (error) { document.getElementById('currentWeather').innerHTML = `🌤️ N/A`; } }
+        dtwBtn.addEventListener('click', (e) => { e.stopPropagation(); const isShow = calPopup.classList.contains('show');
+            closeAllModals(); if (!isShow) { calPopup.classList.add('show'); const today = new Date(); currentMonth = today
+                    .getMonth();
+                currentYear = today.getFullYear();
+                renderCalendar(currentMonth, currentYear); } });
+
+        function updateDateTime() { const now = new Date(); const day = String(now.getDate()).padStart(2, '0'); const month =
+                String(now.getMonth() + 1).padStart(2, '0'); const year = now.getFullYear(); const hours = String(now.getHours())
+                .padStart(2, '0'); const minutes = String(now.getMinutes()).padStart(2, '0'); const seconds = String(now
+                .getSeconds()).padStart(2, '0'); document.getElementById('currentDateTime').textContent =
+                `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`; }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+
+        function renderCalendar(month, year) { const grid = document.getElementById('calendarGrid'); const monthYearText =
+                document.getElementById('monthYear'); grid.innerHTML = ''; const monthNames = ['Enero', 'Febrero', 'Marzo',
+                'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ]; monthYearText.textContent = `${monthNames[month]} ${year}`; const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate(); const today = new Date(); for (let i = 0; i < firstDay; i++) { grid
+                    .innerHTML += `<div class="calendar-day empty"></div>`; } for (let i = 1; i <= daysInMonth; i++) { const isToday =
+                    (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()); const classes =
+                    isToday ? 'calendar-day current' : 'calendar-day'; grid.innerHTML +=
+                    `<div class="${classes}">${i}</div>`; } }
+
+        document.getElementById('prevMonth').addEventListener('click', (e) => { e.stopPropagation(); currentMonth--; if (
+                currentMonth < 0) { currentMonth = 11;
+                currentYear--; }
+            renderCalendar(currentMonth, currentYear); });
+        document.getElementById('nextMonth').addEventListener('click', (e) => { e.stopPropagation(); currentMonth++; if (
+                currentMonth > 11) { currentMonth = 0;
+                currentYear++; }
+            renderCalendar(currentMonth, currentYear); });
+
+        async function fetchWeather() { try { const res = await fetch(
+                    'https://api.open-meteo.com/v1/forecast?latitude=-27.3671&longitude=-55.8961&current_weather=true'); const data =
+                    await res.json(); document.getElementById('currentWeather').innerHTML =
+                `🌤️ ${data.current_weather.temperature}°C`; } catch (error) { document.getElementById('currentWeather')
+                    .innerHTML = `🌤️ N/A`; } }
         fetchWeather();
-        
+
+        // ============================================================
+        // MODAL SALIDA
+        // ============================================================
         const modalSalida = document.getElementById('modalSalida');
         document.getElementById('btnSalir').addEventListener('click', () => { modalSalida.classList.add('active'); });
         document.getElementById('cancelarSalida').addEventListener('click', () => { modalSalida.classList.remove('active'); });
-        
-        const bannerDiv = document.getElementById('eventBanner');
-        document.getElementById('eventBanner')?.addEventListener('click', (e) => { loadPage('https://sistemadigital.github.io/defensor-secretarios/eventos.html'); });
-        
-        // Cerrar modal de cumpleaños
+
+        // ============================================================
+        // BANNER EVENTOS
+        // ============================================================
+        document.getElementById('eventBanner')?.addEventListener('click', (e) => { loadPage(
+                'https://sistemadigital.github.io/defensor-secretarios/eventos.html'); });
+
+        // ============================================================
+        // MODAL CUMPLEAÑOS
+        // ============================================================
         const bdayModal = document.getElementById('birthdayModal');
         const closeBdayBtn = document.getElementById('closeBirthdayBtn');
         const closeBdaySpan = document.querySelector('.close-birthday');
 
-        function cerrarModalCumpleanos() {
-            if (bdayModal) bdayModal.style.display = 'none';
-        }
-
+        function cerrarModalCumpleanos() { if (bdayModal) bdayModal.style.display = 'none'; }
         if (closeBdayBtn) closeBdayBtn.addEventListener('click', cerrarModalCumpleanos);
         if (closeBdaySpan) closeBdaySpan.addEventListener('click', cerrarModalCumpleanos);
-        
-        if (bdayModal) {
-            bdayModal.addEventListener('click', (e) => {
-                if (e.target === bdayModal) {
-                    cerrarModalCumpleanos();
-                }
+        if (bdayModal) { bdayModal.addEventListener('click', (e) => { if (e.target === bdayModal) { cerrarModalCumpleanos(); } }); }
+
+        // ============================================================
+        // BOTÓN ASISTENTE IA (se agrega al footer)
+        // ============================================================
+        (function() {
+            document.addEventListener('DOMContentLoaded', function() {
+                const footerRight = document.getElementById('footerRightArea');
+                if (!footerRight) return;
+                const eventBanner = document.getElementById('eventBanner');
+                if (!eventBanner) return;
+
+                const link = document.createElement('a');
+                link.href = 'https://notebooklm.google.com/';
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.className = 'btn-asistente-ia';
+                link.innerHTML = 'Asistente IA';
+                footerRight.insertBefore(link, eventBanner);
             });
-        }
+        })();
     </script>
 
     <script type="module">
@@ -1109,7 +1707,7 @@
         import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
         // ============================================================
-        // CONFIGURACIONES DE FIREBASE
+        // CONFIGURACIONES FIREBASE
         // ============================================================
         const firebaseConfigPerfil = {
             apiKey: "AIzaSyBDXZYAxWsvMiMGCrPRp3EBVuU0dzuWF4M",
@@ -1123,7 +1721,6 @@
         const auth = getAuth(app);
         const dbPerfil = getFirestore(app);
 
-        // Configuración para Feria Judicial (Firestore)
         const feriaApp = initializeApp({
             apiKey: "AIzaSyCxct5wrF6yGrGyWCwcI5J6F_bbzTOcr4w",
             authDomain: "feriajudicial6.firebaseapp.com",
@@ -1134,7 +1731,6 @@
         }, "feria");
         const dbFeria = getFirestore(feriaApp);
 
-        // Configuración para Licencias (Realtime Database)
         const licenciasApp = initializeApp({
             apiKey: "AIzaSyDDIbbbuorx96B02O-gmZ60oAs7bb7fjfM",
             authDomain: "defensoria6rpj.firebaseapp.com",
@@ -1147,31 +1743,23 @@
         const dbLicencias = getDatabase(licenciasApp);
 
         // ============================================================
-        // FUNCIÓN PARA FORMATEAR FECHAS (DD/MM/YYYY)
+        // FUNCIONES DE FECHAS Y NOVEDADES
         // ============================================================
         function formatFecha(fechaStr) {
             if (!fechaStr) return '';
             const partes = fechaStr.split('-');
-            if (partes.length === 3) {
-                return `${partes[2]}/${partes[1]}/${partes[0]}`;
-            }
+            if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
             return fechaStr;
         }
 
-        // ============================================================
-        // OBTENER EMPLEADOS DE FERIA EN LA SEMANA SIGUIENTE
-        // ============================================================
         async function obtenerEmpleadosFeriaSemanaSiguiente() {
             try {
                 const snapshot = await getDocs(collection(dbFeria, "ferias"));
                 if (snapshot.empty) return [];
-
                 const hoy = new Date();
-                hoy.setHours(0,0,0,0);
+                hoy.setHours(0, 0, 0, 0);
                 const dentroDe7Dias = new Date(hoy);
                 dentroDe7Dias.setDate(hoy.getDate() + 7);
-
-                // Filtrar documentos cuyo inicio esté en la semana siguiente
                 const empleadosSemana = [];
                 snapshot.forEach(doc => {
                     const data = doc.data();
@@ -1190,8 +1778,6 @@
                         }
                     }
                 });
-
-                // Agrupar por período
                 const grupos = {};
                 empleadosSemana.forEach(emp => {
                     if (!grupos[emp.periodo]) {
@@ -1208,43 +1794,31 @@
                         fin: emp.fin
                     });
                 });
-
-                // Convertir a array y formatear fechas
-                const resultado = Object.values(grupos).map(grupo => {
-                    const empleadosConFechas = grupo.empleados.map(emp => ({
+                return Object.values(grupos).map(grupo => ({
+                    periodo: grupo.periodo,
+                    defensor: grupo.defensor,
+                    encargado: grupo.encargado,
+                    empleados: grupo.empleados.map(emp => ({
                         nombre: emp.nombre,
                         inicio: formatFecha(emp.inicio),
                         fin: formatFecha(emp.fin)
-                    }));
-                    return {
-                        periodo: grupo.periodo,
-                        defensor: grupo.defensor,
-                        encargado: grupo.encargado,
-                        empleados: empleadosConFechas
-                    };
-                });
-
-                return resultado;
+                    }))
+                }));
             } catch (error) {
-                console.error("Error obteniendo empleados de feria semana siguiente:", error);
+                console.error("Error obteniendo empleados de feria:", error);
                 return [];
             }
         }
 
-        // ============================================================
-        // OBTENER LICENCIAS DE LA SEMANA SIGUIENTE (próximos 7 días)
-        // ============================================================
         async function obtenerLicenciasSemanaProxima() {
             try {
                 const snapshot = await get(ref(dbLicencias, "registros"));
                 const data = snapshot.val();
                 if (!data) return [];
-
                 const hoy = new Date();
-                hoy.setHours(0,0,0,0);
+                hoy.setHours(0, 0, 0, 0);
                 const dentroDe7Dias = new Date(hoy);
                 dentroDe7Dias.setDate(hoy.getDate() + 7);
-
                 const licencias = [];
                 for (const key in data) {
                     const reg = data[key];
@@ -1259,7 +1833,7 @@
                         });
                     }
                 }
-                licencias.sort((a,b) => new Date(a.inicio) - new Date(b.inicio));
+                licencias.sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
                 return licencias;
             } catch (error) {
                 console.error("Error obteniendo licencias:", error);
@@ -1268,7 +1842,7 @@
         }
 
         // ============================================================
-        // ACTUALIZAR EL MODAL DE NOVEDADES Y EL BOTÓN
+        // ACTUALIZAR NOVEDADES (MODAL Y BORDE DEL MÓDULO)
         // ============================================================
         async function actualizarNovedades() {
             const contenedor = document.getElementById('novedadesContenido');
@@ -1281,31 +1855,29 @@
                     obtenerLicenciasSemanaProxima()
                 ]);
 
-                // Determinar si hay datos para mostrar
                 const hayDatos = (gruposFeria.length > 0) || (licencias.length > 0);
                 if (btnNovedades) {
-                    if (hayDatos) {
-                        btnNovedades.classList.add('hay-datos');
-                    } else {
-                        btnNovedades.classList.remove('hay-datos');
-                    }
+                    if (hayDatos) btnNovedades.classList.add('hay-datos');
+                    else btnNovedades.classList.remove('hay-datos');
                 }
 
                 let html = '';
-
-                // SECCIÓN FERIA JUDICIAL - Semana Próxima
                 html += `<div class="seccion">`;
-                html += `<div class="seccion-titulo"><i class="fas fa-gavel"></i> Feria Judicial - Semana Próxima</div>`;
-
+                html +=
+                    `<div class="seccion-titulo"><i class="fas fa-gavel"></i> Feria Judicial - Semana Próxima</div>`;
                 if (gruposFeria.length > 0) {
-                    // Mostrar cada grupo (normalmente uno solo)
                     gruposFeria.forEach(grupo => {
-                        html += `<div class="item-lista"><span class="nombre"><strong>${grupo.periodo}</strong></span></div>`;
-                        html += `<div class="item-lista"><span class="nombre">⚖️ Defensor: ${grupo.defensor}</span></div>`;
-                        html += `<div class="item-lista"><span class="nombre">📋 Encargado: ${grupo.encargado}</span></div>`;
-                        html += `<div style="font-size:0.8rem; font-weight:600; color:#1e293b; padding:0.2rem 0 0.2rem 1.2rem; border-bottom:1px dashed #e2e8f0;">👥 Empleados en semana próxima:</div>`;
+                        html +=
+                            `<div class="item-lista"><span class="nombre"><strong>${grupo.periodo}</strong></span></div>`;
+                        html +=
+                            `<div class="item-lista"><span class="nombre">⚖️ Defensor: ${grupo.defensor}</span></div>`;
+                        html +=
+                            `<div class="item-lista"><span class="nombre">📋 Encargado: ${grupo.encargado}</span></div>`;
+                        html +=
+                            `<div style="font-size:0.8rem; font-weight:600; color:#1e293b; padding:0.2rem 0 0.2rem 1.2rem; border-bottom:1px dashed #e2e8f0;">👥 Empleados en semana próxima:</div>`;
                         grupo.empleados.forEach(emp => {
-                            html += `<div class="item-lista"><span class="nombre">${emp.nombre}</span><span class="fecha">${emp.inicio} - ${emp.fin}</span></div>`;
+                            html +=
+                                `<div class="item-lista"><span class="nombre">${emp.nombre}</span><span class="fecha">${emp.inicio} - ${emp.fin}</span></div>`;
                         });
                     });
                 } else {
@@ -1313,13 +1885,14 @@
                 }
                 html += `</div>`;
 
-                // SECCIÓN LICENCIAS SEMANA PRÓXIMA
                 html += `<div class="seccion">`;
-                html += `<div class="seccion-titulo"><i class="fas fa-calendar-week"></i> Licencias en la semana próxima</div>`;
+                html +=
+                    `<div class="seccion-titulo"><i class="fas fa-calendar-week"></i> Licencias en la semana próxima</div>`;
                 if (licencias.length > 0) {
                     licencias.forEach(lic => {
                         const fecha = lic.inicio ? formatFecha(lic.inicio) : '?';
-                        html += `<div class="item-lista"><span class="nombre">${lic.nombre}</span><span class="fecha">${fecha} (${lic.dias} d)</span></div>`;
+                        html +=
+                            `<div class="item-lista"><span class="nombre">${lic.nombre}</span><span class="fecha">${fecha} (${lic.dias} d)</span></div>`;
                     });
                 } else {
                     html += `<div class="sin-datos">No hay licencias en los próximos 7 días.</div>`;
@@ -1334,41 +1907,25 @@
         }
 
         // ============================================================
-        // MANEJO DEL BOTÓN Y MODAL DE NOVEDADES
+        // MANEJO DEL MÓDULO DE NOVEDADES (toggle del modal)
         // ============================================================
-        const btnNovedades = document.getElementById('btnNovedades');
-        const modalNovedades = document.getElementById('novedadesModal');
-        const cerrarNovedadesBtn = document.getElementById('cerrarNovedadesBtn');
-
         function toggleNovedades() {
-            if (modalNovedades.classList.contains('visible')) {
-                modalNovedades.classList.remove('visible');
+            const modal = document.getElementById('novedadesModal');
+            if (modal.classList.contains('visible')) {
+                modal.classList.remove('visible');
             } else {
                 actualizarNovedades();
-                modalNovedades.classList.add('visible');
+                modal.classList.add('visible');
             }
         }
 
-        btnNovedades.addEventListener('click', (e) => {
+        document.getElementById('cerrarNovedadesBtn').addEventListener('click', (e) => {
             e.stopPropagation();
-            toggleNovedades();
+            document.getElementById('novedadesModal').classList.remove('visible');
         });
-
-        cerrarNovedadesBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            modalNovedades.classList.remove('visible');
-        });
-
-        // Actualización periódica cada 30 minutos (siempre para refrescar el botón)
-        setInterval(() => {
-            actualizarNovedades();
-        }, 30 * 60 * 1000);
-
-        // Cargar datos al inicio para mostrar borde verde si corresponde
-        actualizarNovedades();
 
         // ============================================================
-        // RESTO DEL CÓDIGO DE PERFIL DE USUARIO (sin cambios)
+        // EVENTOS DE EVENTOS (banner)
         // ============================================================
         const causasConfigHistorica = {
             apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
@@ -1394,9 +1951,7 @@
             dbHistorica = getFirestore(appHistorica);
             dbNueva = getFirestore(appNueva);
             console.log("Bases de eventos inicializadas correctamente");
-        } catch (e) {
-            console.error("Error al inicializar bases de eventos:", e);
-        }
+        } catch (e) { console.error("Error al inicializar bases de eventos:", e); }
 
         function toDate(val) {
             if (!val) return null;
@@ -1411,30 +1966,21 @@
                     return new Date(year, parseInt(match[2]) - 1, parseInt(match[1]));
                 }
                 const matchIso = val.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-                if (matchIso) {
-                    return new Date(parseInt(matchIso[1]), parseInt(matchIso[2]) - 1, parseInt(matchIso[3]));
-                }
+                if (matchIso) return new Date(parseInt(matchIso[1]), parseInt(matchIso[2]) - 1, parseInt(matchIso[3]));
                 const d = new Date(val);
                 if (!isNaN(d)) return d;
             }
-            if (typeof val === 'object' && val !== null && 'fecha' in val) {
-                return toDate(val.fecha);
-            }
+            if (typeof val === 'object' && val !== null && 'fecha' in val) return toDate(val.fecha);
             return null;
         }
 
         async function hayEventosHoy() {
             try {
-                if (!dbHistorica || !dbNueva) {
-                    console.warn("Bases de datos de eventos no inicializadas");
-                    return false;
-                }
-
+                if (!dbHistorica || !dbNueva) { console.warn("Bases de datos de eventos no inicializadas"); return false; }
                 const [snapHistorica, snapNueva] = await Promise.all([
                     getDocs(collection(dbHistorica, "causas")),
                     getDocs(collection(dbNueva, "causas"))
                 ]);
-
                 const hoy = new Date();
                 const year = hoy.getFullYear();
                 const month = hoy.getMonth();
@@ -1470,7 +2016,6 @@
                 for (const docSnap of snapNueva.docs) {
                     if (procesarCausa(docSnap.data())) return true;
                 }
-
                 return false;
             } catch (error) {
                 console.error("Error en hayEventosHoy:", error);
@@ -1482,10 +2027,8 @@
             const bannerDiv = document.getElementById('eventBanner');
             const bannerText = document.getElementById('bannerText');
             if (!bannerDiv || !bannerText) return;
-
             try {
                 const hay = await hayEventosHoy();
-                console.log("¿Hay eventos hoy?", hay);
                 if (hay) {
                     bannerText.textContent = "📅 Recuerda, hoy tenemos eventos agendados";
                     bannerDiv.classList.add('hay-eventos');
@@ -1499,17 +2042,15 @@
                 bannerDiv.classList.remove('hay-eventos');
             }
         }
-
         actualizarBannerEventos();
         setInterval(actualizarBannerEventos, 30 * 60 * 1000);
 
+        // ============================================================
+        // PERFIL DE USUARIO Y PERSONALIZACIÓN
+        // ============================================================
         function hexToRgb(hex) {
             const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            } : null;
+            return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
         }
 
         const DEFAULT_FOOTER_COLOR = '#001f3f';
@@ -1522,33 +2063,35 @@
                 footer.style.backgroundColor = color;
                 let r, g, b;
                 if (color.startsWith('#')) {
-                    r = parseInt(color.slice(1,3), 16);
-                    g = parseInt(color.slice(3,5), 16);
-                    b = parseInt(color.slice(5,7), 16);
-                } else {
-                    r = g = b = 0;
-                }
+                    r = parseInt(color.slice(1, 3), 16);
+                    g = parseInt(color.slice(3, 5), 16);
+                    b = parseInt(color.slice(5, 7), 16);
+                } else { r = g = b = 0; }
                 const luminance = (0.299 * r + 0.587 * g + 0.114 * b);
                 const isDark = luminance < 128;
                 const textColor = isDark ? '#ffffff' : '#1e293b';
                 footer.style.color = textColor;
                 const footerElements = footer.querySelectorAll('*');
                 footerElements.forEach(el => {
-                    if (el.closest('.calendar-popup') || el.closest('.menu-popup') || el.closest('.sistema-info-modal')) {
-                        return;
-                    }
-                    if (el.classList && (el.classList.contains('event-banner') || el.classList.contains('logout-button') || 
-                        el.classList.contains('sistema-info-text') || el.classList.contains('dtw-content') ||
-                        el.classList.contains('footer-defensoria') || el.classList.contains('acceso-defensor-text'))) {
+                    if (el.closest('.calendar-popup') || el.closest('.menu-popup') || el.closest(
+                            '.sistema-info-modal')) return;
+                    if (el.classList && (el.classList.contains('event-banner') || el.classList.contains(
+                            'logout-button') ||
+                            el.classList.contains('sistema-info-text') || el.classList.contains(
+                            'dtw-content') ||
+                            el.classList.contains('footer-defensoria') || el.classList.contains(
+                            'acceso-defensor-text'))) {
                         el.style.color = textColor;
                     } else if (el.tagName === 'I' || el.tagName === 'SPAN' || el.tagName === 'DIV') {
                         el.style.color = textColor;
                     }
                 });
                 const logoutBtn = document.querySelector('.logout-button');
-                if (logoutBtn) logoutBtn.style.borderColor = textColor === '#ffffff' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)';
+                if (logoutBtn) logoutBtn.style.borderColor = textColor === '#ffffff' ? 'rgba(255,255,255,0.3)' :
+                    'rgba(0,0,0,0.3)';
                 const dtwContent = document.querySelector('.dtw-content');
-                if (dtwContent) dtwContent.style.backgroundColor = textColor === '#ffffff' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+                if (dtwContent) dtwContent.style.backgroundColor = textColor === '#ffffff' ? 'rgba(255,255,255,0.1)' :
+                    'rgba(0,0,0,0.1)';
                 const eventBanner = document.getElementById('eventBanner');
                 if (eventBanner) {
                     eventBanner.style.color = '#ffffff';
@@ -1560,13 +2103,11 @@
             const sistemaDigital = document.querySelector('.sistema-digital-text');
             if (welcomeMsg) welcomeMsg.style.color = color;
             if (sistemaDigital) sistemaDigital.style.color = color;
-
             const imgContainer = document.querySelector('.image-large');
             if (imgContainer) {
                 imgContainer.style.borderColor = color;
                 imgContainer.style.boxShadow = `0 0 30px ${color}66`;
             }
-
             const mainEl = document.querySelector('main');
             if (mainEl) {
                 if (color === DEFAULT_FOOTER_COLOR) {
@@ -1585,14 +2126,46 @@
 
         const AVATAR_HOMBRE = 'https://github.com/sistemadigital/iconos/blob/main/hombre.png?raw=true';
         const AVATAR_MUJER = 'https://github.com/sistemadigital/iconos/blob/main/mujer.png?raw=true';
-        let currentUser = null; let birthdayModalShown = false; let userDataCache = {};
-        
-        function formatDate(timestamp) { if (!timestamp) return 'Desconocido'; const date = new Date(timestamp); return `${date.getDate().toString().padStart(2,'0')}/${(date.getMonth()+1).toString().padStart(2,'0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`; }
-        
-        async function updateUserAvatar(photoURL) { if (!currentUser) return; try { await updateProfile(currentUser, { photoURL }); userDataCache.photoURL = photoURL; showWelcomeMessage(currentUser, true); } catch (error) { console.error('Error al actualizar avatar:', error); } }
-        async function updateDisplayName(newName) { if (!currentUser || !newName.trim()) return; try { const safeEmail = currentUser.email || 'anonimo'; await updateProfile(currentUser, { displayName: newName.trim() }); await setDoc(doc(dbPerfil, "usuarios", safeEmail), { nombreCompleto: newName.trim() }, { merge: true }); userDataCache.displayName = newName.trim(); showWelcomeMessage(currentUser, true); } catch (error) { console.error('Error al actualizar nombre:', error); } }
-        async function updateFechaNacimiento(newFecha) { if (!currentUser) return; try { const safeEmail = currentUser.email || 'anonimo'; await setDoc(doc(dbPerfil, "usuarios", safeEmail), { fechaNacimiento: newFecha }, { merge: true }); userDataCache.fechaNacimiento = newFecha; showWelcomeMessage(currentUser, true); } catch (error) { console.error('Error al actualizar fecha:', error); } }
-        
+        let currentUser = null;
+        let birthdayModalShown = false;
+        let userDataCache = {};
+
+        function formatDate(timestamp) {
+            if (!timestamp) return 'Desconocido';
+            const date = new Date(timestamp);
+            return `${date.getDate().toString().padStart(2,'0')}/${(date.getMonth()+1).toString().padStart(2,'0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`;
+        }
+
+        async function updateUserAvatar(photoURL) {
+            if (!currentUser) return;
+            try {
+                await updateProfile(currentUser, { photoURL });
+                userDataCache.photoURL = photoURL;
+                showWelcomeMessage(currentUser, true);
+            } catch (error) { console.error('Error al actualizar avatar:', error); }
+        }
+
+        async function updateDisplayName(newName) {
+            if (!currentUser || !newName.trim()) return;
+            try {
+                const safeEmail = currentUser.email || 'anonimo';
+                await updateProfile(currentUser, { displayName: newName.trim() });
+                await setDoc(doc(dbPerfil, "usuarios", safeEmail), { nombreCompleto: newName.trim() }, { merge: true });
+                userDataCache.displayName = newName.trim();
+                showWelcomeMessage(currentUser, true);
+            } catch (error) { console.error('Error al actualizar nombre:', error); }
+        }
+
+        async function updateFechaNacimiento(newFecha) {
+            if (!currentUser) return;
+            try {
+                const safeEmail = currentUser.email || 'anonimo';
+                await setDoc(doc(dbPerfil, "usuarios", safeEmail), { fechaNacimiento: newFecha }, { merge: true });
+                userDataCache.fechaNacimiento = newFecha;
+                showWelcomeMessage(currentUser, true);
+            } catch (error) { console.error('Error al actualizar fecha:', error); }
+        }
+
         async function updateColorPersonalizado(newColor) {
             if (!currentUser) return;
             try {
@@ -1602,136 +2175,249 @@
             } catch (error) { console.error('Error al actualizar color personalizado:', error); }
         }
 
-        async function launchConfetti() { try { const module = await import('https://cdn.skypack.dev/canvas-confetti'); const confetti = module.default; var duration = 3 * 1000; var animationEnd = Date.now() + duration; var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 }; function randomInRange(min, max) { return Math.random() * (max - min) + min; } var interval = setInterval(function() { var timeLeft = animationEnd - Date.now(); if (timeLeft <= 0) return clearInterval(interval); var particleCount = 50 * (timeLeft / duration); confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } })); confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } })); }, 250); } catch (e) { console.warn("No se pudo cargar la animación de confeti."); } }
-        
-        async function checkBirthdays(isCurrentUserBirthday) { if (!currentUser || isCurrentUserBirthday) return; const today = new Date(); const hoy = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}`; try { const q = query(collection(dbPerfil, "usuarios"), where("fechaNacimiento", "==", hoy)); const querySnapshot = await getDocs(q); const birthdayUsers = []; querySnapshot.forEach(doc => { if (doc.data().email !== (currentUser?.email || '')) birthdayUsers.push(doc.data().nombreCompleto); }); if (birthdayUsers.length > 0 && !birthdayModalShown) { const list = document.getElementById('birthdayList'); list.innerHTML = ''; birthdayUsers.forEach(nombre => { const li = document.createElement('li'); li.textContent = nombre; list.appendChild(li); }); document.getElementById('birthdayModal').style.display = 'flex'; birthdayModalShown = true; } } catch (error) { console.error("Error al consultar cumpleaños:", error); } }
-        
-        async function showWelcomeMessage(user, useCache = false) { 
-            const dynamicContent = document.getElementById('dynamicContent'); 
-            const email = user.email || ""; 
-            const displayName = user.displayName || (email ? email.split('@')[0] : 'Usuario'); 
-            const photoURL = user.photoURL; 
-            const inicial = displayName.charAt(0).toUpperCase(); 
-            let fechaNacimiento = userDataCache.fechaNacimiento || ''; 
+        async function launchConfetti() {
+            try {
+                const module = await import('https://cdn.skypack.dev/canvas-confetti');
+                const confetti = module.default;
+                var duration = 3 * 1000;
+                var animationEnd = Date.now() + duration;
+                var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+                function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+                var interval = setInterval(function() {
+                    var timeLeft = animationEnd - Date.now();
+                    if (timeLeft <= 0) return clearInterval(interval);
+                    var particleCount = 50 * (timeLeft / duration);
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3),
+                            y: Math.random() - 0.2 } }));
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9),
+                            y: Math.random() - 0.2 } }));
+                }, 250);
+            } catch (e) { console.warn("No se pudo cargar la animación de confeti."); }
+        }
+
+        async function checkBirthdays(isCurrentUserBirthday) {
+            if (!currentUser || isCurrentUserBirthday) return;
+            const today = new Date();
+            const hoy = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}`;
+            try {
+                const q = query(collection(dbPerfil, "usuarios"), where("fechaNacimiento", "==", hoy));
+                const querySnapshot = await getDocs(q);
+                const birthdayUsers = [];
+                querySnapshot.forEach(doc => {
+                    if (doc.data().email !== (currentUser?.email || '')) birthdayUsers.push(doc.data()
+                        .nombreCompleto);
+                });
+                if (birthdayUsers.length > 0 && !birthdayModalShown) {
+                    const list = document.getElementById('birthdayList');
+                    list.innerHTML = '';
+                    birthdayUsers.forEach(nombre => {
+                        const li = document.createElement('li');
+                        li.textContent = nombre;
+                        list.appendChild(li);
+                    });
+                    document.getElementById('birthdayModal').style.display = 'flex';
+                    birthdayModalShown = true;
+                }
+            } catch (error) { console.error("Error al consultar cumpleaños:", error); }
+        }
+
+        // ============================================================
+        // showWelcomeMessage
+        // ============================================================
+        async function showWelcomeMessage(user, useCache = false) {
+            const dynamicContent = document.getElementById('dynamicContent');
+            const email = user.email || "";
+            const displayName = user.displayName || (email ? email.split('@')[0] : 'Usuario');
+            const photoURL = user.photoURL;
+            const inicial = displayName.charAt(0).toUpperCase();
+            let fechaNacimiento = userDataCache.fechaNacimiento || '';
             let colorPersonalizado = userDataCache.colorPersonalizado || '#001f3f';
-            let faltaFecha = false; 
-            let esCumpleanos = false; 
-            let mensajeBienvenida = `¡Hola ${displayName}!`; 
-            
-            if (!useCache && !userDataCache.fechaNacimiento && email) { 
-                try { 
-                    const docRef = doc(dbPerfil, "usuarios", email); 
-                    const docSnap = await getDoc(docRef); 
-                    if (docSnap.exists()) { 
-                        fechaNacimiento = docSnap.data().fechaNacimiento || ''; 
-                        userDataCache.fechaNacimiento = fechaNacimiento; 
+            let faltaFecha = false;
+            let esCumpleanos = false;
+            let mensajeBienvenida = `¡Hola ${displayName}!`;
+
+            if (!useCache && !userDataCache.fechaNacimiento && email) {
+                try {
+                    const docRef = doc(dbPerfil, "usuarios", email);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        fechaNacimiento = docSnap.data().fechaNacimiento || '';
+                        userDataCache.fechaNacimiento = fechaNacimiento;
                         colorPersonalizado = docSnap.data().colorPersonalizado || '#001f3f';
                         userDataCache.colorPersonalizado = colorPersonalizado;
-                    } 
-                } catch (error) { console.warn("No se pudo obtener el perfil de usuario:", error); } 
-            } 
-            
+                    }
+                } catch (error) { console.warn("No se pudo obtener el perfil de usuario:", error); }
+            }
+
             aplicarColorPersonalizado(colorPersonalizado);
-            
-            if (fechaNacimiento) { 
-                const hoy = new Date(); 
-                const fechaHoy = `${String(hoy.getDate()).padStart(2, '0')}/${String(hoy.getMonth() + 1).padStart(2, '0')}`; 
-                if (fechaNacimiento === fechaHoy) { 
-                    mensajeBienvenida = `¡Feliz Cumpleaños, ${displayName}! 🎉`; 
-                    esCumpleanos = true; 
-                } 
-            } else { faltaFecha = true; } 
-            
-            const creationTime = user.metadata?.creationTime ? new Date(user.metadata.creationTime) : null; 
-            const lastLoginAt = user.metadata?.lastLoginAt ? new Date(parseInt(user.metadata.lastLoginAt)) : null; 
-            const creationStr = creationTime ? formatDate(creationTime) : 'No disponible'; 
-            const lastLoginStr = lastLoginAt ? formatDate(lastLoginAt) : 'No disponible'; 
-            let avatarHtml = photoURL ? `<img src="${photoURL}" alt="Avatar" class="avatar-medium">` : `<div class="avatar-placeholder-medium">${inicial}</div>`; 
-            let dropdownHeaderHtml = photoURL ? `<div style="font-weight:600; font-size:1.2rem; margin-bottom:1rem; color:#1e293b;">Detalle de Usuario</div>` : `<div class="dropdown-avatar-placeholder">${inicial}</div><div style="font-weight:600; color:#1e293b; text-align:center;">Elige un avatar</div>`; 
-            let avatarOptionsHtml = photoURL ? '' : `<div class="avatar-options"><img src="${AVATAR_HOMBRE}" class="avatar-option" id="avatarHombre"><img src="${AVATAR_MUJER}" class="avatar-option" id="avatarMujer"></div>`; 
-            
-            dynamicContent.innerHTML = `<div class="welcome-container" id="welcomeContainer"><div class="welcome-bar" id="welcomeBar"><div class="left-group">${avatarHtml}<div><div class="welcome-message">${mensajeBienvenida}</div>${faltaFecha ? `<div id="avisoCompletar" style="font-size: 0.75em; color: #d9534f; cursor: pointer; text-decoration: underline;">🎉 Completa tu fecha de cumpleaños</div>` : ''}</div></div><span class="sistema-digital-text">Sistema Digital</span></div><div class="user-dropdown" id="userDropdown">${dropdownHeaderHtml}${avatarOptionsHtml}<div class="info-item" id="nameDisplayRow"><strong>Nombre:</strong> <span id="displayNameSpan">${displayName}</span><i class="fas fa-pencil-alt edit-icon" id="editNameIcon"></i></div><div class="info-item edit-row" id="nameEditRow" style="display:none;"><strong>Nombre:</strong> <input type="text" id="nameInput" value="${displayName}" placeholder="Nombre y apellido"><button id="saveNameBtn" class="save-btn"><i class="fas fa-check"></i></button><button id="cancelNameBtn" class="cancel-btn"><i class="fas fa-times"></i></button></div><div class="info-item" id="fechaDisplayRow"><strong>F. Nacimiento:</strong> <span id="fechaSpan">${fechaNacimiento || 'No registrada'}</span><i class="fas fa-pencil-alt edit-icon" id="editFechaIcon"></i></div><div class="info-item edit-row" id="fechaEditRow" style="display:none;"><strong>F. Nacimiento:</strong> <input type="text" id="fechaInput" value="${fechaNacimiento}" placeholder="DD/MM" maxlength="5"><button id="saveFechaBtn" class="save-btn"><i class="fas fa-check"></i></button><button id="cancelFechaBtn" class="cancel-btn"><i class="fas fa-times"></i></button></div>
-            <div class="info-item"><strong>Color Personal:</strong> <input type="color" id="colorPicker" value="${colorPersonalizado}" style="cursor: pointer; border: none; width: 40px; height: 30px; border-radius: 4px; padding: 0; background: transparent;"></div>
-            <div class="info-item"><strong>Correo:</strong> ${email || 'No asignado'}</div><div class="info-item"><strong>Último acceso:</strong> ${lastLoginStr}</div><div class="info-item"><strong>Registro:</strong> ${creationStr}</div><div class="version-badge">Versión 3.1.2026</div><button onclick="window.mostrarHome()" style="margin-top:10px; padding:8px 15px; cursor:pointer; background:#00BFFF; border:none; border-radius:5px; color:white; font-weight:bold; width:100%;">Volver al Inicio</button></div></div>`; 
-            
-            if (esCumpleanos) launchConfetti(); 
-            const bar = document.getElementById('welcomeBar'); 
-            const dropdown = document.getElementById('userDropdown'); 
-            bar.addEventListener('click', (e) => { e.stopPropagation(); const isShow = dropdown.classList.contains('show'); closeAllModals(); if(!isShow) dropdown.classList.add('show'); }); 
-            dropdown.addEventListener('click', (e) => e.stopPropagation()); 
-            document.getElementById('avatarHombre')?.addEventListener('click', () => updateUserAvatar(AVATAR_HOMBRE)); 
-            document.getElementById('avatarMujer')?.addEventListener('click', () => updateUserAvatar(AVATAR_MUJER)); 
-            document.getElementById('editNameIcon')?.addEventListener('click', () => { document.getElementById('nameDisplayRow').style.display='none'; document.getElementById('nameEditRow').style.display='flex'; document.getElementById('nameInput').focus(); }); 
-            document.getElementById('cancelNameBtn')?.addEventListener('click', () => { document.getElementById('nameDisplayRow').style.display='flex'; document.getElementById('nameEditRow').style.display='none'; document.getElementById('nameInput').value = displayName; }); 
-            document.getElementById('saveNameBtn')?.addEventListener('click', async () => { const newName = document.getElementById('nameInput').value.trim(); if (newName && newName !== displayName) await updateDisplayName(newName); else { document.getElementById('nameDisplayRow').style.display='flex'; document.getElementById('nameEditRow').style.display='none'; } }); 
-            document.getElementById('editFechaIcon')?.addEventListener('click', () => { document.getElementById('fechaDisplayRow').style.display='none'; document.getElementById('fechaEditRow').style.display='flex'; document.getElementById('fechaInput').focus(); }); 
-            document.getElementById('cancelFechaBtn')?.addEventListener('click', () => { document.getElementById('fechaDisplayRow').style.display='flex'; document.getElementById('fechaEditRow').style.display='none'; document.getElementById('fechaInput').value = fechaNacimiento; }); 
-            document.getElementById('saveFechaBtn')?.addEventListener('click', async () => { const newFecha = document.getElementById('fechaInput').value.trim(); if (!/^\d{2}\/\d{2}$/.test(newFecha)) return alert("Formato inválido. Usa DD/MM"); if (newFecha !== fechaNacimiento) await updateFechaNacimiento(newFecha); else { document.getElementById('fechaDisplayRow').style.display='flex'; document.getElementById('fechaEditRow').style.display='none'; } }); 
-            
+
+            if (fechaNacimiento) {
+                const hoy = new Date();
+                const fechaHoy = `${String(hoy.getDate()).padStart(2, '0')}/${String(hoy.getMonth() + 1).padStart(2, '0')}`;
+                if (fechaNacimiento === fechaHoy) {
+                    mensajeBienvenida = `¡Feliz Cumpleaños, ${displayName}! 🎉`;
+                    esCumpleanos = true;
+                }
+            } else { faltaFecha = true; }
+
+            const creationTime = user.metadata?.creationTime ? new Date(user.metadata.creationTime) : null;
+            const lastLoginAt = user.metadata?.lastLoginAt ? new Date(parseInt(user.metadata.lastLoginAt)) : null;
+            const creationStr = creationTime ? formatDate(creationTime) : 'No disponible';
+            const lastLoginStr = lastLoginAt ? formatDate(lastLoginAt) : 'No disponible';
+
+            let avatarHtml = photoURL ?
+                `<img src="${photoURL}" alt="Avatar" class="avatar-medium">` :
+                `<div class="avatar-placeholder-medium">${inicial}</div>`;
+
+            let dropdownHeaderHtml = photoURL ?
+                `<div style="font-weight:600; font-size:1.2rem; margin-bottom:1rem; color:#1e293b;">Detalle de Usuario</div>` :
+                `<div class="dropdown-avatar-placeholder">${inicial}</div><div style="font-weight:600; color:#1e293b; text-align:center;">Elige un avatar</div>`;
+
+            let avatarOptionsHtml = photoURL ? '' :
+                `<div class="avatar-options"><img src="${AVATAR_HOMBRE}" class="avatar-option" id="avatarHombre"><img src="${AVATAR_MUJER}" class="avatar-option" id="avatarMujer"></div>`;
+
+            const html = `
+                <div class="welcome-container" id="welcomeContainer">
+                    <div class="welcome-bar" id="welcomeBar">
+                        <div class="left-group">
+                            ${avatarHtml}
+                            <div>
+                                <div class="welcome-message">${mensajeBienvenida}</div>
+                                ${faltaFecha ? `<div id="avisoCompletar" style="font-size: 0.75em; color: #d9534f; cursor: pointer; text-decoration: underline;">🎉 Completa tu fecha de cumpleaños</div>` : ''}
+                            </div>
+                        </div>
+                        <span class="sistema-digital-text">Sistema Digital</span>
+                    </div>
+
+                    <div class="modules-container">
+                        <div class="module-item module-novedades" id="btnNovedades">Novedades</div>
+                        <div class="module-item module-caja" onclick="loadPage('https://fioravanteweb.github.io/cajachica/')">Caja Chica</div>
+                        <div class="module-item module-cejume" onclick="loadPage('https://defensoria6.github.io/CEJUME/')">Cejume-Audiencias</div>
+                        <div class="module-item module-pase" onclick="loadPage('https://defensoria6.github.io/pase-digital/')">Pase Digital</div>
+                        <div class="module-item module-protocolo" onclick="loadPage('https://defensorialocal-seis.github.io/protocolo/')">Protocolo de Actuación</div>
+                    </div>
+
+                    <div class="user-dropdown" id="userDropdown">
+                        ${dropdownHeaderHtml}
+                        ${avatarOptionsHtml}
+                        <div class="info-item" id="nameDisplayRow"><strong>Nombre:</strong> <span id="displayNameSpan">${displayName}</span><i class="fas fa-pencil-alt edit-icon" id="editNameIcon"></i></div>
+                        <div class="info-item edit-row" id="nameEditRow" style="display:none;"><strong>Nombre:</strong> <input type="text" id="nameInput" value="${displayName}" placeholder="Nombre y apellido"><button id="saveNameBtn" class="save-btn"><i class="fas fa-check"></i></button><button id="cancelNameBtn" class="cancel-btn"><i class="fas fa-times"></i></button></div>
+                        <div class="info-item" id="fechaDisplayRow"><strong>F. Nacimiento:</strong> <span id="fechaSpan">${fechaNacimiento || 'No registrada'}</span><i class="fas fa-pencil-alt edit-icon" id="editFechaIcon"></i></div>
+                        <div class="info-item edit-row" id="fechaEditRow" style="display:none;"><strong>F. Nacimiento:</strong> <input type="text" id="fechaInput" value="${fechaNacimiento}" placeholder="DD/MM" maxlength="5"><button id="saveFechaBtn" class="save-btn"><i class="fas fa-check"></i></button><button id="cancelFechaBtn" class="cancel-btn"><i class="fas fa-times"></i></button></div>
+                        <div class="info-item"><strong>Color Personal:</strong> <input type="color" id="colorPicker" value="${colorPersonalizado}" style="cursor: pointer; border: none; width: 40px; height: 30px; border-radius: 4px; padding: 0; background: transparent;"></div>
+                        <div class="info-item"><strong>Correo:</strong> ${email || 'No asignado'}</div>
+                        <div class="info-item"><strong>Último acceso:</strong> ${lastLoginStr}</div>
+                        <div class="info-item"><strong>Registro:</strong> ${creationStr}</div>
+                        <div class="version-badge">Versión 3.1.2026</div>
+                        <button onclick="window.mostrarHome()" style="margin-top:10px; padding:8px 15px; cursor:pointer; background:#00BFFF; border:none; border-radius:5px; color:white; font-weight:bold; width:100%;">Volver al Inicio</button>
+                    </div>
+                </div>
+            `;
+
+            dynamicContent.innerHTML = html;
+
+            if (esCumpleanos) launchConfetti();
+
+            const btnNovedades = document.getElementById('btnNovedades');
+            if (btnNovedades) {
+                btnNovedades.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleNovedades();
+                });
+            }
+
+            const bar = document.getElementById('welcomeBar');
+            const dropdown = document.getElementById('userDropdown');
+            if (bar && dropdown) {
+                bar.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isShow = dropdown.classList.contains('show');
+                    closeAllModals();
+                    if (!isShow) dropdown.classList.add('show');
+                });
+                dropdown.addEventListener('click', (e) => e.stopPropagation());
+            }
+
+            document.getElementById('avatarHombre')?.addEventListener('click', () => updateUserAvatar(AVATAR_HOMBRE));
+            document.getElementById('avatarMujer')?.addEventListener('click', () => updateUserAvatar(AVATAR_MUJER));
+
+            document.getElementById('editNameIcon')?.addEventListener('click', () => {
+                document.getElementById('nameDisplayRow').style.display = 'none';
+                document.getElementById('nameEditRow').style.display = 'flex';
+                document.getElementById('nameInput').focus();
+            });
+            document.getElementById('cancelNameBtn')?.addEventListener('click', () => {
+                document.getElementById('nameDisplayRow').style.display = 'flex';
+                document.getElementById('nameEditRow').style.display = 'none';
+                document.getElementById('nameInput').value = displayName;
+            });
+            document.getElementById('saveNameBtn')?.addEventListener('click', async () => {
+                const newName = document.getElementById('nameInput').value.trim();
+                if (newName && newName !== displayName) await updateDisplayName(newName);
+                else {
+                    document.getElementById('nameDisplayRow').style.display = 'flex';
+                    document.getElementById('nameEditRow').style.display = 'none';
+                }
+            });
+
+            document.getElementById('editFechaIcon')?.addEventListener('click', () => {
+                document.getElementById('fechaDisplayRow').style.display = 'none';
+                document.getElementById('fechaEditRow').style.display = 'flex';
+                document.getElementById('fechaInput').focus();
+            });
+            document.getElementById('cancelFechaBtn')?.addEventListener('click', () => {
+                document.getElementById('fechaDisplayRow').style.display = 'flex';
+                document.getElementById('fechaEditRow').style.display = 'none';
+                document.getElementById('fechaInput').value = fechaNacimiento;
+            });
+            document.getElementById('saveFechaBtn')?.addEventListener('click', async () => {
+                const newFecha = document.getElementById('fechaInput').value.trim();
+                if (!/^\d{2}\/\d{2}$/.test(newFecha)) return alert("Formato inválido. Usa DD/MM");
+                if (newFecha !== fechaNacimiento) await updateFechaNacimiento(newFecha);
+                else {
+                    document.getElementById('fechaDisplayRow').style.display = 'flex';
+                    document.getElementById('fechaEditRow').style.display = 'none';
+                }
+            });
+
             const colorPicker = document.getElementById('colorPicker');
             if (colorPicker) {
                 colorPicker.addEventListener('input', (e) => { aplicarColorPersonalizado(e.target.value); });
                 colorPicker.addEventListener('change', async (e) => { await updateColorPersonalizado(e.target.value); });
             }
-            
-            document.getElementById('avisoCompletar')?.addEventListener('click', () => { dropdown.classList.add('show'); document.getElementById('fechaDisplayRow').style.display='none'; document.getElementById('fechaEditRow').style.display='flex'; document.getElementById('fechaInput').focus(); }); 
-            await checkBirthdays(esCumpleanos); 
-        }
-        
-        onAuthStateChanged(auth, (user) => { if (user) { currentUser = user; userDataCache.displayName = user.displayName; userDataCache.photoURL = user.photoURL; showWelcomeMessage(currentUser); } else { window.location.href = 'index.html'; } });
-        document.getElementById('confirmarSalida').addEventListener('click', async () => { document.getElementById('modalSalida').classList.remove('active'); try { await signOut(auth); } catch (error) { console.error('Error al salir:', error); } });
-    </script>
 
-    <!-- Botón Asistente IA (integrado en el footer, solo visible en escritorio) -->
-    <script>
-        (function() {
-            document.addEventListener('DOMContentLoaded', function() {
-                const footerRight = document.getElementById('footerRightArea');
-                if (!footerRight) return;
-                const eventBanner = document.getElementById('eventBanner');
-                if (!eventBanner) return;
-
-                const link = document.createElement('a');
-                link.href = 'https://notebooklm.google.com/';
-                link.target = '_blank';
-                link.rel = 'noopener noreferrer';
-                link.className = 'btn-asistente-ia';
-                link.innerHTML = 'Asistente IA';
-                footerRight.insertBefore(link, eventBanner);
-
-                const style = document.createElement('style');
-                style.textContent = `
-                    .btn-asistente-ia {
-                        display: inline-flex;
-                        align-items: center;
-                        background: #22c55e;
-                        border: 2px solid #15803d;
-                        color: white;
-                        padding: 6px 14px;
-                        border-radius: 40px;
-                        text-decoration: none;
-                        font-weight: 700;
-                        font-size: 0.85rem;
-                        gap: 6px;
-                        box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
-                        transition: transform 0.2s, box-shadow 0.2s;
-                        font-family: 'Inter', sans-serif;
-                        white-space: nowrap;
-                        margin-right: 8px;
-                    }
-                    .btn-asistente-ia:hover {
-                        transform: scale(1.05);
-                        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.5);
-                    }
-                    @media (max-width: 768px) {
-                        .btn-asistente-ia {
-                            display: none !important;
-                        }
-                    }
-                `;
-                document.head.appendChild(style);
+            document.getElementById('avisoCompletar')?.addEventListener('click', () => {
+                dropdown.classList.add('show');
+                document.getElementById('fechaDisplayRow').style.display = 'none';
+                document.getElementById('fechaEditRow').style.display = 'flex';
+                document.getElementById('fechaInput').focus();
             });
-        })();
+
+            await checkBirthdays(esCumpleanos);
+        }
+
+        // ============================================================
+        // AUTH STATE
+        // ============================================================
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                userDataCache.displayName = user.displayName;
+                userDataCache.photoURL = user.photoURL;
+                showWelcomeMessage(currentUser);
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        document.getElementById('confirmarSalida').addEventListener('click', async () => {
+            document.getElementById('modalSalida').classList.remove('active');
+            try { await signOut(auth); } catch (error) { console.error('Error al salir:', error); }
+        });
+
+        setInterval(() => { actualizarNovedades(); }, 30 * 60 * 1000);
+        actualizarNovedades();
     </script>
 
 </body>
