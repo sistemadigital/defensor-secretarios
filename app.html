@@ -20,18 +20,52 @@
             flex-direction: column;
             height: 100vh;
             height: 100dvh;
-            background-color: #ffffff;
+            background-color: transparent; /* Fondo transparente para mostrar el fondo animado */
             overflow: hidden;
+            position: relative;
         }
+
+        /* ===== FONDO ANIMADO (heredado de index.html) ===== */
+        .intro-fluid-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 30% 20%, #1a0f2e 0%, transparent 60%),
+                radial-gradient(circle at 70% 80%, #140b24 0%, transparent 60%),
+                #0d0716;
+        }
+
+        .intro-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            mix-blend-mode: screen;
+            opacity: .65;
+            will-change: transform;
+        }
+        .intro-blob--1 { width: 60vw; height: 60vw; left: -15vw; top: -10vh; background: #7c3aed; animation: introDrift1 26s ease-in-out infinite alternate; }
+        .intro-blob--2 { width: 50vw; height: 50vw; right: -10vw; top: -5vh; background: #12b3a8; animation: introDrift2 32s ease-in-out infinite alternate; }
+        .intro-blob--3 { width: 55vw; height: 55vw; left: 10vw; bottom: -20vh; background: #ff6a4d; animation: introDrift3 22s ease-in-out infinite alternate; }
+        .intro-blob--4 { width: 45vw; height: 45vw; right: 5vw; bottom: -15vh; background: #ff3d7f; animation: introDrift4 30s ease-in-out infinite alternate; }
+        .intro-blob--5 { width: 35vw; height: 35vw; left: 35vw; top: 30vh; background: #ffb648; opacity: .4; animation: introDrift5 20s ease-in-out infinite alternate; }
+
+        @keyframes introDrift1 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(8vw,10vh) scale(1.15); } }
+        @keyframes introDrift2 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(-10vw,8vh) scale(1.1); } }
+        @keyframes introDrift3 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(6vw,-8vh) scale(1.2); } }
+        @keyframes introDrift4 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(-8vw,-6vh) scale(1.1); } }
+        @keyframes introDrift5 { 0% { transform: translate(-6vw,-4vh) scale(1); } 100% { transform: translate(6vw,6vh) scale(1.25); } }
 
         main {
             flex: 1;
-            background: #d4eafc;
+            background: transparent;
             display: flex;
             flex-direction: column;
             position: relative;
             overflow: hidden;
             padding-bottom: 0;
+            z-index: 1;
         }
 
         #appIframe {
@@ -127,7 +161,7 @@
             transition: color 0.2s ease;
         }
 
-        /* ===== WRAPPER para "Sistema Digital" + "Con Ayudante IA" ===== */
+        /* ===== WRAPPER para "Sistema Digital" + GIF ===== */
         .sistema-wrapper {
             display: flex;
             align-items: center;
@@ -145,24 +179,24 @@
             transition: color 0.2s ease;
         }
 
-        /* ===== ESTILO PARA "Con Ayudante IA" ===== */
-        .ayudante-ia {
-            font-weight: 800;
-            color: #ff8c00;
-            font-size: 1.8rem;
-            white-space: nowrap;
+        /* Estilo para el GIF en lugar del texto "Con Ayudante IA" */
+        .vector-gif-ia {
+            height: 1.8rem;  /* mismo tamaño que el texto */
+            width: auto;
+            vertical-align: middle;
             display: inline-block;
             animation: brillo-ia 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 8px rgba(255, 140, 0, 0.5));
         }
 
         @keyframes brillo-ia {
             0%, 100% {
                 opacity: 1;
-                text-shadow: 0 0 5px rgba(255, 140, 0, 0.4);
+                filter: drop-shadow(0 0 5px rgba(255, 140, 0, 0.4));
             }
             50% {
                 opacity: 0.7;
-                text-shadow: 0 0 20px rgba(255, 140, 0, 0.9), 0 0 40px rgba(255, 140, 0, 0.5);
+                filter: drop-shadow(0 0 20px rgba(255, 140, 0, 0.9)) drop-shadow(0 0 40px rgba(255, 140, 0, 0.5));
             }
         }
 
@@ -1227,7 +1261,7 @@
             box-shadow: 0 0 20px rgba(255, 140, 0, 0.7), 0 0 40px rgba(255, 140, 0, 0.3);
         }
 
-        /* ===== NUEVO: TEXTO MÓVIL "Sistema Digital Con Ayudante IA" ===== */
+        /* ===== NUEVO: TEXTO MÓVIL "Sistema Digital" con GIF ===== */
         .sistema-movil {
             display: none;
             width: 100%;
@@ -1243,9 +1277,11 @@
         .sistema-movil:hover {
             opacity: 0.7;
         }
-        .sistema-movil .ayudante-ia {
-            color: #ff8c00;
+        .sistema-movil .vector-gif-ia {
+            height: 1.4rem;
+            vertical-align: middle;
             animation: brillo-ia 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 8px rgba(255, 140, 0, 0.5));
         }
 
         /* ===== GIF AYUDANTE IA EN FOOTER (móvil) ===== */
@@ -1277,8 +1313,8 @@
                 display: inline !important;
                 font-size: 1.4rem;
             }
-            .ayudante-ia {
-                font-size: 1.4rem;
+            .vector-gif-ia {
+                height: 1.4rem;
             }
             .left-group {
                 gap: 0.5rem;
@@ -1453,6 +1489,15 @@
     </style>
 </head>
 <body>
+
+    <!-- FONDO ANIMADO (heredado de index.html) -->
+    <div class="intro-fluid-bg">
+        <div class="intro-blob intro-blob--1"></div>
+        <div class="intro-blob intro-blob--2"></div>
+        <div class="intro-blob intro-blob--3"></div>
+        <div class="intro-blob intro-blob--4"></div>
+        <div class="intro-blob intro-blob--5"></div>
+    </div>
 
     <main id="mainContent">
         <iframe id="appIframe"></iframe>
@@ -2188,14 +2233,14 @@
             const mainEl = document.querySelector('main');
             if (mainEl) {
                 if (color === DEFAULT_FOOTER_COLOR) {
-                    mainEl.style.backgroundColor = DEFAULT_BACKGROUND;
+                    mainEl.style.backgroundColor = 'transparent';
                 } else {
                     const rgb = hexToRgb(color);
                     if (rgb) {
                         const lightR = Math.round(rgb.r + (255 - rgb.r) * 0.85);
                         const lightG = Math.round(rgb.g + (255 - rgb.g) * 0.85);
                         const lightB = Math.round(rgb.b + (255 - rgb.b) * 0.85);
-                        mainEl.style.backgroundColor = `rgb(${lightR}, ${lightG}, ${lightB})`;
+                        mainEl.style.backgroundColor = `rgba(${lightR}, ${lightG}, ${lightB}, 0.6)`;
                     }
                 }
             }
@@ -2364,17 +2409,17 @@
                                 ${faltaFecha ? `<div id="avisoCompletar" style="font-size: 0.75em; color: #d9534f; cursor: pointer; text-decoration: underline;">🎉 Completa tu fecha de cumpleaños</div>` : ''}
                             </div>
                         </div>
-                        <!-- WRAPPER para "Sistema Digital" + "Con Ayudante IA" -->
+                        <!-- WRAPPER para "Sistema Digital" + GIF (reemplaza el texto "Con Ayudante IA") -->
                         <div class="sistema-wrapper">
                             <span class="sistema-digital-text">Sistema Digital</span>
-                            <span class="ayudante-ia">Con Ayudante IA</span>
+                            <img src="https://github.com/sistemadigital/iconos/blob/main/vector.gif?raw=true" alt="Ayudante IA" class="vector-gif-ia" />
                         </div>
                     </div>
 
-                    <!-- BLOQUE MÓVIL clickeable -->
+                    <!-- BLOQUE MÓVIL clickeable con GIF -->
                     <div class="sistema-movil" id="sistemaMovilLink" onclick="loadPage('https://defensoria6.github.io/ayudanteIA/')">
                         <span class="sistema-digital-text">Sistema Digital</span>
-                        <span class="ayudante-ia">Con Ayudante IA</span>
+                        <img src="https://github.com/sistemadigital/iconos/blob/main/vector.gif?raw=true" alt="Ayudante IA" class="vector-gif-ia" />
                     </div>
 
                     <div class="modules-container">
