@@ -112,6 +112,14 @@
             border-color: var(--primary-blue);
         }
 
+        .header-buttons {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: var(--spacing-s);
+        }
+
         .container {
             max-width: 1800px;
             margin: 0 auto;
@@ -465,7 +473,10 @@
     <header class="header">
         <div class="header-content">
             <div class="logo">Biblioteca</div>
-            <a href="https://experiencia-ia.github.io/biblioteca-doctrina-jurisprudencia/" class="btn-biblioteca" target="_self">Biblioteca de Doctrina y Jurisprudencia</a>
+            <div class="header-buttons">
+                <a href="https://defensorialocal-seis.github.io/ayuda-plazos/" class="btn-biblioteca" target="_self">Legislacion y Plazos Procesales</a>
+                <a href="https://experiencia-ia.github.io/biblioteca-doctrina-jurisprudencia/" class="btn-biblioteca" target="_self">Biblioteca de Doctrina y Jurisprudencia</a>
+            </div>
         </div>
     </header>
 
