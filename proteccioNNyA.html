@@ -1,2282 +1,462 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sistema de Protección de NNyA</title>
-  
-  <!-- Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-  
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  
-  <style>
-    /* Estilos CSS de proteccion-adultos.html */
-    :root {
-        --primary-blue: #007bff;
-        --primary-light-blue: #e7f4ff;
-        --primary-dark-blue: #0056b3;
-        --secondary-gray: #f8f9fa;
-        --secondary-light-gray: #e9ecef;
-        --secondary-dark-gray: #6c757d;
-        --status-success: #28a745;
-        --status-warning: #ffc107;
-        --status-danger: #dc3545;
-        --status-info: #17a2b8;
-        --text-primary: #212529;
-        --text-secondary: #6c757d;
-        --text-link: #007bff;
-        --text-light: #ffffff;
-        --background-default: #ffffff;
-        --background-card: #ffffff;
-        --background-header: #ffffff;
-        --background-table-header: #f8f9fa;
-        --border-default: #dee2e6;
-        --font-family: 'Arial', 'Helvetica', sans-serif;
-        --display-size: 24px;
-        --h1-size: 20px;
-        --h2-size: 18px;
-        --body-large-size: 16px;
-        --body-regular-size: 14px;
-        --caption-size: 12px;
-        --font-weight-regular: 400;
-        --font-weight-semibold: 600;
-        --font-weight-bold: 700;
-        --spacing-unit: 8px;
-        --spacing-xs: 4px;
-        --spacing-s: 8px;
-        --spacing-m: 16px;
-        --spacing-l: 24px;
-        --spacing-xl: 32px;
-        --spacing-gutter: 20px;
-        --border-radius-small: 2px;
-        --border-radius-default: 4px;
-        --border-radius-pill: 20px;
-        --shadow-none: none;
-        --shadow-subtle: 0 1px 3px rgba(0,0,0,0.1);
-        --radius: 12px;
-        --shadow: 0 4px 15px rgba(0,0,0,.08);
-    }
-
-    body {
-        font-family: var(--font-family);
-        background-color: var(--background-default);
-        color: var(--text-primary);
-        line-height: 1.5;
-        min-height: 100vh;
-        padding-top: 80px;
-    }
-
-    /* Header */
-    .header {
-        background-color: var(--background-header);
-        border-bottom: 1px solid var(--border-default);
-        padding: var(--spacing-s) var(--spacing-m);
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 100;
-        box-shadow: var(--shadow-subtle);
-    }
-
-    .header-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        max-width: 1800px;
-        margin: 0 auto;
-    }
-
-    .logo {
-        font-size: var(--h1-size);
-        font-weight: var(--font-weight-bold);
-        color: var(--primary-blue);
-    }
-
-    /* Menú de navegación en el header */
-    .nav-menu {
-        display: flex;
-        gap: var(--spacing-s);
-        flex-wrap: wrap;
-    }
-
-    .nav-button {
-        background-color: var(--primary-blue);
-        color: var(--text-light);
-        border: none;
-        border-radius: var(--border-radius-default);
-        padding: var(--spacing-s) var(--spacing-m);
-        text-align: center;
-        box-shadow: var(--shadow-subtle);
-        transition: transform 0.2s, box-shadow 0.2s;
-        cursor: pointer;
-        text-decoration: none;
-        font-size: var(--body-regular-size);
-        font-weight: var(--font-weight-semibold);
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-xs);
-    }
-
-    .nav-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        background-color: var(--primary-dark-blue);
-        color: var(--text-light);
-        text-decoration: none;
-    }
-
-    /* Contenedor principal */
-    .container {
-        max-width: 1800px;
-        margin: 0 auto;
-        padding: var(--spacing-m) var(--spacing-gutter);
-    }
-
-    /* Dashboard con KPIs */
-    .dashboard-section {
-        margin-bottom: var(--spacing-xl);
-    }
-
-    .dashboard-title {
-        font-size: var(--h2-size);
-        font-weight: var(--font-weight-semibold);
-        margin-bottom: var(--spacing-m);
-    }
-
-    .dashboard-cards {
-        display: flex;
-        gap: var(--spacing-m);
-        overflow-x: auto;
-        padding-bottom: var(--spacing-s);
-    }
-
-    .dashboard-card {
-        background-color: var(--background-card);
-        padding: var(--spacing-m) var(--spacing-l);
-        border-radius: var(--border-radius-default);
-        border: 1px solid var(--border-default);
-        text-align: center;
-        box-shadow: var(--shadow-subtle);
-        transition: transform 0.2s, box-shadow 0.2s;
-        min-width: 180px;
-        flex: 1;
-    }
-
-    .dashboard-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-
-    .dashboard-card.total {
-        background-color: var(--primary-blue);
-        color: var(--text-light);
-    }
-
-    .dashboard-card.abiertos {
-        border-left: 4px solid var(--status-success);
-    }
-
-    .dashboard-card.proceso {
-        border-left: 4px solid var(--status-warning);
-    }
-
-    .dashboard-card.cerrados {
-        border-left: 4px solid var(--status-danger);
-    }
-
-    .dashboard-number {
-        font-size: var(--display-size);
-        font-weight: var(--font-weight-bold);
-        margin-bottom: var(--spacing-xs);
-    }
-
-    .dashboard-card.total .dashboard-number {
-        color: var(--text-light);
-    }
-
-    .dashboard-label {
-        font-size: var(--caption-size);
-        font-weight: var(--font-weight-regular);
-        text-transform: uppercase;
-    }
-
-    .dashboard-card.total .dashboard-label {
-        color: var(--text-light);
-    }
-
-    /* Filtros y tabla de casos */
-    .filters-section {
-        background-color: var(--background-card);
-        padding: var(--spacing-m);
-        border-radius: var(--border-radius-default);
-        border: 1px solid var(--border-default);
-        margin-bottom: var(--spacing-xl);
-        box-shadow: var(--shadow-subtle);
-    }
-
-    .filters-title {
-        font-size: var(--h2-size);
-        font-weight: var(--font-weight-semibold);
-        margin-bottom: var(--spacing-m);
-    }
-
-    .filter-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--spacing-m);
-    }
-
-    .filter-group {
-        flex: 1;
-        min-width: 150px;
-    }
-
-    .filter-label {
-        display: block;
-        font-size: var(--body-regular-size);
-        margin-bottom: var(--spacing-xs);
-        font-weight: var(--font-weight-semibold);
-    }
-
-    .input, .dropdown {
-        border: 1px solid var(--border-default);
-        border-radius: var(--border-radius-default);
-        padding: var(--spacing-s);
-        background-color: var(--background-default);
-        color: var(--text-primary);
-        font-size: var(--body-regular-size);
-        width: 100%;
-        transition: border-color 0.2s;
-    }
-
-    .input:focus, .dropdown:focus {
-        outline: none;
-        border-color: var(--primary-blue);
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: var(--spacing-s);
-        margin-top: var(--spacing-m);
-        flex-wrap: wrap;
-    }
-
-    .button {
-        background-color: var(--primary-blue);
-        color: var(--text-light);
-        border: none;
-        border-radius: var(--border-radius-default);
-        padding: var(--spacing-s) var(--spacing-m);
-        font-size: var(--body-regular-size);
-        cursor: pointer;
-        transition: background-color 0.2s;
-        display: inline-flex;
-        align-items: center;
-        gap: var(--spacing-xs);
-    }
-
-    .button:hover {
-        opacity: 0.9;
-    }
-
-    .button-success {
-        background-color: #1e7e34;
-    }
-
-    .button-secondary {
-        background-color: var(--secondary-dark-gray);
-    }
-
-    .button-danger {
-        background-color: var(--status-danger);
-    }
-
-    .button-info {
-        background-color: var(--status-info);
-    }
-
-    /* Tabla de casos */
-    .table-section {
-        background-color: var(--background-card);
-        border-radius: var(--border-radius-default);
-        border: 1px solid var(--border-default);
-        overflow: hidden;
-        box-shadow: var(--shadow-subtle);
-    }
-
-    .table-title {
-        font-size: var(--h2-size);
-        font-weight: var(--font-weight-semibold);
-        padding: var(--spacing-m);
-        background-color: var(--background-table-header);
-        border-bottom: 1px solid var(--border-default);
-    }
-
-    .table-wrap {
-        overflow-x: auto;
-    }
-
-    .data-table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 1000px;
-    }
-
-    .data-table th {
-        background-color: var(--background-table-header);
-        font-weight: var(--font-weight-semibold);
-        border-bottom: 2px solid var(--border-default);
-        padding: var(--spacing-m);
-        color: var(--text-primary);
-        font-size: var(--caption-size);
-        text-transform: uppercase;
-    }
-
-    .data-table td {
-        border-bottom: 1px solid var(--border-default);
-        padding: var(--spacing-m);
-        color: var(--text-primary);
-        font-size: var(--body-regular-size);
-    }
-
-    .data-table tr:last-child td {
-        border-bottom: none;
-    }
-
-    .data-table tr:hover td {
-        background-color: var(--secondary-gray);
-    }
-
-    /* Estilos para estado */
-    .estado-pill {
-        display: inline-block;
-        padding: 4px 8px;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        font-weight: bold;
-        color: #fff;
-        text-transform: uppercase;
-    }
-    .estado-abierto { background-color: var(--status-success); }
-    .estado-proceso { background-color: var(--status-warning); }
-    .estado-cerrado { background-color: var(--status-danger); }
-
-    /* Paginación */
-    .pagination-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: var(--spacing-m);
-        margin-top: var(--spacing-m);
-        background: var(--background-card);
-        border-radius: var(--border-radius-default);
-        box-shadow: var(--shadow-subtle);
-    }
-    .pagination-container .page-info {
-        font-size: var(--body-regular-size);
-        color: var(--text-secondary);
-        font-weight: var(--font-weight-semibold);
-    }
-    .pagination-container .nav-buttons {
-        display: flex;
-        gap: var(--spacing-s);
-    }
-
-    /* Estilos para la paginación */
-    .pagination {
-        display: flex;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        gap: 5px;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .page-item {
-        margin: 0;
-    }
-    
-    .page-link {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 40px;
-        height: 40px;
-        padding: 0 12px;
-        border: 1px solid var(--border-default);
-        background-color: var(--background-default);
-        color: var(--text-primary);
-        text-decoration: none;
-        border-radius: var(--border-radius-default);
-        font-size: var(--body-regular-size);
-        font-weight: var(--font-weight-semibold);
-        transition: all 0.2s;
-        cursor: pointer;
-    }
-    
-    .page-link:hover {
-        background-color: var(--secondary-light-gray);
-        border-color: var(--primary-blue);
-        color: var(--primary-blue);
-    }
-    
-    .page-item.active .page-link {
-        background-color: var(--primary-blue);
-        border-color: var(--primary-blue);
-        color: var(--text-light);
-    }
-    
-    .page-item.disabled .page-link {
-        color: var(--secondary-dark-gray);
-        background-color: var(--secondary-light-gray);
-        border-color: var(--border-default);
-        cursor: not-allowed;
-    }
-    
-    .pagination-info {
-        display: flex;
-        align-items: center;
-        font-size: var(--body-regular-size);
-        color: var(--text-secondary);
-        margin-right: var(--spacing-m);
-    }
-
-    /* MODALES */
-    .modal-header {
-        position: sticky;
-        top: 0;
-        background: var(--primary-blue);
-        color: #fff;
-        padding: 12px 16px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        border-radius: 16px 16px 0 0;
-        z-index: 5;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        justify-content: center;
-    }
-    .modal-body {
-        padding: 16px 16px 0;
-        overflow-y: auto;
-        max-height: 70vh;
-    }
-    .controls-form {
-        position: sticky;
-        bottom: 0;
-        background: #fff;
-        padding: 12px 16px;
-        border-top: 1px solid #eee;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: flex-end;
-        z-index: 5;
-    }
-
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-    }
-    @media(max-width:900px) { 
-        .form-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-    .form-group label {
-        font-weight: 600;
-        color: var(--primary-blue);
-        font-size: 0.9rem;
-        margin-bottom: 4px;
-        display: block;
-    }
-    .form-group input, .form-group textarea, .form-group select {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        font-size: 0.9rem;
-        background: #fafafa;
-        transition: .2s;
-    }
-    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-        outline: none;
-        border-color: var(--primary-blue);
-        background: #fff;
-    }
-
-    /* Estilos para el modal de ver detalles */
-    .detalle-registro {
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 15px;
-    }
-    .detalle-registro h4 {
-        color: var(--primary-blue);
-        margin-bottom: 15px;
-        border-bottom: 2px solid var(--primary-blue);
-        padding-bottom: 8px;
-    }
-    .detalle-item {
-        margin-bottom: 10px;
-        display: flex;
-    }
-    .detalle-label {
-        font-weight: 600;
-        min-width: 180px;
-        color: #495057;
-    }
-    .detalle-value {
-        flex: 1;
-        color: #212529;
-    }
-
-    /* Alerta flotante */
-    .floating-alert {
-        position: fixed;
-        top: -100px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: var(--status-danger);
-        color: #fff;
-        padding: 12px 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        z-index: 1000;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        max-width: 400px;
-        text-align: center;
-        font-size: 1rem;
-    }
-    .floating-alert.success {
-        background-color: var(--status-success);
-    }
-
-    .floating-alert.show {
-        opacity: 1;
-        visibility: visible;
-        top: 20px;
-    }
-
-    /* Estilos para las pestañas del modal de registro */
-    .nav-tabs .nav-link {
-        color: var(--text-secondary);
-        font-weight: var(--font-weight-semibold);
-        border: none;
-        padding: var(--spacing-s) var(--spacing-m);
-    }
-
-    .nav-tabs .nav-link.active {
-        color: var(--primary-blue);
-        border-bottom: 2px solid var(--primary-blue);
-        background: transparent;
-    }
-
-    .nav-tabs .nav-link:hover {
-        color: var(--primary-blue);
-        border-bottom: 2px solid var(--primary-blue);
-    }
-
-    .tab-pane {
-        padding: var(--spacing-m) 0;
-    }
-
-    /* Iconos de acciones - ESTILOS ACTUALIZADOS */
-    .action-icons {
-        display: flex;
-        gap: 8px;
-    }
-    
-    .icon-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid;
-        background: white;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        text-decoration: none;
-        font-size: 16px;
-    }
-
-    .icon-btn.edit {
-        color: #007bff;
-        border-color: #007bff;
-    }
-
-    .icon-btn.edit:hover {
-        background: #007bff;
-        color: white;
-    }
-
-    .icon-btn.view {
-        color: #28a745;
-        border-color: #28a745;
-    }
-
-    .icon-btn.view:hover {
-        background: #28a745;
-        color: white;
-    }
-
-    .icon-btn.follow {
-        color: #ffc107;
-        border-color: #ffc107;
-    }
-
-    .icon-btn.follow:hover {
-        background: #ffc107;
-        color: white;
-    }
-
-    /* Mejoras para el modal de registro */
-    .modal-tab-content {
-        max-height: 60vh;
-        overflow-y: auto;
-        padding: 10px;
-    }
-    
-    .form-section {
-        margin-bottom: 20px;
-        padding: 15px;
-        border-radius: 8px;
-        background-color: #f8f9fa;
-    }
-    
-    .form-section h5 {
-        color: var(--primary-blue);
-        margin-bottom: 15px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid #dee2e6;
-    }
-
-    /* Estilos para búsqueda de expedientes */
-    .expediente-search-container {
-        position: relative;
-    }
-    
-    .expediente-search-results {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: white;
-        border: 1px solid #ddd;
-        border-top: none;
-        border-radius: 0 0 8px 8px;
-        max-height: 200px;
-        overflow-y: auto;
-        z-index: 10;
-        display: none;
-    }
-    
-    .expediente-search-result {
-        padding: 8px 12px;
-        cursor: pointer;
-        border-bottom: 1px solid #eee;
-    }
-    
-    .expediente-search-result:hover {
-        background-color: #f0f0f0;
-    }
-    
-    .expediente-search-result:last-child {
-        border-bottom: none;
-    }
-
-    /* Estilos para el modal de seguimiento */
-    .timeline-item {
-        border-left: 3px solid var(--primary-blue);
-        margin-left: 10px;
-        padding-left: 12px;
-        margin-bottom: 12px;
-        position: relative;
-    }
-    
-    .timeline-item .date {
-        font-size: 0.82rem;
-        color: var(--text-secondary);
-    }
-    
-    .timeline-item .delete-btn {
-        position: absolute;
-        right: 0;
-        top: 0;
-        background: none;
-        border: none;
-        color: var(--status-danger);
-        cursor: pointer;
-    }
-    
-    .seguimiento-form {
-        border-top: 1px solid var(--border-default);
-        padding: 14px;
-        background: #fafbfc;
-        margin-top: 20px;
-    }
-
-    /* Responsive */
-    @media (max-width: 1024px) {
-        .container {
-            max-width: 100%;
-            padding: var(--spacing-s);
-        }
-        
-        .dashboard-cards {
-            gap: var(--spacing-s);
-        }
-        
-        .dashboard-card {
-            min-width: 160px;
-            padding: var(--spacing-s) var(--spacing-m);
-        }
-        
-        .filter-row {
-            gap: var(--spacing-s);
-        }
-        
-        .filter-group {
-            min-width: 140px;
-        }
-        
-        .nav-menu {
-            gap: var(--spacing-xs);
-        }
-        
-        .nav-button {
-            padding: var(--spacing-xs) var(--spacing-s);
-            font-size: var(--caption-size);
-        }
-    }
-
-    @media (max-width: 768px) {
-        .header-content {
-            flex-direction: column;
-            gap: var(--spacing-s);
-            text-align: center;
-        }
-        
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            overflow-x: visible;
-        }
-        
-        .dashboard-card {
-            min-width: auto;
-        }
-        
-        .filter-row {
-            flex-direction: column;
-        }
-        
-        .filter-group {
-            min-width: auto;
-        }
-        
-        .pagination-container {
-            flex-direction: column;
-            gap: var(--spacing-m);
-            text-align: center;
-        }
-        
-        .table-title {
-            padding: var(--spacing-s);
-        }
-        
-        .data-table th, 
-        .data-table td {
-            padding: var(--spacing-s);
-        }
-
-        .action-buttons {
-            flex-direction: column;
-        }
-
-        .controls-form {
-            flex-direction: column;
-        }
-        
-        .nav-menu {
-            justify-content: center;
-            width: 100%;
-        }
-        
-        .detalle-item {
-            flex-direction: column;
-        }
-        .detalle-label {
-            min-width: auto;
-            margin-bottom: 5px;
-        }
-        
-        .pagination {
-            gap: 3px;
-        }
-        
-        .page-link {
-            min-width: 35px;
-            height: 35px;
-            padding: 0 8px;
-            font-size: var(--caption-size);
-        }
-    }
-
-    @media (max-width: 576px) {
-        .container {
-            padding: var(--spacing-xs);
-        }
-        
-        .dashboard-cards {
-            grid-template-columns: 1fr;
-        }
-        
-        .dashboard-card {
-            padding: var(--spacing-m);
-        }
-        
-        .dashboard-number {
-            font-size: var(--h1-size);
-        }
-        
-        .filters-section,
-        .table-section {
-            padding: var(--spacing-s);
-        }
-        
-        .filters-title,
-        .table-title {
-            font-size: var(--body-large-size);
-        }
-        
-        .nav-button {
-            padding: var(--spacing-xs);
-            font-size: 0.7rem;
-        }
-        
-        .pagination {
-            gap: 2px;
-        }
-        
-        .page-link {
-            min-width: 30px;
-            height: 30px;
-            padding: 0 6px;
-            font-size: 0.7rem;
-        }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sistema de Protección de NNyA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+:root{--b50:#eff6ff;--b100:#dbeafe;--b200:#bfdbfe;--b500:#3b82f6;--b600:#2563eb;--b700:#1d4ed8;--b900:#1e3a8a;--ink:#0f172a;--mut:#64748b;--line:#e2e8f0;--bg:#f5f8ff;--sh:0 1px 2px rgba(30,58,138,.05),0 6px 20px rgba(37,99,235,.06)}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;font:14px/1.55 'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink);background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+h2{margin:0;font-size:16px;font-weight:700;letter-spacing:-.01em}
+h4{margin:2px 0 14px;font-size:14px;color:var(--b700)}h4 small{color:var(--mut);font-weight:500;margin-left:6px}
+.sub{color:var(--mut);font-size:12px}.empty{padding:28px;text-align:center;color:var(--mut);margin:0}
+:focus-visible{outline:2px solid var(--b500);outline-offset:2px}
+/* barra superior */
+.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top>div{max-width:1600px;margin:auto;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px;letter-spacing:-.01em}
+.brand i{background:var(--b600);color:#fff;width:36px;height:36px;border-radius:11px;display:grid;place-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;font-weight:600;cursor:pointer;transition:.15s}
+.btn:hover:not(:disabled){border-color:var(--b500);color:var(--b600)}.btn:disabled{opacity:.45;cursor:default}
+.btn.p{background:var(--b600);border-color:var(--b600);color:#fff}.btn.p:hover{background:var(--b700);border-color:var(--b700);color:#fff}
+main{max-width:1600px;margin:auto;padding:24px 20px 48px;display:grid;gap:22px}
+/* disposición: tabla + panel lateral */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;align-items:start}
+.side{position:sticky;top:84px;max-height:calc(100dvh - 108px);display:flex;flex-direction:column}
+/* tarjetas, filtros */
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);overflow:hidden}
+.ch{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.inp{border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:#fff;width:100%;min-width:0;transition:.15s}
+.inp:focus{outline:0;border-color:var(--b500);box-shadow:0 0 0 3px var(--b100)}textarea.inp{resize:vertical}
+.srch{position:relative}.srch i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--mut)}.srch .inp{padding-left:35px;min-width:250px}
+.tram{display:flex;flex-direction:column;gap:8px;padding:14px;overflow-y:auto;min-height:0}
+.tr{display:flex;align-items:center;border:1px solid var(--line);border-radius:14px;background:#fff;transition:.15s}.tr:hover{border-color:var(--b500);background:var(--b50)}
+.go{display:flex;align-items:center;gap:10px;flex:1;min-width:0;border:0;background:none;text-align:left;padding:10px 4px 10px 12px;cursor:pointer}
+.go>span:last-child{min-width:0;flex:1}.go b,.go small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.go small{color:var(--mut);font-size:12px}
+.fu{border:0;background:none;color:var(--mut);width:34px;height:34px;margin-right:6px;border-radius:9px;cursor:pointer;flex:none}.fu:hover{background:var(--b100);color:var(--b700)}
+/* tabla */
+.tw{overflow-x:auto;padding:2px 16px 6px;background:#f8fbff}
+table{width:100%;border-collapse:separate;border-spacing:0 8px;min-width:720px}
+th{text-align:left;font-size:12px;color:var(--mut);font-weight:600;padding:6px 16px;white-space:nowrap}
+td{padding:13px 16px;background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line);vertical-align:middle;transition:.15s}
+td:first-child{border-left:1px solid var(--line);border-radius:14px 0 0 14px;box-shadow:inset 3px 0 0 var(--st,var(--b500))}
+td:last-child{border-right:1px solid var(--line);border-radius:0 14px 14px 0}
+tbody tr:hover td{border-color:var(--b200);background:#fcfdff}
+tr.proc{--st:#f59e0b}tr.cer{--st:#94a3b8}tr.hl td{background:var(--b100)!important}
+.who{display:flex;align-items:center;gap:11px}.who b,.who small{display:block}.who small{color:var(--mut);font-size:12px;font-weight:400}
+.av{width:36px;height:36px;border-radius:50%;background:var(--b100);color:var(--b700);font-weight:700;font-size:13px;display:grid;place-items:center;flex:none}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:99px;padding:3px 11px;font-size:12px;font-weight:600;background:var(--b50);color:var(--b700);white-space:nowrap}
+.pill:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.proc{background:#fef3c7;color:#b45309}.pill.cer{background:#f1f5f9;color:#475569}
+.tag{display:inline-block;background:var(--b50);color:var(--b700);border-radius:6px;padding:2px 8px;font-size:12px;font-weight:500}
+a.lnk{color:var(--b600);font-weight:600;text-decoration:none}a.lnk:hover{text-decoration:underline}
+.acts{display:inline-flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.acts button{width:32px;height:32px;border:0;border-radius:9px;background:none;color:var(--mut);cursor:pointer;font-size:15px;transition:.15s}
+.acts button:hover{background:var(--b50);color:var(--b600)}.acts button[data-a=edit]:hover{background:var(--b600);color:#fff}
+.pg{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;padding:12px 20px;border-top:1px solid var(--line)}
+.pgb{min-width:34px;height:34px;border:1px solid var(--line);background:#fff;border-radius:9px;cursor:pointer;font-weight:600;margin-left:4px;transition:.15s}
+.pgb:hover:not(:disabled){border-color:var(--b500);color:var(--b600)}.pgb.on{background:var(--b600);border-color:var(--b600);color:#fff}.pgb:disabled{opacity:.4;cursor:default}
+/* modales con solapas */
+dialog{border:0;border-radius:20px;padding:0;width:min(980px,calc(100% - 24px));max-height:calc(100dvh - 24px);box-shadow:0 24px 80px rgba(15,23,42,.28);color:inherit;overflow:hidden}
+dialog[open]{display:flex;flex-direction:column;animation:pop .22s ease}dialog::backdrop{background:rgba(15,23,42,.45);backdrop-filter:blur(3px)}
+@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.98)}}
+#dReg{width:min(1100px,calc(100% - 24px));height:min(820px,calc(100dvh - 24px))}#regBody .grid{grid-template-columns:repeat(3,1fr)}#dSeg,#dExp{width:min(720px,calc(100% - 24px))}
+.mh{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 22px}
+.mh h3{margin:0;font-size:18px;font-weight:700;display:flex;gap:10px;align-items:center;letter-spacing:-.01em}.mh h3 i{color:var(--b600)}
+.x{border:0;background:var(--b50);color:var(--b700);width:34px;height:34px;border-radius:50%;cursor:pointer;flex:none}.x:hover{background:var(--b100)}
+.tabs{display:flex;gap:2px;padding:6px 14px 0;border-bottom:1px solid var(--line);background:#fafcff}
+.tabs button{flex:1 1 0;min-width:0;border:0;background:none;padding:10px 4px 9px;font-size:12px;font-weight:600;color:var(--mut);cursor:pointer;border-bottom:2px solid transparent;display:flex;flex-direction:column;align-items:center;gap:3px;transition:.15s}
+.tabs button i{font-size:17px}.tabs button span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tabs button:hover{color:var(--b600)}.tabs button.on{color:var(--b600);border-color:var(--b600)}
+.mb{padding:22px;overflow-y:auto;flex:1;min-height:0}.pane{display:none}.pane.on{display:block}
+.mf{display:flex;gap:10px;justify-content:space-between;align-items:center;padding:14px 22px;border-top:1px solid var(--line);background:#fafcff;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.full{grid-column:1/-1}
+.fld label{display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:6px}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.chip{display:flex;gap:9px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:9px 12px;cursor:pointer;font-weight:500;transition:.15s}
+.chip:hover{border-color:var(--b200)}.chip:has(input:checked),.chip.on{background:var(--b50);border-color:var(--b500);color:var(--b700)}.chip.off{color:var(--mut);cursor:default}
+.chip input{accent-color:var(--b600);width:16px;height:16px}
+.info{display:flex;gap:8px;flex-wrap:wrap}
+.bd{border-radius:99px;padding:3px 11px;font-size:12px;font-weight:600;background:#f1f5f9;color:#475569}
+.bd.ok{background:#dcfce7;color:#166534}.bd.no{background:#fee2e2;color:#991b1b}.bd.warn{background:#fef3c7;color:#92400e}
+.res{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(15,23,42,.14);max-height:210px;overflow-y:auto;z-index:10;display:none}
+.res div{padding:9px 12px;cursor:pointer;border-bottom:1px solid #eef2f9}.res div:hover{background:var(--b50)}.res div:last-child{border:0}
+.kv{display:grid;grid-template-columns:200px 1fr;margin:0 0 20px}.kv dt,.kv dd{margin:0;padding:9px 0;border-bottom:1px solid #eef2f9}.kv dt{color:var(--mut);font-weight:500;padding-right:12px}
+.tl{display:grid;gap:14px;margin-bottom:16px}.ti{position:relative;border-left:2px solid var(--b200);padding:2px 34px 2px 14px}.ti small{display:block;color:var(--mut)}
+.del{position:absolute;right:0;top:0;border:0;background:none;color:#ef4444;cursor:pointer;padding:4px}
+.addseg{display:grid;gap:10px;justify-content:start;border-top:1px solid var(--line);padding-top:16px}.addseg .inp{width:min(560px,100%)}
+.toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-90px);background:var(--b900);color:#fff;padding:11px 18px;border-radius:12px;box-shadow:0 10px 30px rgba(15,23,42,.25);z-index:1000;transition:.4s;max-width:min(420px,calc(100% - 24px));text-align:center;font-weight:500}
+.toast.show{transform:translate(-50%,0)}.toast.err{background:#b91c1c}
+@media(max-width:1500px){.h{display:none}}
+@media(max-width:1250px){.h2{display:none}}
+@media(max-width:1100px){.layout{grid-template-columns:1fr}.side{position:static;max-height:320px;order:-1}}
+@media(max-width:900px){#regBody .grid{grid-template-columns:repeat(2,1fr)}.tabs button span{display:none}}
+@media(max-width:700px){.grid,#regBody .grid,.kv{grid-template-columns:1fr}.kv dt{border:0;padding-bottom:0}.srch .inp{min-width:0}.srch,.tools>*{flex:1 1 100%}
+dialog,#dReg,#dSeg,#dExp{width:100%;max-height:100dvh;height:100dvh!important;border-radius:0}.mh,.mb,.mf{padding-left:16px;padding-right:16px}.mf .tools{width:100%}.mf .tools .btn{flex:1}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
 </head>
 <body>
-    <!-- Alerta flotante -->
-    <div class="floating-alert" id="floating-alert"></div>
+<div class="toast" id="toast" role="status"></div>
+<header class="top"><div>
+  <div class="brand"><i class="bi bi-shield-heart"></i>Protección de NNyA</div>
+  <button class="btn p" data-a="new"><i class="bi bi-plus-lg"></i> Nuevo registro</button>
+</div></header>
 
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">Sistema de Protección de NNyA</div>
-            <div class="nav-menu">
-                <a class="nav-button" data-bs-toggle="modal" data-bs-target="#registroModal" onclick="limpiarFormulario()">
-                    <i class="bi bi-plus-circle"></i> Nuevo registro
-                </a>
-            </div>
-        </div>
-    </header>
-
-    <!-- Contenido principal -->
-    <main class="container">
-        <!-- Pestaña Inicio -->
-        <div id="inicio" class="tab-content active">
-            <!-- Dashboard con KPIs -->
-            <section class="dashboard-section">
-                <h2 class="dashboard-title">Resumen de Casos</h2>
-                <div class="dashboard-cards" id="dashboardCards">
-                    <div class="loading">Cargando datos...</div>
-                </div>
-            </section>
-
-            <!-- Casos en trámite -->
-            <section class="table-section">
-                <h2 class="table-title">Casos en Trámite</h2>
-                <div class="table-wrap">
-                    <ul id="listaTramite" style="padding: var(--spacing-m); max-height: 300px; overflow-y: auto;"></ul>
-                </div>
-            </section>
-        </div>
-
-        <!-- Pestaña Casos Registrados -->
-        <div id="casos" class="tab-content active">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-m);">
-                <h2>Casos Registrados</h2>
-                <button class="button button-success" onclick="imprimirTablaCasos()">
-                    <i class="bi bi-printer"></i> Imprimir listado
-                </button>
-            </div>
-
-            <!-- Filtros -->
-            <section class="filters-section">
-                <h2 class="filters-title">Filtros de Búsqueda</h2>
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label class="filter-label" for="searchInput">Búsqueda</label>
-                        <input type="text" id="searchInput" class="input" placeholder="Buscar nombre/DNI..." oninput="aplicarFiltros()">
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label" for="estadoFilter">Estado</label>
-                        <select id="estadoFilter" class="dropdown" onchange="aplicarFiltros()">
-                            <option value="">Estado (todos)</option>
-                            <option value="Abierto">Abierto</option>
-                            <option value="En Proceso">En Proceso</option>
-                            <option value="Cerrado">Cerrado</option>
-                        </select>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Tabla de datos -->
-            <section class="table-section">
-                <h2 class="table-title">Casos Registrados</h2>
-                <div class="table-wrap">
-                    <div id="tablaCasos"></div>
-                </div>
-            </section>
-            
-            <!-- Controles de paginación -->
-            <div id="paginacion-container" class="pagination-container">
-                <div class="pagination-info" id="paginacion-info">
-                    Mostrando 0 de 0 casos
-                </div>
-                <nav aria-label="Navegación de páginas">
-                    <ul class="pagination" id="paginacion">
-                        <!-- Los elementos de paginación se generarán aquí -->
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </main>
-
-    <!-- Modal de Registro Único con Pestañas -->
-    <div class="modal fade" id="registroModal" tabindex="-1" aria-labelledby="registroModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title" id="registroModalLabel">
-                        <i class="bi bi-person-plus"></i> Nuevo Registro
-                    </h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body modal-tab-content">
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="modulo1-tab" data-bs-toggle="tab" data-bs-target="#modulo1" type="button" role="tab" aria-controls="modulo1" aria-selected="true">
-                                <i class="bi bi-person"></i> Datos del NNA
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="modulo2-tab" data-bs-toggle="tab" data-bs-target="#modulo2" type="button" role="tab" aria-controls="modulo2" aria-selected="false">
-                                <i class="bi bi-house"></i> Medida y Acogimiento
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="modulo3-tab" data-bs-toggle="tab" data-bs-target="#modulo3" type="button" role="tab" aria-controls="modulo3" aria-selected="false">
-                                <i class="bi bi-info-circle"></i> Información Adicional
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="modulo4-tab" data-bs-toggle="tab" data-bs-target="#modulo4" type="button" role="tab" aria-controls="modulo4" aria-selected="false">
-                                <i class="bi bi-people"></i> Información Familiar
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="modulo5-tab" data-bs-toggle="tab" data-bs-target="#modulo5" type="button" role="tab" aria-controls="modulo5" aria-selected="false">
-                                <i class="bi bi-shield-check"></i> Medidas y Seguimiento
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="modulo6-tab" data-bs-toggle="tab" data-bs-target="#modulo6" type="button" role="tab" aria-controls="modulo6" aria-selected="false">
-                                <i class="bi bi-briefcase"></i> Garantías Procesales
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="modulo7-tab" data-bs-toggle="tab" data-bs-target="#modulo7" type="button" role="tab" aria-controls="modulo7" aria-selected="false">
-                                <i class="bi bi-clipboard-check"></i> Requisitos RUFAAFA
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="modulo8-tab" data-bs-toggle="tab" data-bs-target="#modulo8" type="button" role="tab" aria-controls="modulo8" aria-selected="false">
-                                <i class="bi bi-x-circle"></i> Inhabilidades
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="modulo9-tab" data-bs-toggle="tab" data-bs-target="#modulo9" type="button" role="tab" aria-controls="modulo9" aria-selected="false">
-                                <i class="bi bi-folder"></i> Expediente y Seguimiento
-                            </button>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="myTabContent">
-                        <!-- Módulo 1 -->
-                        <div class="tab-pane fade show active" id="modulo1" role="tabpanel" aria-labelledby="modulo1-tab">
-                            <div class="form-section">
-                                <h5>Datos del NNA (Ley II - N.º 36)</h5>
-                                <form id="modulo1Form" class="form-grid">
-                                    <div class="form-group">
-                                        <label for="nombreNNA">Nombre *</label>
-                                        <input type="text" id="nombreNNA" class="form-control" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="dniNNA">DNI</label>
-                                        <input type="text" id="dniNNA" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="fechaNacimientoNNA">Fecha nac.</label>
-                                        <input type="date" id="fechaNacimientoNNA" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="generoNNA">Género</label>
-                                        <select id="generoNNA" class="form-control">
-                                            <option value=""></option>
-                                            <option>Masculino</option>
-                                            <option>Femenino</option>
-                                            <option>Otro</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="centroVida">Centro de vida (localidad/prov.)</label>
-                                        <input type="text" id="centroVida" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="vinculosFraternos">Vínculos fraternos preservados</label>
-                                        <select id="vinculosFraternos" class="form-control">
-                                            <option value=""></option>
-                                            <option>Sí</option>
-                                            <option>No</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <label for="situacionVulneracion">Situación</label>
-                                        <textarea id="situacionVulneracion" class="form-control" rows="3"></textarea>
-                                    </div>
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <span id="edadNNAInfo" class="badge">Edad NNA: —</span>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <!-- Módulo 2 -->
-                        <div class="tab-pane fade" id="modulo2" role="tabpanel" aria-labelledby="modulo2-tab">
-                            <div class="form-section">
-                                <h5>Medida y Acogimiento (Ley II - N.º 36)</h5>
-                                <form id="modulo2Form" class="form-grid">
-                                    <div class="form-group">
-                                        <label for="tipoMedida">Tipo de medida excepcional</label>
-                                        <select id="tipoMedida" class="form-control">
-                                            <option value=""></option>
-                                            <option>Administrativa con intervención judicial</option>
-                                            <option>Judicial</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="autoridadInterviniente">Autoridad interviniente</label>
-                                        <input type="text" id="autoridadInterviniente" class="form-control" placeholder="Órgano/juzgado/área">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="fechaMedida">Fecha de la medida</label>
-                                        <input type="date" id="fechaMedida" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="fechaIngresoSAF">Fecha de ingreso al SAF</label>
-                                        <input type="date" id="fechaIngresoSAF" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="tipoFamilia">Tipo de familia de acogimiento</label>
-                                        <select id="tipoFamilia" class="form-control">
-                                            <option value=""></option>
-                                            <option>Alternativa</option>
-                                            <option>Inmediata (≤ 10 días)</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="rufAAFA">RUFAAFA (N° registro)</label>
-                                        <input type="text" id="rufAAFA" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="faNombre">Referente de familia de acogimiento</label>
-                                        <input type="text" id="faNombre" class="form-control" placeholder="Nombre y apellido">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="faDni">DNI referente</label>
-                                        <input type="text" id="faDni" class="form-control" placeholder="Documento">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="faFechaNac">Fecha nac. referente</label>
-                                        <input type="date" id="faFechaNac" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="faContacto">Contacto (tel/correo)</label>
-                                        <input type="text" id="faContacto" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="faDomicilio">Domicilio familia de acogimiento</label>
-                                        <input type="text" id="faDomicilio" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="faResidenciaAnos">Años de residencia en Misiones</label>
-                                        <input type="number" min="0" step="1" id="faResidenciaAnos" class="form-control" placeholder="Ej: 3">
-                                    </div>
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <span id="edadFAInfo" class="badge">Edad referente: —</span>
-                                        <span id="difEdadInfo" class="badge">Diferencia con NNA: —</span>
-                                        <span id="residenciaInfo" class="badge">Residencia: —</span>
-                                    </div>
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <label>Etapa del proceso (Art. 14)</label>
-                                        <div class="chips">
-                                            <label class="chip"><input type="checkbox" id="etapaConvocatoria"> Convocatoria</label>
-                                            <label class="chip"><input type="checkbox" id="etapaEvaluacion"> Evaluación y selección</label>
-                                            <label class="chip"><input type="checkbox" id="etapaCapacitacion"> Capacitación</label>
-                                            <label class="chip"><input type="checkbox" id="etapaInscripcion"> Inscripción RUFAAFA</label>
-                                            <label class="chip"><input type="checkbox" id="etapaPlan"> Plan de intervención</label>
-                                        </div>
-                                    </div>
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <label for="planIntervencion">Plan de intervención</label>
-                                        <textarea id="planIntervencion" class="form-control" placeholder="Objetivos, acciones, roles (Art.14.5)" rows="3"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="causalEgreso">Egreso (si aplica)</label>
-                                        <select id="causalEgreso" class="form-control">
-                                            <option value=""></option>
-                                            <option>Revinculación con familia de origen</option>
-                                            <option>Vinculación con familia extensa</option>
-                                            <option>Adoptabilidad y guarda con fines de adopción</option>
-                                            <option>Mayoría de edad</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="fechaEgreso">Fecha de egreso</label>
-                                        <input type="date" id="fechaEgreso" class="form-control">
-                                    </div>
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <label for="obsDerechos">Observaciones sobre derecho a ser oído / identidad / integridad</label>
-                                        <textarea id="obsDerechos" class="form-control" placeholder="Registro de escucha activa, identidad y resguardo (Art. 4)" rows="3"></textarea>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <!-- Módulo 3 -->
-                        <div class="tab-pane fade" id="modulo3" role="tabpanel" aria-labelledby="modulo3-tab">
-                            <div class="form-section">
-                                <h5>Información Adicional (Ley II - N.º 16)</h5>
-                                <form id="modulo3Form" class="form-grid">
-                                    <div class="form-group">
-                                        <label for="nombreCompletoNNA">Nombre Completo del NNA *</label>
-                                        <input type="text" id="nombreCompletoNNA" class="form-control" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="nacionalidadNNA">Nacionalidad</label>
-                                        <input type="text" id="nacionalidadNNA" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="identidadCulturalNNA">Identidad cultural / Idioma de origen</label>
-                                        <input type="text" id="identidadCulturalNNA" class="form-control">
-                                    </div>
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <label for="opinionNNA">Opinión del NNA</label>
-                                        <textarea id="opinionNNA" class="form-control" placeholder="Registrar la opinión y deseos del menor sobre el caso." rows="3"></textarea>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <!-- Módulo 4 -->
-                        <div class="tab-pane fade" id="modulo4" role="tabpanel" aria-labelledby="modulo4-tab">
-                            <div class="form-section">
-                                <h5>Información Familiar (Ley II - N.º 16)</h5>
-                                <form id="modulo4Form" class="form-grid">
-                                    <div class="form-group">
-                                        <label for="nombreMadre">Nombre de la madre</label>
-                                        <input type="text" id="nombreMadre" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="nombrePadre">Nombre del padre</label>
-                                        <input type="text" id="nombrePadre" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="vinculoFamiliar">Estado del Vínculo Familiar</label>
-                                        <select id="vinculoFamiliar" class="form-control">
-                                            <option value=""></option>
-                                            <option>Grupo Familiar de Origen</option>
-                                            <option>Familia Ampliada</option>
-                                            <option>Hogar Alternativo</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <label for="obsFamilia">Observaciones familiares</label>
-                                        <textarea id="obsFamilia" class="form-control" placeholder="Detalles de la convivencia, etc." rows="3"></textarea>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <!-- Módulo 5 -->
-                        <div class="tab-pane fade" id="modulo5" role="tabpanel" aria-labelledby="modulo5-tab">
-                            <div class="form-section">
-                                <h5>Medidas de Protección y Seguimiento (Ley II - N.º 16)</h5>
-                                <form id="modulo5Form" class="form-grid">
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <label>Medidas de Protección Aplicadas</label>
-                                        <div class="chips">
-                                            <label class="chip"><input type="checkbox" id="medidaGuiaAsistencia"> Guía y asistencia a la familia</label>
-                                            <label class="chip"><input type="checkbox" id="medidaAsistenciaSalud"> Asistencia a tratamientos médicos/psicológicos</label>
-                                            <label class="chip"><input type="checkbox" id="medidaInscripcionEscolar"> Apoyo para la inscripción escolar</label>
-                                            <label class="chip"><input type="checkbox" id="medidaExclusionAgresor"> Exclusión del agresor de la vivienda</label>
-                                            <label class="chip"><input type="checkbox" id="medidaOtros"> Otras medidas (especificar)</label>
-                                        </div>
-                                    </div>
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <label for="obsMedida">Observaciones y Plazo de la Medida</label>
-                                        <textarea id="obsMedida" class="form-control" placeholder="Documentar la efectividad de la medida, su duración y las causas que la motivaron." rows="3"></textarea>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <!-- Módulo 6 -->
-                        <div class="tab-pane fade" id="modulo6" role="tabpanel" aria-labelledby="modulo6-tab">
-                            <div class="form-section">
-                                <h5>Garantías Procesales (Ley II - N.º 16)</h5>
-                                <form id="modulo6Form" class="form-grid">
-                                    <div class="form-group">
-                                        <label for="asistenciaLetrada">Asistencia Letrada (nombre del abogado)</label>
-                                        <input type="text" id="asistenciaLetrada" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="actoInfractor">Acto Infractor Atribuido</label>
-                                        <input type="text" id="actoInfractor" class="form-control">
-                                    </div>
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <label for="infoFamilia">Información a la familia</label>
-                                        <textarea id="infoFamilia" class="form-control" placeholder="Detalles sobre cómo y cuándo se informó a la familia sobre la situación." rows="3"></textarea>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <!-- Módulo 7 -->
-                        <div class="tab-pane fade" id="modulo7" role="tabpanel" aria-labelledby="modulo7-tab">
-                            <div class="form-section">
-                                <h5>Requisitos RUFAAFA (Ley II - N.º 36)</h5>
-                                <form id="modulo7Form" class="form-grid">
-                                    <div class="subgrid-3">
-                                        <label class="chip"><input type="checkbox" id="reqDomicilio"> Domicilio en Misiones (≥ 2 años)</label>
-                                        <label class="chip"><input type="checkbox" id="reqEdad"> Mayor de 25 años</label>
-                                        <label class="chip"><input type="checkbox" id="reqDiferenciaEdad"> Diferencia ≥ 15 años con el NNA</label>
-                                        <label class="chip"><input type="checkbox" id="reqPenales"> Cert. antecedentes penales</label>
-                                        <label class="chip"><input type="checkbox" id="reqAlimentaria"> Libre deuda alimentaria</label>
-                                        <label class="chip"><input type="checkbox" id="reqPsicofisico"> Aptitud psicofísica (sector público)</label>
-                                        <label class="chip"><input type="checkbox" id="reqIngresos"> Constancia/ DDJJ de ingresos</label>
-                                        <label class="chip"><input type="checkbox" id="reqVivienda"> Acredita vivienda (propia/locación)</label>
-                                        <label class="chip"><input type="checkbox" id="reqCapacitacion"> Capacitaciones realizadas</label>
-                                        <label class="chip"><input type="checkbox" id="reqAcuerdo"> Acuerdo de aceptación firmado</label>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <!-- Módulo 8 -->
-                        <div class="tab-pane fade" id="modulo8" role="tabpanel" aria-labelledby="modulo8-tab">
-                            <div class="form-section">
-                                <h5>Inhabilidades (Ley II - N.º 36)</h5>
-                                <form id="modulo8Form" class="form-grid">
-                                    <div class="subgrid-3">
-                                        <label class="chip"><input type="checkbox" id="inhDelitos"> Sin condena por delitos dolosos</label>
-                                        <label class="chip"><input type="checkbox" id="inhMedidas"> Sin medidas cautelares vigentes (L. XIV-6 / IV-68)</label>
-                                        <label class="chip"><input type="checkbox" id="inhRespParental"> Sin privación/suspensión de resp. parental</label>
-                                        <label class="chip"><input type="checkbox" id="inhTutela"> Sin remoción de tutela por mal desempeño</label>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <!-- Módulo 9 -->
-                        <div class="tab-pane fade" id="modulo9" role="tabpanel" aria-labelledby="modulo9-tab">
-                            <div class="form-section">
-                                <h5>Expediente y Seguimiento</h5>
-                                <form id="modulo9Form" class="form-grid">
-                                    <div class="form-group">
-                                        <label for="expedienteReferencia">Expediente de referencia</label>
-                                        <div class="expediente-search-container">
-                                            <input type="text" id="expedienteReferencia" class="form-control" placeholder="Escriba para buscar expediente..." oninput="filtrarExpedientes(this.value)">
-                                            <div class="expediente-search-results" id="expedienteSearchResults"></div>
-                                        </div>
-                                        <small id="expedienteInfo" class="text-muted"></small>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="estadoCaso">Estado</label>
-                                        <select id="estadoCaso" class="form-control">
-                                            <option>Abierto</option>
-                                            <option>En Proceso</option>
-                                            <option>Cerrado</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <label for="seguimientoInicial">Seguimiento inicial</label>
-                                        <textarea id="seguimientoInicial" class="form-control" placeholder="Anote el primer seguimiento o acción..." rows="3"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="lugarInstitucionalizacion">Lugar de institucionalización</label>
-                                        <textarea id="lugarInstitucionalizacion" class="form-control" placeholder="Si corresponde" rows="2"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="contactoInstitucionalizacion">Contacto institucionalizacion</label>
-                                        <textarea id="contactoInstitucionalizacion" class="form-control" placeholder="Si corresponde" rows="2"></textarea>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="button button-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle"></i> Cancelar
-                    </button>
-                    <button type="button" class="button button-success" onclick="imprimirSeccion('registroModal')">
-                        <i class="bi bi-printer"></i> Imprimir
-                    </button>
-                    <button type="button" class="button" onclick="guardarCaso()">
-                        <i class="bi bi-check-circle"></i> Guardar Caso
-                    </button>
-                </div>
-            </div>
-        </div>
+<main>
+<div class="layout">
+  <section class="card">
+    <div class="ch"><h2>Casos registrados</h2>
+      <div class="tools">
+        <div class="srch"><i class="bi bi-search"></i><input id="q" class="inp" placeholder="Buscar por nombre o DNI" aria-label="Buscar"></div>
+        <select id="est" class="inp" style="width:auto" aria-label="Estado"><option value="">Todos los estados</option><option>Abierto</option><option>En Proceso</option><option>Cerrado</option></select>
+        <button class="btn" data-a="print"><i class="bi bi-printer"></i> Imprimir listado</button>
+      </div>
     </div>
+    <div class="tw" id="tabla"><p class="empty">Cargando casos…</p></div>
+    <div class="pg"><span class="sub" id="pgi"></span><div id="pgn"></div></div>
+  </section>
 
-    <!-- Modal Ver Caso -->
-    <div class="modal fade" id="modalCaso" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">
-                        <i class="bi bi-eye"></i> Detalles del Caso
-                    </h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="modalCasoBody"></div>
-                <div class="controls-form">
-                    <button type="button" class="button button-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle"></i> Cerrar
-                    </button>
-                    <button type="button" class="button button-success" onclick="imprimirSeccion('modalCasoBody')">
-                        <i class="bi bi-printer"></i> Imprimir
-                    </button>
-                </div>
-            </div>
-        </div>
+  <aside class="card side" aria-label="Casos en trámite">
+    <div class="ch"><h2>Casos en trámite</h2><span class="tag" id="tramN">0</span></div>
+    <div class="tram" id="tram"></div>
+  </aside>
+</div>
+</main>
+
+<!-- Registro -->
+<dialog id="dReg">
+  <div class="mh"><h3><i class="bi bi-person-plus"></i><span id="regT">Nuevo registro</span></h3><button class="x" data-close aria-label="Cerrar"><i class="bi bi-x-lg"></i></button></div>
+  <div class="tabs" id="regTabs"></div>
+  <div class="mb" id="regBody"></div>
+  <div class="mf">
+    <button class="btn" data-close>Cancelar</button>
+    <div class="tools">
+      <button class="btn" id="prev"><i class="bi bi-chevron-left"></i> Anterior</button>
+      <button class="btn" id="next">Siguiente <i class="bi bi-chevron-right"></i></button>
+      <button class="btn p" data-a="save"><i class="bi bi-check2-circle"></i> Guardar caso</button>
     </div>
+  </div>
+</dialog>
 
-    <!-- Modal Seguimiento -->
-    <div class="modal fade" id="modalSeguimiento" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">
-                        <i class="bi bi-journal-text"></i> Seguimiento del Caso
-                    </h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="modalSeguimientoBody">
-                    <div id="timelineSeguimiento"></div>
-                    <div class="seguimiento-form">
-                        <textarea id="nuevoSeguimiento" rows="3" placeholder="Agregar seguimiento..." class="form-control"></textarea>
-                        <button type="button" class="button button-primary" onclick="guardarSeguimiento()" style="margin-top: 10px;">
-                            <i class="bi bi-check-circle"></i> Agregar Seguimiento
-                        </button>
-                    </div>
-                </div>
-                <div class="controls-form">
-                    <button type="button" class="button button-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle"></i> Cerrar
-                    </button>
-                    <button type="button" class="button button-success" onclick="imprimirSeccion('modalSeguimientoBody')">
-                        <i class="bi bi-printer"></i> Imprimir
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+<!-- Ver caso -->
+<dialog id="dVer">
+  <div class="mh"><h3><i class="bi bi-eye"></i><span id="verT">Detalle del caso</span></h3><button class="x" data-close aria-label="Cerrar"><i class="bi bi-x-lg"></i></button></div>
+  <div class="tabs" id="verTabs"></div>
+  <div class="mb" id="verBody"></div>
+  <div class="mf"><button class="btn" data-close>Cerrar</button><button class="btn" data-a="printVer"><i class="bi bi-printer"></i> Imprimir</button></div>
+</dialog>
 
-    <!-- Modal Expediente -->
-    <div class="modal fade" id="modalExpediente" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">
-                        <i class="bi bi-folder"></i> Detalle de Expediente
-                    </h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="modalExpedienteBody"></div>
-                <div class="controls-form">
-                    <button type="button" class="button button-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle"></i> Cerrar
-                    </button>
-                    <button type="button" class="button button-success" onclick="imprimirSeccion('modalExpedienteBody')">
-                        <i class="bi bi-printer"></i> Imprimir
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+<!-- Seguimiento -->
+<dialog id="dSeg">
+  <div class="mh"><h3><i class="bi bi-journal-text"></i>Seguimiento del caso</h3><button class="x" data-close aria-label="Cerrar"><i class="bi bi-x-lg"></i></button></div>
+  <div class="mb"><div id="tl"></div>
+    <div class="addseg"><textarea id="nuevoSeg" class="inp" rows="3" placeholder="Escribí el nuevo seguimiento"></textarea><button class="btn p" data-a="addSeg"><i class="bi bi-plus-lg"></i> Agregar seguimiento</button></div>
+  </div>
+  <div class="mf"><button class="btn" data-close>Cerrar</button><button class="btn" data-a="printSeg"><i class="bi bi-printer"></i> Imprimir</button></div>
+</dialog>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Expediente -->
+<dialog id="dExp">
+  <div class="mh"><h3><i class="bi bi-folder2-open"></i>Detalle del expediente</h3><button class="x" data-close aria-label="Cerrar"><i class="bi bi-x-lg"></i></button></div>
+  <div class="mb" id="expBody"></div>
+  <div class="mf"><button class="btn" data-close>Cerrar</button><button class="btn" data-a="printExp"><i class="bi bi-printer"></i> Imprimir</button></div>
+</dialog>
 
-    <script type="module">
-        // ===== Firebase (Firestore y RTDB) =====
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, push, get, child, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getDatabase,ref,push,get,child,update} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import {getFirestore,collection,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        function formatFechaHora(date){
-          return new Intl.DateTimeFormat("es-AR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(date);
-        }
-        function formatFecha(date){
-          return new Intl.DateTimeFormat("es-AR",{day:"2-digit",month:"2-digit",year:"numeric"}).format(date);
-        }
-        const $ = (id)=>document.getElementById(id);
+/* ===== Firebase (sin cambios) ===== */
+// App 1: proteccion-personas (casos, Realtime Database)
+const app1=initializeApp({apiKey:"AIzaSyAWlsFqN09y_DAAIKLLIjGjjyR2_rKJIFs",authDomain:"proteccion-personas.firebaseapp.com",projectId:"proteccion-personas"},"app1");
+const rtdb=getDatabase(app1);
+// App 2: causas-defensoria (expedientes, Firestore)
+const app2=initializeApp({apiKey:"AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",authDomain:"causas-defensoria.firebaseapp.com",databaseURL:"https://causas-defensoria-default-rtdb.firebaseio.com",projectId:"causas-defensoria"},"app2");
+const db2=getFirestore(app2);
 
-        // Firebase App 1: proteccion-personas (esta aplicación)
-        const app1 = initializeApp({apiKey:"AIzaSyAWlsFqN09y_DAAIKLLIjGjjyR2_rKJIFs",authDomain:"proteccion-personas.firebaseapp.com",projectId:"proteccion-personas"},"app1");
-        const rtdb1 = getDatabase(app1);
+/* ===== Utilidades ===== */
+const $=id=>document.getElementById(id), $$=s=>[...document.querySelectorAll(s)];
+const e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nl2=s=>e(s).replace(/\n/g,'<br>'), R=s=>({r:s}), nl=s=>R(nl2(s));
+const fmtDT=d=>new Intl.DateTimeFormat('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d);
+const fmtD=d=>new Intl.DateTimeFormat('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'}).format(d);
+const cap=s=>s[0].toUpperCase()+s.slice(1), ini=n=>(n||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+function calcEdad(s){if(!s)return null;const d=new Date(s),t=new Date();let a=t.getFullYear()-d.getFullYear();const m=t.getMonth()-d.getMonth();if(m<0||(m===0&&t.getDate()<d.getDate()))a--;return a>=0?a:null}
+let tt;function toast(m,k=''){const t=$('toast');t.textContent=m;t.className='toast show '+k;clearTimeout(tt);tt=setTimeout(()=>t.className='toast',3800)}
+function imprimir(titulo,html){const w=window.open('','_blank');w.document.write(`<html><head><title>${e(titulo)}</title>${$$('style,link[rel=stylesheet]').map(n=>n.outerHTML).join('')}<style>body{background:#fff;padding:24px}.pane{display:block!important;margin-bottom:18px}.acts,.tabs{display:none}</style></head><body><h2 style="margin-bottom:16px">${e(titulo)}</h2>${html}</body></html>`);w.document.close();w.onload=()=>w.print()}
 
-        // Firebase App 2: causas-defensoria (expedientes externos - Firestore)
-        const firebaseConfig = {
-          apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
-          authDomain: "causas-defensoria.firebaseapp.com",
-          databaseURL: "https://causas-defensoria-default-rtdb.firebaseio.com",
-          projectId: "causas-defensoria",
-        };
-        const app2 = initializeApp(firebaseConfig, "app2");
-        const db2 = getFirestore(app2);
+/* ===== Esquema del formulario: [id, etiqueta, tipo, extra]. Los ids son las claves guardadas en Firebase ===== */
+const CH=(pre,items)=>({pre,items});
+const TABS=[
+ {i:'person',n:'NNA',t:'Datos del NNA',s:'Ley II - N.º 36',f:[
+  ['nombreNNA','Nombre *'],['dniNNA','DNI'],['fechaNacimientoNNA','Fecha de nacimiento','date'],
+  ['generoNNA','Género','sel',['Masculino','Femenino','Otro']],['centroVida','Centro de vida (localidad/prov.)'],
+  ['vinculosFraternos','Vínculos fraternos preservados','sel',['Sí','No']],
+  ['situacionVulneracion','Situación','area'],[null,null,'badge',[['edadNNAInfo','Edad NNA: —']]]]},
+ {i:'house',n:'Acogimiento',t:'Medida y acogimiento',s:'Ley II - N.º 36',f:[
+  ['tipoMedida','Tipo de medida excepcional','sel',['Administrativa con intervención judicial','Judicial']],
+  ['autoridadInterviniente','Autoridad interviniente','text','Órgano/juzgado/área'],
+  ['fechaMedida','Fecha de la medida','date'],['fechaIngresoSAF','Fecha de ingreso al SAF','date'],
+  ['tipoFamilia','Tipo de familia de acogimiento','sel',['Alternativa','Inmediata (≤ 10 días)']],['rufAAFA','RUFAAFA (N° de registro)'],
+  ['faNombre','Referente de familia de acogimiento','text','Nombre y apellido'],['faDni','DNI del referente','text','Documento'],
+  ['faFechaNac','Fecha de nacimiento del referente','date'],['faContacto','Contacto (tel/correo)'],
+  ['faDomicilio','Domicilio de la familia de acogimiento'],['faResidenciaAnos','Años de residencia en Misiones','number','Ej: 3'],
+  [null,null,'badge',[['edadFAInfo','Edad referente: —'],['difEdadInfo','Diferencia con NNA: —'],['residenciaInfo','Residencia: —']]],
+  ['etapas','Etapa del proceso (Art. 14)','chips',CH('etapa',[['convocatoria','Convocatoria'],['evaluacion','Evaluación y selección'],['capacitacion','Capacitación'],['inscripcion','Inscripción RUFAAFA'],['plan','Plan de intervención']])],
+  ['planIntervencion','Plan de intervención','area','Objetivos, acciones, roles (Art. 14.5)'],
+  ['causalEgreso','Egreso (si aplica)','sel',['Revinculación con familia de origen','Vinculación con familia extensa','Adoptabilidad y guarda con fines de adopción','Mayoría de edad']],
+  ['fechaEgreso','Fecha de egreso','date'],
+  ['obsDerechos','Observaciones sobre derecho a ser oído / identidad / integridad','area','Registro de escucha activa, identidad y resguardo (Art. 4)']]},
+ {i:'info-circle',n:'Adicional',t:'Información adicional',s:'Ley II - N.º 16',f:[
+  ['nombreCompletoNNA','Nombre completo del NNA'],['nacionalidadNNA','Nacionalidad'],['identidadCulturalNNA','Identidad cultural / Idioma de origen'],
+  ['opinionNNA','Opinión del NNA','area','Registrar la opinión y deseos del menor sobre el caso.']]},
+ {i:'people',n:'Familia',t:'Información familiar',s:'Ley II - N.º 16',f:[
+  ['nombreMadre','Nombre de la madre'],['nombrePadre','Nombre del padre'],
+  ['vinculoFamiliar','Estado del vínculo familiar','sel',['Grupo Familiar de Origen','Familia Ampliada','Hogar Alternativo']],
+  ['obsFamilia','Observaciones familiares','area','Detalles de la convivencia, etc.']]},
+ {i:'shield-check',n:'Protección',t:'Medidas y seguimiento',s:'Ley II - N.º 16',f:[
+  ['medidasAplicadas','Medidas de protección aplicadas','chips',CH('medida',[['guiaAsistencia','Guía y asistencia a la familia'],['asistenciaSalud','Asistencia a tratamientos médicos/psicológicos'],['inscripcionEscolar','Apoyo para la inscripción escolar'],['exclusionAgresor','Exclusión del agresor de la vivienda'],['otros','Otras medidas (especificar)']])],
+  ['obsMedida','Observaciones y plazo de la medida','area','Efectividad de la medida, su duración y las causas que la motivaron.']]},
+ {i:'briefcase',n:'Garantías',t:'Garantías procesales',s:'Ley II - N.º 16',f:[
+  ['asistenciaLetrada','Asistencia letrada (nombre del abogado)'],['actoInfractor','Acto infractor atribuido'],
+  ['infoFamilia','Información a la familia','area','Cómo y cuándo se informó a la familia sobre la situación.']]},
+ {i:'clipboard-check',n:'Requisitos',t:'Requisitos RUFAAFA',s:'Ley II - N.º 36',f:[
+  ['requisitos','Requisitos cumplidos','chips',CH('',[['reqDomicilio','Domicilio en Misiones (≥ 2 años)'],['reqEdad','Mayor de 25 años'],['reqDiferenciaEdad','Diferencia ≥ 15 años con el NNA'],['reqPenales','Cert. antecedentes penales'],['reqAlimentaria','Libre deuda alimentaria'],['reqPsicofisico','Aptitud psicofísica (sector público)'],['reqIngresos','Constancia/DDJJ de ingresos'],['reqVivienda','Acredita vivienda (propia/locación)'],['reqCapacitacion','Capacitaciones realizadas'],['reqAcuerdo','Acuerdo de aceptación firmado']])]]},
+ {i:'x-circle',n:'Inhabilidades',t:'Inhabilidades',s:'Ley II - N.º 36',f:[
+  ['inhabilidades','Inhabilidades (negativas)','chips',CH('',[['inhDelitos','Sin condena por delitos dolosos'],['inhMedidas','Sin medidas cautelares vigentes (L. XIV-6 / IV-68)'],['inhRespParental','Sin privación/suspensión de resp. parental'],['inhTutela','Sin remoción de tutela por mal desempeño']])]]},
+ {i:'folder',n:'Expediente',t:'Expediente y seguimiento',s:'',f:[
+  ['expedienteReferencia','Expediente de referencia','exp','Escribí para buscar un expediente'],
+  ['estadoCaso','Estado','sel',['Abierto','En Proceso','Cerrado']],
+  ['seguimientoInicial','Seguimiento inicial','area','Anotá el primer seguimiento o acción'],
+  ['lugarInstitucionalizacion','Lugar de institucionalización','area','Si corresponde'],
+  ['contactoInstitucionalizacion','Contacto de institucionalización','area','Si corresponde']]}
+];
+const ALL=TABS.flatMap(t=>t.f);
+const FLAT=ALL.filter(f=>f[0]&&!['badge','chips'].includes(f[2])), GROUPS=ALL.filter(f=>f[2]==='chips');
+const cid=(x,k)=>x.pre+(x.pre?cap(k):k);   // id del checkbox en el DOM
 
-        // ===== Estado =====
-        let casos=[], casosFiltrados=[], casoActual=null, editandoId=null, lastEditedId=null;
-        let causasIndex = {};
-        let tempCasoData = {};
-        
-        // Variables para paginación
-        let paginaActual = 1;
-        const casosPorPagina = 5;
+function fieldHTML([id,l,t='text',x]){
+  if(t==='badge')return `<div class="full info">${x.map(([i,tx])=>`<span class="bd" id="${i}">${tx}</span>`).join('')}</div>`;
+  if(t==='chips')return `<div class="fld full"><label>${l}</label><div class="chips">${x.items.map(([k,tx])=>`<label class="chip"><input type="checkbox" id="${cid(x,k)}"> ${tx}</label>`).join('')}</div></div>`;
+  let c;
+  if(t==='sel')c=`<select class="inp" id="${id}">${id==='estadoCaso'?'':'<option value=""></option>'}${x.map(o=>`<option>${o}</option>`).join('')}</select>`;
+  else if(t==='area')c=`<textarea class="inp" id="${id}" rows="2" placeholder="${x||''}"></textarea>`;
+  else c=`<input class="inp" id="${id}" type="${t==='exp'?'text':t}" ${t==='number'?'min="0" step="1"':''} ${t==='exp'?'autocomplete="off"':''} placeholder="${x||''}">`;
+  if(t==='exp')c=`<div style="position:relative">${c}<div class="res" id="expRes"></div></div><small class="sub" id="expInfo"></small>`;
+  return `<div class="fld${t==='area'?' full':''}"><label for="${id}">${l}</label>${c}</div>`;
+}
+function buildForm(){
+  $('regTabs').innerHTML=TABS.map(t=>`<button type="button" title="${t.t}"><i class="bi bi-${t.i}"></i><span>${t.n}</span></button>`).join('');
+  $('regBody').innerHTML=TABS.map(t=>`<div class="pane"><h4>${t.t}<small>${t.s}</small></h4><div class="grid">${t.f.map(fieldHTML).join('')}</div></div>`).join('');
+}
+function setTab(d,i){
+  $$('#'+d.id+' .tabs button').forEach((b,j)=>b.classList.toggle('on',i===j));
+  $$('#'+d.id+' .pane').forEach((p,j)=>p.classList.toggle('on',i===j));
+  d.dataset.tab=i;d.querySelector('.mb').scrollTop=0;
+  if(d.id==='dReg'){$('prev').disabled=i===0;$('next').disabled=i===TABS.length-1}
+}
 
-        // Variables para seguimiento
-        let casoActualSeguimiento = null;
+/* ===== Estado ===== */
+let casos=[],filtrados=[],causasIndex={},editandoId=null,lastId=null,casoSeg=null,pagina=1;const PAGE=8;
+const getExp=n=>{const c=causasIndex[n];return c?(c.caratula||c.numCausa||''):(n||'')};
 
-        // ===== Refs DOM =====
-        const searchInput=$('searchInput'), estadoFilter=$('estadoFilter'), tablaCasos=$('tablaCasos');
-        const listaTramite=$('listaTramite');
-        const validacionMsg=$('validacionMsg');
+/* ===== Formulario: leer / llenar / limpiar ===== */
+function readForm(){
+  const d={};
+  FLAT.forEach(([id])=>{if(id!=='seguimientoInicial')d[id]=$(id).value});
+  GROUPS.forEach(([g,,,x])=>{d[g]={};x.items.forEach(([k])=>d[g][k]=$(cid(x,k)).checked)});
+  return d;
+}
+function fill(c){
+  FLAT.forEach(([id])=>{if(c[id]!=null)$(id).value=c[id]});
+  GROUPS.forEach(([g,,,x])=>x.items.forEach(([k])=>$(cid(x,k)).checked=!!c[g]?.[k]));
+  badges();
+}
+function limpiar(){
+  FLAT.forEach(([id])=>$(id).value='');$('estadoCaso').value='Abierto';
+  $$('#regBody input[type=checkbox]').forEach(c=>c.checked=false);
+  editandoId=null;$('seguimientoInicial').closest('.fld').hidden=false;$('expRes').style.display='none';
+  badges();setTab($('dReg'),0);
+}
+const bd=(id,t,l='')=>{const x=$(id);x.textContent=t;x.className='bd '+l};
+function badges(auto){
+  const n=calcEdad($('fechaNacimientoNNA').value),f=calcEdad($('faFechaNac').value),y=parseInt($('faResidenciaAnos').value,10),df=n!=null&&f!=null?f-n:null;
+  bd('edadNNAInfo','Edad NNA: '+(n!=null?n+' años':'—'),n!=null?'ok':'');
+  bd('edadFAInfo','Edad referente: '+(f!=null?f+' años':'—'),f==null?'':f>=25?'ok':'no');
+  bd('difEdadInfo','Diferencia con NNA: '+(df!=null?df+' años':'—'),df==null?'':df>=15?'ok':'no');
+  bd('residenciaInfo','Residencia: '+(isNaN(y)?'—':y+' años'),isNaN(y)?'':y>=2?'ok':'warn');
+  if(auto){ // tilda los requisitos que se deducen de las fechas
+    if(f!=null)$('reqEdad').checked=f>=25;
+    if(df!=null)$('reqDiferenciaEdad').checked=df>=15;
+    if(!isNaN(y))$('reqDomicilio').checked=y>=2;
+  }
+}
+function filtrarExp(q){
+  const r=$('expRes');r.innerHTML='';
+  if(!q){r.style.display='none';return}
+  const l=Object.keys(causasIndex).filter(n=>`causa ${n} ${causasIndex[n].caratula||''}`.toLowerCase().includes(q.toLowerCase()));
+  r.innerHTML=l.length?l.map(n=>`<div data-n="${e(n)}">Causa ${e(n)}${causasIndex[n].caratula?' – '+e(causasIndex[n].caratula):''}</div>`).join(''):'<div>No se encontraron expedientes</div>';
+  r.style.display='block';
+}
 
-        // ===== Utilidades =====
-        function calcEdad(dateStr){
-          if(!dateStr) return null;
-          const d=new Date(dateStr), t=new Date();
-          let e=t.getFullYear()-d.getFullYear();
-          const m=t.getMonth()-d.getMonth();
-          if(m<0 || (m===0 && t.getDate()<d.getDate())) e--;
-          return e>=0?e:null;
-        }
-        function setBadge(el, text, level=""){
-          el.textContent = text;
-          el.classList.remove("badge-ok","badge-warn","badge-danger");
-          if(level) el.classList.add(level);
-        }
-        
-        // ===== Eventos =====
-        document.addEventListener("DOMContentLoaded", async ()=>{
-          await Promise.all([cargarExpedientes(), cargarCasos()]);
-          
-          // Configurar eventos de actualización de badges
-          document.getElementById('fechaNacimientoNNA')?.addEventListener('input', updateBadges);
-          document.getElementById('faFechaNac')?.addEventListener('input', updateBadges);
-          document.getElementById('faResidenciaAnos')?.addEventListener('input', updateBadges);
-        });
-        
-        function updateBadges() {
-          const fechaNacNNA = document.getElementById('fechaNacimientoNNA')?.value;
-          const fechaNacFA = document.getElementById('faFechaNac')?.value;
-          const residenciaAnos = document.getElementById('faResidenciaAnos')?.value;
-          
-          const edadNNA = calcEdad(fechaNacNNA);
-          const edadFA = calcEdad(fechaNacFA);
-          const anos = parseInt(residenciaAnos, 10);
-          
-          const edadNNAInfoEl = document.getElementById('edadNNAInfo');
-          if (edadNNAInfoEl) setBadge(edadNNAInfoEl, `Edad NNA: ${edadNNA} años`, edadNNA != null ? "badge-ok" : "");
-          
-          const edadFAInfoEl = document.getElementById('edadFAInfo');
-          if (edadFAInfoEl) setBadge(edadFAInfoEl, `Edad referente: ${edadFA} años`, edadFA != null && edadFA >= 25 ? "badge-ok" : "badge-danger");
-          
-          const difEdadInfoEl = document.getElementById('difEdadInfo');
-          if (difEdadInfoEl) {
-            if (edadNNA != null && edadFA != null) {
-              const diff = edadFA - edadNNA;
-              setBadge(difEdadInfoEl, `Diferencia con NNA: ${diff} años`, diff >= 15 ? "badge-ok" : "badge-danger");
-            } else {
-              setBadge(difEdadInfoEl, "Diferencia con NNA: —");
-            }
-          }
-          
-          const residenciaInfoEl = document.getElementById('residenciaInfo');
-          if (residenciaInfoEl) {
-            if (!isNaN(anos)) {
-              setBadge(residenciaInfoEl, `Residencia: ${anos} años`, anos >= 2 ? "badge-ok" : "badge-warn");
-            } else {
-              setBadge(residenciaInfoEl, "Residencia: —");
-            }
-          }
-          
-          // Update checkbox states for requirements
-          const reqEdad = document.getElementById('reqEdad');
-          if (reqEdad && edadFA != null) reqEdad.checked = edadFA >= 25;
-          
-          const reqDiferenciaEdad = document.getElementById('reqDiferenciaEdad');
-          if (reqDiferenciaEdad && edadNNA != null && edadFA != null) reqDiferenciaEdad.checked = (edadFA - edadNNA) >= 15;
-          
-          const reqDomicilio = document.getElementById('reqDomicilio');
-          if (reqDomicilio && !isNaN(anos)) reqDomicilio.checked = anos >= 2;
-        }
+/* ===== Guardar (RTDB app1:/casos) ===== */
+async function guardar(){
+  const d=readForm();
+  if(!d.nombreNNA.trim()){toast('Completá el nombre del NNA.','err');setTab($('dReg'),0);return}
+  if(!d.nombreCompletoNNA.trim())d.nombreCompletoNNA=d.nombreNNA;
+  const n=calcEdad(d.fechaNacimientoNNA),f=calcEdad(d.faFechaNac),y=parseInt(d.faResidenciaAnos,10);
+  const err=(m)=>{toast(m,'err');setTab($('dReg'),1)};
+  if(f!=null&&f<25)return err('El referente debe tener 25 años o más (Art. 18).');
+  if(n!=null&&f!=null&&f-n<15)return err('La diferencia de edad con el NNA debe ser de 15 años o más (Art. 18).');
+  if(!isNaN(y)&&y<2)return err('La residencia en Misiones debe ser de 2 años o más (Art. 18).');
+  const now=fmtDT(new Date());
+  try{
+    if(editandoId){
+      const r=ref(rtdb,'casos/'+editandoId),s=await get(r),h=s.val()?.historial||[];
+      h.push({fecha:now,accion:'Edición del caso'});
+      await update(r,{...d,historial:h});lastId=editandoId;
+    }else{
+      const ini=$('seguimientoInicial').value.trim();
+      const res=await push(ref(rtdb,'casos'),{...d,fechaRegistro:fmtD(new Date()),seguimientos:ini?[{fecha:now,texto:ini}]:[],historial:[{fecha:now,accion:'Creación del caso'}]});
+      lastId=res.key;
+    }
+    $('dReg').close();toast('Caso guardado.');await cargarCasos();
+  }catch(x){console.error(x);toast('No se pudo guardar: '+x.message,'err')}
+}
 
-        // ===== Cargar expedientes desde Firestore =====
-        async function cargarExpedientes() {
-          causasIndex = {};
-          try {
-            const querySnapshot = await getDocs(collection(db2, "causas"));
-            
-            querySnapshot.forEach((doc) => {
-              const val = doc.data();
-              if (val && val.numCausa) {
-                causasIndex[val.numCausa] = { ...val, firebaseId: doc.id };
-              }
-            });
-          } catch (error) {
-            console.error("Error al cargar expedientes desde Firestore:", error);
-          }
-        }
+/* ===== Carga de datos ===== */
+async function cargarExpedientes(){
+  causasIndex={};
+  try{(await getDocs(collection(db2,'causas'))).forEach(d=>{const v=d.data();if(v?.numCausa)causasIndex[v.numCausa]={...v,firebaseId:d.id}})}
+  catch(x){console.error('Error al cargar expedientes:',x)}
+}
+async function cargarCasos(){
+  try{const s=await get(child(ref(rtdb),'casos'));casos=s.exists()?Object.entries(s.val()).map(([id,v])=>({id,...v})).reverse():[]}
+  catch(x){casos=[];console.error(x);toast('No se pudieron cargar los casos.','err')}
+  filtrar();tramite();
+}
 
-        // ===== Función para filtrar expedientes =====
-        window.filtrarExpedientes = function(busqueda) {
-          const resultados = document.getElementById('expedienteSearchResults');
-          resultados.innerHTML = '';
-          
-          if (!busqueda) {
-            resultados.style.display = 'none';
-            return;
-          }
-          
-          const busquedaLower = busqueda.toLowerCase();
-          const expedientesFiltrados = Object.keys(causasIndex).filter(numCausa => {
-            const causa = causasIndex[numCausa];
-            const textoBusqueda = `Causa ${numCausa} ${causa.caratula || ''}`.toLowerCase();
-            return textoBusqueda.includes(busquedaLower);
-          });
-          
-          if (expedientesFiltrados.length === 0) {
-            resultados.innerHTML = '<div class="expediente-search-result">No se encontraron expedientes</div>';
-          } else {
-            expedientesFiltrados.forEach(numCausa => {
-              const causa = causasIndex[numCausa];
-              const div = document.createElement('div');
-              div.className = 'expediente-search-result';
-              div.textContent = `Causa ${numCausa}${causa.caratula ? ` – ${causa.caratula}` : ''}`;
-              div.onclick = function() {
-                document.getElementById('expedienteReferencia').value = numCausa;
-                resultados.style.display = 'none';
-              };
-              resultados.appendChild(div);
-            });
-          }
-          
-          resultados.style.display = 'block';
-        };
+/* ===== Render ===== */
+const ST={'Abierto':'','En Proceso':'proc','Cerrado':'cer'};
+const pill=s=>s?`<span class="pill ${ST[s]??''}">${e(s)}</span>`:'';
+function tramite(){
+  const l=casos.filter(c=>c.estadoCaso==='En Proceso');$('tramN').textContent=l.length;
+  $('tram').innerHTML=l.length?l.map(c=>{
+    const sg=c.seguimientos||[],u=sg[sg.length-1];
+    return `<div class="tr"><button class="go" data-a="view" data-id="${c.id}"><span class="av">${e(ini(c.nombreNNA))}</span><span><b>${e(c.nombreNNA||'Sin nombre')}</b><small>Exp: ${e(c.expedienteReferencia?getExp(c.expedienteReferencia):'—')}</small><small>${u?'Último seguimiento: '+e(String(u.fecha).split(',')[0]):e(c.tipoFamilia||'Sin seguimientos')}</small></span></button><button class="fu" data-a="seg" data-id="${c.id}" title="Agregar seguimiento" aria-label="Agregar seguimiento"><i class="bi bi-journal-plus"></i></button></div>`}).join(''):'<p class="empty">No hay casos en proceso.</p>';
+}
+function filtrar(){
+  const q=$('q').value.toLowerCase(),s=$('est').value;
+  filtrados=casos.filter(c=>((c.nombreNNA||'').toLowerCase().includes(q)||(c.dniNNA||'').includes(q))&&(!s||c.estadoCaso===s));
+  pagina=1;tabla();
+}
+function tabla(){
+  const t=filtrados.length,P=Math.ceil(t/PAGE);
+  if(!t){$('tabla').innerHTML='<p class="empty">No hay casos que coincidan con los filtros.</p>';$('pgi').textContent='';$('pgn').innerHTML='';return}
+  pagina=Math.min(pagina,P);const a=(pagina-1)*PAGE,b=Math.min(a+PAGE,t);
+  $('pgi').textContent=`Mostrando ${a+1}–${b} de ${t} casos`;
+  $('tabla').innerHTML=`<table><thead><tr><th>Caso</th><th>Edad</th><th>Estado</th><th>Medida y SAF</th><th class="h2">Referente</th><th>Expediente</th><th class="h">Registro</th><th>Acciones</th></tr></thead><tbody>${filtrados.slice(a,b).map(c=>{
+    const n=calcEdad(c.fechaNacimientoNNA),s=(c.seguimientos||[]).length;
+    return `<tr id="r-${c.id}" class="${ST[c.estadoCaso]??''}">
+     <td><div class="who"><span class="av">${e(ini(c.nombreNNA))}</span><div><b>${e(c.nombreNNA)}</b><small>DNI ${e(c.dniNNA||'—')}</small></div></div></td>
+     <td>${n!=null?n+' años':'—'}<div class="sub">${e(c.generoNNA||'')}</div></td>
+     <td>${pill(c.estadoCaso)}</td>
+     <td>${c.tipoFamilia?`<span class="tag">${e(c.tipoFamilia)}</span>`:'—'}<div class="sub">${e(c.tipoMedida||'')}</div></td>
+     <td class="h2">${e(c.faNombre||'—')}<div class="sub">${e(c.faContacto||'')}</div></td>
+     <td>${c.expedienteReferencia?`<a href="#" class="lnk" data-a="exp" data-n="${e(c.expedienteReferencia)}">${e(getExp(c.expedienteReferencia))}</a>`:'—'}</td>
+     <td class="h">${e(c.fechaRegistro||'—')}<div class="sub">${s} seguimiento${s===1?'':'s'}</div></td>
+     <td><div class="acts"><button data-a="view" data-id="${c.id}" title="Ver detalle" aria-label="Ver detalle"><i class="bi bi-eye"></i></button><button data-a="edit" data-id="${c.id}" title="Editar" aria-label="Editar"><i class="bi bi-pencil-square"></i></button><button data-a="seg" data-id="${c.id}" title="Seguimiento" aria-label="Seguimiento"><i class="bi bi-journal-text"></i></button></div></td></tr>`}).join('')}</tbody></table>`;
+  const pb=(p,l,x='',dis=false)=>`<button class="pgb ${x}" data-a="pg" data-p="${p}" ${dis?'disabled':''}>${l}</button>`;
+  let i0=Math.max(1,pagina-2),i1=Math.min(P,i0+4);i0=Math.max(1,i1-4);
+  $('pgn').innerHTML=pb(pagina-1,'<i class="bi bi-chevron-left"></i>','',pagina===1)+Array.from({length:i1-i0+1},(_,k)=>pb(i0+k,i0+k,i0+k===pagina?'on':'')).join('')+pb(pagina+1,'<i class="bi bi-chevron-right"></i>','',pagina===P);
+  if(lastId){const r=$('r-'+lastId);if(r){r.classList.add('hl');r.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>r.classList.remove('hl'),2200)}lastId=null}
+}
 
-        // ===== Limpiar formulario al abrir nuevo registro =====
-        window.limpiarFormulario = function() {
-          // Limpiar todos los formularios dentro del modal
-          const forms = document.querySelectorAll('#registroModal form');
-          forms.forEach(form => form.reset());
-          
-          // Limpiar datos temporales y estado de edición
-          tempCasoData = {};
-          editandoId = null;
-          
-          // Actualizar badges
-          updateBadges();
-          
-          // Limpiar resultados de búsqueda de expedientes
-          document.getElementById('expedienteSearchResults').style.display = 'none';
-        };
+/* ===== Detalle de caso (solapas) ===== */
+const kv=rows=>`<dl class="kv">${rows.map(([k,v])=>`<dt>${k}</dt><dd>${v?.r??(e(v)||'<span class="sub">—</span>')}</dd>`).join('')}</dl>`;
+const tl=(a,del)=>`<div class="tl">${a.map((x,i)=>`<div class="ti"><small>${e(x.fecha)}</small><div>${nl2(x.texto??x.accion)}</div>${del?`<button class="del" data-a="delSeg" data-i="${i}" title="Eliminar" aria-label="Eliminar"><i class="bi bi-trash3"></i></button>`:''}</div>`).join('')}</div>`;
+async function verCaso({id}){
+  let c;try{const s=await get(child(ref(rtdb),'casos/'+id));if(!s.exists())return;c={id,...s.val()}}catch(x){return toast('No se pudo abrir el caso.','err')}
+  const n=calcEdad(c.fechaNacimientoNNA),f=calcEdad(c.faFechaNac),df=n!=null&&f!=null?f-n:null;
+  const age=(v,ok)=>R(v==null?'':` <span class="bd ${ok?'ok':'no'}">${v} años</span>`);
+  const ck=g=>{const x=GROUPS.find(z=>z[0]===g)[3];return R(`<div class="chips">${x.items.map(([k,l])=>{const on=c[g]?.[k];return `<div class="chip ${on?'on':'off'}"><i class="bi bi-${on?'check-circle-fill':'circle'}"></i> ${e(l)}</div>`}).join('')}</div>`)};
+  const exp=c.expedienteReferencia?R(`<a href="#" class="lnk" data-a="exp" data-n="${e(c.expedienteReferencia)}">${e(getExp(c.expedienteReferencia))}</a>`):'';
+  const P=[
+   ['Resumen',kv([['Nombre',c.nombreNNA],['Nombre completo',c.nombreCompletoNNA],['DNI',c.dniNNA],['Fecha de nacimiento',R(e(c.fechaNacimientoNNA)+(n!=null?` <span class="bd ok">${n} años</span>`:''))],['Género',c.generoNNA],['Nacionalidad',c.nacionalidadNNA],['Identidad cultural',c.identidadCulturalNNA],['Centro de vida',c.centroVida],['Vínculos fraternos',c.vinculosFraternos],['Estado',R(pill(c.estadoCaso))],['Expediente',exp],['Lugar de institucionalización',c.lugarInstitucionalizacion],['Contacto de institucionalización',c.contactoInstitucionalizacion]])],
+   ['Medida y SAF',kv([['Tipo de medida',c.tipoMedida],['Autoridad',c.autoridadInterviniente],['Fecha de la medida',c.fechaMedida],['Ingreso al SAF',c.fechaIngresoSAF],['Tipo de familia',c.tipoFamilia],['RUFAAFA',c.rufAAFA],['Referente',c.faNombre],['DNI del referente',c.faDni],['Fecha nac. del referente',R(e(c.faFechaNac)+(f!=null?` <span class="bd ${f>=25?'ok':'no'}">${f} años</span>`:''))],['Contacto',c.faContacto],['Domicilio',c.faDomicilio],['Residencia en Misiones',R(e(c.faResidenciaAnos)+(c.faResidenciaAnos?` <span class="bd ${parseInt(c.faResidenciaAnos,10)>=2?'ok':'warn'}">${e(c.faResidenciaAnos)} años</span>`:''))],['Diferencia de edad',df!=null?R(`${df} años <span class="bd ${df>=15?'ok':'no'}">${df>=15?'OK':'Insuficiente'}</span>`):''],['Etapas',ck('etapas')],['Plan de intervención',nl(c.planIntervencion)],['Causal de egreso',c.causalEgreso],['Fecha de egreso',c.fechaEgreso]])],
+   ['Situación y familia',kv([['Situación de vulneración',nl(c.situacionVulneracion)],['Derechos (oído / identidad)',nl(c.obsDerechos)],['Opinión del NNA',nl(c.opinionNNA)],['Madre',c.nombreMadre],['Padre',c.nombrePadre],['Vínculo familiar',c.vinculoFamiliar],['Observaciones familiares',nl(c.obsFamilia)],['Medidas aplicadas',ck('medidasAplicadas')],['Observaciones de la medida',nl(c.obsMedida)],['Asistencia letrada',c.asistenciaLetrada],['Acto infractor',c.actoInfractor],['Información a la familia',nl(c.infoFamilia)]])],
+   ['Requisitos',`<h4>Requisitos RUFAAFA</h4>${ck('requisitos').r}<h4 style="margin-top:20px">Inhabilidades</h4>${ck('inhabilidades').r}`],
+   ['Seguimientos',(c.seguimientos?.length?tl(c.seguimientos):'<p class="empty">Sin seguimientos.</p>')],
+   ['Historial',(c.historial?.length?tl(c.historial):'<p class="empty">Sin historial.</p>')]];
+  $('verT').textContent=c.nombreNNA||'Detalle del caso';
+  const VI=['person','house','chat-left-text','clipboard-check','journal-text','clock-history'];
+  $('verTabs').innerHTML=P.map(([t],i)=>`<button type="button" title="${t}"><i class="bi bi-${VI[i]}"></i><span>${t}</span></button>`).join('');
+  $('verBody').innerHTML=P.map(([t,h])=>`<div class="pane"><h4>${t}</h4>${h}</div>`).join('');
+  setTab($('dVer'),0);$('dVer').showModal();
+}
 
-        // ===== Guardar / Actualizar caso (RTDB app1:/casos) =====
-        window.guardarCaso = async (e)=>{
-          // Recopilar datos de todos los formularios
-          const forms = document.querySelectorAll('#registroModal form');
-          forms.forEach(form => {
-            const formData = new FormData(form);
-            for (let [key, value] of formData.entries()) {
-              tempCasoData[key] = value;
-            }
-            // Para checkboxes
-            const checkboxes = form.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-              tempCasoData[checkbox.id] = checkbox.checked;
-            });
-          });
+/* ===== Expediente (Firestore app2) ===== */
+async function verExp({n}){
+  const c=causasIndex[n];if(!c)return toast('Detalles del expediente no encontrados.','err');
+  let s=[];try{s=(await getDocs(collection(db2,'causas',c.firebaseId,'seguimiento'))).docs.map(d=>d.data())}catch(x){console.error(x)}
+  $('expBody').innerHTML=`<h4>Datos del expediente</h4>`+kv([['Número de causa',c.numCausa],['Carátula',c.caratula],['Fecha de registro',c.fecha],['Estado',c.estado],['Detalle',nl(c.detalle)]])+`<h4>Seguimientos</h4>`+(s.length?tl(s):'<p class="empty">Sin seguimientos registrados.</p>');
+  $('dExp').showModal();
+}
 
-          if(!tempCasoData.nombreNNA || !tempCasoData.nombreCompletoNNA){
-            alert("Los campos de nombre del NNA son obligatorios. Por favor, complete los módulos 'Datos del NNA' y 'Información Adicional'.");
-            return;
-          }
+/* ===== Seguimientos del caso (RTDB) ===== */
+const segArr=()=>Array.isArray(casoSeg?.seguimientos)?casoSeg.seguimientos:[];
+function tlSeg(){const a=segArr();$('tl').innerHTML=a.length?tl(a,true):'<p class="empty">Sin seguimientos.</p>'}
+async function abrirSeg({id}){
+  try{const s=await get(child(ref(rtdb),'casos/'+id));if(!s.exists())return;casoSeg={id,...s.val()}}catch(x){return toast('No se pudo abrir el seguimiento.','err')}
+  $('nuevoSeg').value='';tlSeg();$('dSeg').showModal();
+}
+async function saveSeg(a){
+  try{await update(ref(rtdb,'casos/'+casoSeg.id),{seguimientos:a});casoSeg.seguimientos=a;const c=casos.find(x=>x.id===casoSeg.id);if(c)c.seguimientos=a;tlSeg();tabla()}
+  catch(x){console.error(x);toast('No se pudo guardar el seguimiento.','err')}
+}
 
-          const edadN = calcEdad(tempCasoData.fechaNacimientoNNA);
-          const edadF = calcEdad(tempCasoData.faFechaNac);
-          const anosRes = parseInt(tempCasoData.faResidenciaAnos,10);
-          if(edadF!=null && edadF<25){ alert("No se puede guardar: el referente debe tener 25 años o más (Art. 18)."); return; }
-          if(edadN!=null && edadF!=null && (edadF-edadN)<15){ alert("No se puede guardar: la diferencia de edad con el NNA debe ser de 15 años o más (Art. 18)."); return; }
-          if(!isNaN(anosRes) && anosRes<2){ alert("No se puede guardar: la residencia en Misiones debe ser de 2 años o más (Art. 18)."); return; }
+/* ===== Acciones (delegación de eventos) ===== */
+const ACT={
+  new:()=>{limpiar();$('regT').textContent='Nuevo registro';$('dReg').showModal()},
+  edit:({id})=>{const c=casos.find(x=>x.id===id);if(!c)return;limpiar();fill(c);editandoId=id;$('seguimientoInicial').closest('.fld').hidden=true;$('regT').textContent='Editar registro';$('dReg').showModal()},
+  view:verCaso,seg:abrirSeg,exp:verExp,save:guardar,
+  pg:({p})=>{pagina=+p;tabla()},
+  addSeg:async()=>{const t=$('nuevoSeg').value.trim();if(!t)return;await saveSeg([...segArr(),{fecha:fmtDT(new Date()),texto:t}]);$('nuevoSeg').value=''},
+  delSeg:async({i})=>{if(confirm('¿Eliminar este seguimiento?'))await saveSeg(segArr().filter((_,k)=>k!==+i))},
+  print:()=>imprimir('Listado de casos registrados',$('tabla').innerHTML),
+  printVer:()=>imprimir($('verT').textContent,$('verBody').innerHTML),
+  printSeg:()=>imprimir('Seguimiento del caso',$('tl').innerHTML),
+  printExp:()=>imprimir('Detalle del expediente',$('expBody').innerHTML)
+};
+document.addEventListener('click',ev=>{
+  const t=ev.target;
+  if(!t.closest('#expRes')&&t.id!=='expedienteReferencia')$('expRes').style.display='none';
+  if(t.closest('[data-close]'))return t.closest('dialog').close();
+  const tb=t.closest('.tabs button');if(tb)return setTab(tb.closest('dialog'),[...tb.parentNode.children].indexOf(tb));
+  const ex=t.closest('#expRes div[data-n]');if(ex){$('expedienteReferencia').value=ex.dataset.n;$('expRes').style.display='none';return}
+  if(t.tagName==='DIALOG'&&t.id!=='dReg')return t.close();
+  const b=t.closest('[data-a]');if(!b)return;ev.preventDefault();ACT[b.dataset.a]?.(b.dataset);
+});
+$('regBody').addEventListener('input',ev=>{
+  if(['fechaNacimientoNNA','faFechaNac','faResidenciaAnos'].includes(ev.target.id))badges(true);
+  if(ev.target.id==='expedienteReferencia')filtrarExp(ev.target.value);
+});
+$('prev').onclick=()=>setTab($('dReg'),+$('dReg').dataset.tab-1);
+$('next').onclick=()=>setTab($('dReg'),+$('dReg').dataset.tab+1);
+$('q').oninput=filtrar;$('est').onchange=filtrar;
 
-          const etapas = {
-            convocatoria: !!tempCasoData.etapaConvocatoria,
-            evaluacion: !!tempCasoData.etapaEvaluacion,
-            capacitacion: !!tempCasoData.etapaCapacitacion,
-            inscripcion: !!tempCasoData.etapaInscripcion,
-            plan: !!tempCasoData.etapaPlan
-          };
-          const requisitos = {
-            reqDomicilio: !!tempCasoData.reqDomicilio,
-            reqEdad: !!tempCasoData.reqEdad,
-            reqDiferenciaEdad: !!tempCasoData.reqDiferenciaEdad,
-            reqPenales: !!tempCasoData.reqPenales,
-            reqAlimentaria: !!tempCasoData.reqAlimentaria,
-            reqPsicofisico: !!tempCasoData.reqPsicofisico,
-            reqIngresos: !!tempCasoData.reqIngresos,
-            reqVivienda: !!tempCasoData.reqVivienda,
-            reqCapacitacion: !!tempCasoData.reqCapacitacion,
-            reqAcuerdo: !!tempCasoData.reqAcuerdo
-          };
-          const inhabilidades = {
-            inhDelitos: !!tempCasoData.inhDelitos,
-            inhMedidas: !!tempCasoData.inhMedidas,
-            inhRespParental: !!tempCasoData.inhRespParental,
-            inhTutela: !!tempCasoData.inhTutela
-          };
-          const medidas = {
-            guiaAsistencia: !!tempCasoData.medidaGuiaAsistencia,
-            asistenciaSalud: !!tempCasoData.medidaAsistenciaSalud,
-            inscripcionEscolar: !!tempCasoData.medidaInscripcionEscolar,
-            exclusionAgresor: !!tempCasoData.medidaExclusionAgresor,
-            otros: !!tempCasoData.medidaOtros
-          }
-          
-          const data = {
-            nombreNNA: tempCasoData.nombreNNA,
-            dniNNA: tempCasoData.dniNNA,
-            fechaNacimientoNNA: tempCasoData.fechaNacimientoNNA,
-            generoNNA: tempCasoData.generoNNA,
-            centroVida: tempCasoData.centroVida,
-            vinculosFraternos: tempCasoData.vinculosFraternos,
-            situacionVulneracion: tempCasoData.situacionVulneracion,
-            tipoMedida: tempCasoData.tipoMedida,
-            autoridadInterviniente: tempCasoData.autoridadInterviniente,
-            fechaMedida: tempCasoData.fechaMedida,
-            fechaIngresoSAF: tempCasoData.fechaIngresoSAF,
-            tipoFamilia: tempCasoData.tipoFamilia,
-            rufAAFA: tempCasoData.rufAAFA,
-            faNombre: tempCasoData.faNombre,
-            faDni: tempCasoData.faDni,
-            faFechaNac: tempCasoData.faFechaNac,
-            faDomicilio: tempCasoData.faDomicilio,
-            faContacto: tempCasoData.faContacto,
-            faResidenciaAnos: tempCasoData.faResidenciaAnos,
-            etapas, planIntervencion: tempCasoData.planIntervencion,
-            causalEgreso: tempCasoData.causalEgreso, fechaEgreso: tempCasoData.fechaEgreso,
-            obsDerechos: tempCasoData.obsDerechos,
-            requisitos, inhabilidades,
-            estadoCaso: tempCasoData.estadoCaso,
-            expedienteReferencia: tempCasoData.expedienteReferencia || "",
-            lugarInstitucionalizacion: tempCasoData.lugarInstitucionalizacion,
-            contactoInstitucionalizacion: tempCasoData.contactoInstitucionalizacion,
-            nombreCompletoNNA: tempCasoData.nombreCompletoNNA,
-            nacionalidadNNA: tempCasoData.nacionalidadNNA,
-            identidadCulturalNNA: tempCasoData.identidadCulturalNNA,
-            opinionNNA: tempCasoData.opinionNNA,
-            nombreMadre: tempCasoData.nombreMadre,
-            nombrePadre: tempCasoData.nombrePadre,
-            vinculoFamiliar: tempCasoData.vinculoFamiliar,
-            obsFamilia: tempCasoData.obsFamilia,
-            medidasAplicadas: medidas,
-            obsMedida: tempCasoData.obsMedida,
-            asistenciaLetrada: tempCasoData.asistenciaLetrada,
-            actoInfractor: tempCasoData.actoInfractor,
-            infoFamilia: tempCasoData.infoFamilia
-          };
-
-          if(editandoId){
-            const targetRef = ref(rtdb1, "casos/" + editandoId);
-            const snap = await get(targetRef);
-            let historial = (snap.exists() && snap.val().historial) ? snap.val().historial : [];
-            historial.push({fecha:formatFechaHora(new Date()), accion:"Edición del caso"});
-            await update(targetRef, {...data, historial});
-            lastEditedId = editandoId;
-            editandoId = null;
-          }else{
-            const nuevo = {
-              ...data,
-              fechaRegistro: formatFecha(new Date()),
-              seguimientos: tempCasoData.seguimientoInicial ? [{fecha:formatFechaHora(new Date()), texto: tempCasoData.seguimientoInicial}] : [],
-              historial: [{fecha:formatFechaHora(new Date()), accion:"Creación del caso"}]
-            };
-            const res = await push(ref(rtdb1,"casos"), nuevo);
-            lastEditedId = res.key;
-          }
-          
-          // Cerrar modal y limpiar datos
-          const modal = bootstrap.Modal.getInstance(document.getElementById('registroModal'));
-          modal.hide();
-          forms.forEach(form => form.reset());
-          tempCasoData = {};
-          
-          await cargarCasos();
-        }
-
-        // ===== Cargar casos (RTDB app1:/casos) =====
-        async function cargarCasos(){
-          casos = [];
-          const s = await get(child(ref(rtdb1),"casos"));
-          if(s.exists()){
-            const data = s.val() || {};
-            casos = Object.entries(data).map(([id, val])=>({id, ...(val||{})}));
-          }
-          aplicarFiltros();
-          actualizarDashboard();
-          renderTramite();
-        }
-
-        function aplicarFiltros(){
-          const q = (searchInput?.value||"").toLowerCase();
-          const est = (estadoFilter?.value||"");
-          casosFiltrados = casos
-            .filter(c => (c.nombreNNA||"").toLowerCase().includes(q) || (c.dniNNA||"").includes(q))
-            .filter(c => !est || c.estadoCaso===est);
-          paginaActual = 1; // Resetear a la primera página al aplicar filtros
-          mostrarCasos();
-        }
-
-        function getExpDisplay(numeroCausa){
-          if(!numeroCausa) return "";
-          const c = causasIndex[numeroCausa];
-          return c ? (c.caratula || c.numCausa || "") : (numeroCausa || "");
-        }
-
-        // ===== Mostrar casos con paginación =====
-        function mostrarCasos(){
-          if(!casosFiltrados.length){ 
-            tablaCasos.innerHTML="<p style='padding: var(--spacing-m);'>No hay casos que coincidan con los filtros</p>"; 
-            document.getElementById('paginacion-container').style.display = 'none';
-            return; 
-          }
-          
-          document.getElementById('paginacion-container').style.display = 'flex';
-          
-          // Calcular índices para la paginación
-          const totalCasos = casosFiltrados.length;
-          const totalPaginas = Math.ceil(totalCasos / casosPorPagina);
-          const inicio = (paginaActual - 1) * casosPorPagina;
-          const fin = Math.min(inicio + casosPorPagina, totalCasos);
-          const casosPagina = casosFiltrados.slice(inicio, fin);
-          
-          // Actualizar información de paginación
-          document.getElementById('paginacion-info').textContent = 
-            `Mostrando ${inicio + 1}-${fin} de ${totalCasos} casos`;
-          
-          // Generar tabla con los casos de la página actual
-          let h = "<table class='data-table'><thead><tr><th>Nombre</th><th>Estado</th><th>SAF</th><th>Expediente</th><th>Acciones</th></tr></thead><tbody>";
-          for(const c of casosPagina){
-            const estadoClase = c.estadoCaso === 'Abierto' ? 'estado-abierto' : 
-                              c.estadoCaso === 'En Proceso' ? 'estado-proceso' : 'estado-cerrado';
-            const expTxt = c.expedienteReferencia ? getExpDisplay(c.expedienteReferencia) : "";
-            const expHtml = c.expedienteReferencia ? `<a href="#" onclick="verExpediente('${c.expedienteReferencia}')">${expTxt}</a>` : "";
-            const safBadge = c.tipoFamilia ? `<span class="badge">${c.tipoFamilia}</span>` : "";
-            h += `<tr id="row-${c.id}">
-                    <td>${c.nombreNNA||""}</td>
-                    <td><span class="estado-pill ${estadoClase}">${c.estadoCaso||""}</span></td>
-                    <td>${safBadge}</td>
-                    <td>${expHtml}</td>
-                    <td class="action-icons">
-                      <button class="icon-btn edit" onclick="editarCaso('${c.id}')" title="Editar">
-                        <i class="bi bi-pencil-square"></i>
-                      </button>
-                      <button class="icon-btn view" onclick="verCaso('${c.id}')" title="Ver">
-                        <i class="bi bi-eye"></i>
-                      </button>
-                      <button class="icon-btn follow" onclick="abrirModalSeguimiento('${c.id}')" title="Seguimiento">
-                        <i class="bi bi-journal-text"></i>
-                      </button>
-                    </td>
-                  </tr>`;
-          }
-          h += "</tbody></table>";
-          tablaCasos.innerHTML = h;
-
-          // Generar controles de paginación
-          generarPaginacion(totalPaginas);
-          
-          if(lastEditedId){
-            const row = document.getElementById('row-'+lastEditedId);
-            if(row){ 
-              row.classList.add('row-highlight'); 
-              row.scrollIntoView({behavior:'smooth', block:'center'}); 
-              setTimeout(() => {
-                row.classList.remove('row-highlight');
-              }, 2200);
-            }
-            lastEditedId = null;
-          }
-        }
-
-        // ===== Generar controles de paginación =====
-        function generarPaginacion(totalPaginas) {
-          const paginacion = document.getElementById('paginacion');
-          paginacion.innerHTML = '';
-          
-          // Botón anterior
-          const prevItem = document.createElement('li');
-          prevItem.className = `page-item ${paginaActual === 1 ? 'disabled' : ''}`;
-          prevItem.innerHTML = `<a class="page-link" href="#" onclick="cambiarPagina(${paginaActual - 1})" aria-label="Anterior">
-                                  <i class="bi bi-chevron-left"></i>
-                                </a>`;
-          paginacion.appendChild(prevItem);
-          
-          // Números de página
-          const paginasAMostrar = 5; // Máximo de páginas a mostrar en el paginador
-          let inicioPagina = Math.max(1, paginaActual - Math.floor(paginasAMostrar / 2));
-          let finPagina = Math.min(totalPaginas, inicioPagina + paginasAMostrar - 1);
-          
-          // Ajustar si estamos cerca del final
-          if (finPagina - inicioPagina + 1 < paginasAMostrar) {
-            inicioPagina = Math.max(1, finPagina - paginasAMostrar + 1);
-          }
-          
-          for (let i = inicioPagina; i <= finPagina; i++) {
-            const pageItem = document.createElement('li');
-            pageItem.className = `page-item ${i === paginaActual ? 'active' : ''}`;
-            pageItem.innerHTML = `<a class="page-link" href="#" onclick="cambiarPagina(${i})">${i}</a>`;
-            paginacion.appendChild(pageItem);
-          }
-          
-          // Botón siguiente
-          const nextItem = document.createElement('li');
-          nextItem.className = `page-item ${paginaActual === totalPaginas ? 'disabled' : ''}`;
-          nextItem.innerHTML = `<a class="page-link" href="#" onclick="cambiarPagina(${paginaActual + 1})" aria-label="Siguiente">
-                                  <i class="bi bi-chevron-right"></i>
-                                </a>`;
-          paginacion.appendChild(nextItem);
-        }
-
-        // ===== Cambiar de página =====
-        window.cambiarPagina = function(nuevaPagina) {
-          if (nuevaPagina >= 1 && nuevaPagina <= Math.ceil(casosFiltrados.length / casosPorPagina)) {
-            paginaActual = nuevaPagina;
-            mostrarCasos();
-          }
-        };
-
-        function actualizarDashboard(){
-          const total = casos.length;
-          const abiertos = casos.filter(c=>c.estadoCaso==="Abierto").length;
-          const proceso = casos.filter(c=>c.estadoCaso==="En Proceso").length;
-          const cerrados = casos.filter(c=>c.estadoCaso==="Cerrado").length;
-          
-          const dashboardCards = document.getElementById('dashboardCards');
-          dashboardCards.innerHTML = `
-            <div class="dashboard-card total">
-              <div class="dashboard-number">${total}</div>
-              <div class="dashboard-label">Total de Casos</div>
-            </div>
-            <div class="dashboard-card abiertos">
-              <div class="dashboard-number">${abiertos}</div>
-              <div class="dashboard-label">Abiertos</div>
-            </div>
-            <div class="dashboard-card proceso">
-              <div class="dashboard-number">${proceso}</div>
-              <div class="dashboard-label">En Proceso</div>
-            </div>
-            <div class="dashboard-card cerrados">
-              <div class="dashboard-number">${cerrados}</div>
-              <div class="dashboard-label">Cerrados</div>
-            </div>
-          `;
-        }
-
-        function renderTramite(){
-          listaTramite.innerHTML="";
-          casos.filter(c=>c.estadoCaso==="En Proceso").forEach(c=>{
-            const li=document.createElement("li");
-            const expTxt = c.expedienteReferencia ? getExpDisplay(c.expedienteReferencia) : "-";
-            li.innerHTML = `<b>${c.nombreNNA||"Sin nombre"}</b> · Exp: ${expTxt} ` + (c.tipoFamilia? `· <i>${c.tipoFamilia}</i>`:"");
-            listaTramite.appendChild(li);
-          });
-        }
-
-        // ===== Editar (carga en formulario) =====
-        window.editarCaso = (id)=>{
-          const c = casos.find(x=>x.id===id); 
-          if(!c) return;
-          
-          // Llenar los formularios con los datos del caso
-          Object.keys(c).forEach(key => {
-            const element = document.getElementById(key);
-            if (element) {
-              if (element.type === 'checkbox') {
-                element.checked = c[key];
-              } else {
-                element.value = c[key];
-              }
-            }
-          });
-
-          // Abrir el modal de registro
-          const modal = new bootstrap.Modal(document.getElementById('registroModal'));
-          modal.show();
-
-          editandoId = id;
-        };
-
-        // ===== Vista (modal) del Caso =====
-        window.verCaso = async (id)=>{
-          const s = await get(child(ref(rtdb1),"casos/"+id));
-          if(!s.exists()) return;
-          casoActual = {id, ...(s.val()||{})};
-          const historialHTML = (casoActual.historial||[]).map(h=>`<p><span class='status-en'>${h.fecha}</span>: ${h.accion}</p>`).join("") || "<p>Sin historial</p>";
-          const seguimientosHTML = (casoActual.seguimientos||[]).map(sg=>`<p><span class='status-en'>${sg.fecha}</span>: ${sg.texto}</p>`).join("") || "<p>Sin seguimiento</p>";
-          const expHtml = casoActual.expedienteReferencia ? `<a class="link" href="#" onclick="verExpediente('${casoActual.expedienteReferencia}')">${getExpDisplay(casoActual.expedienteReferencia)}</a>` : "-";
-          const reqList = casoActual.requisitos ? Object.entries(casoActual.requisitos).filter(([k,v])=>v).map(([k])=>k.replace('req','').replace(/[A-Z]/g,' $&')).join(', ') : '-';
-          const inhList = casoActual.inhabilidades ? Object.entries(casoActual.inhabilidades).filter(([k,v])=>v).map(([k])=>k.replace('inh','').replace(/[A-Z]/g,' $&')).join(', ') : '-';
-          const edadN = calcEdad(casoActual.fechaNacimientoNNA);
-          const edadF = calcEdad(casoActual.faFechaNac);
-          const diff = (edadN!=null && edadF!=null) ? (edadF-edadN) : null;
-          document.getElementById('modalCasoBody').innerHTML = `
-            <div class='detalle-registro'>
-              <h4>Datos del NNA</h4>
-              <div class="detalle-item">
-                <span class="detalle-label">Nombre:</span>
-                <span class="detalle-value">${casoActual.nombreNNA||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">DNI:</span>
-                <span class="detalle-value">${casoActual.dniNNA||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Fecha Nac.:</span>
-                <span class="detalle-value">${casoActual.fechaNacimientoNNA||""} ${edadN!=null?`<span class='badge badge-ok'>${edadN} años</span>`:""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Género:</span>
-                <span class="detalle-value">${casoActual.generoNNA||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Centro de vida:</span>
-                <span class="detalle-value">${casoActual.centroVida||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Vínculos fraternos:</span>
-                <span class="detalle-value">${casoActual.vinculosFraternos||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Estado:</span>
-                <span class="detalle-value">${casoActual.estadoCaso||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Exp. ref.:</span>
-                <span class="detalle-value">${expHtml}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Lugar de institucionalización:</span>
-                <span class="detalle-value">${casoActual.lugarInstitucionalizacion||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Contacto institucionalización:</span>
-                <span class="detalle-value">${casoActual.contactoInstitucionalizacion||""}</span>
-              </div>
-            </div>
-            <div class='detalle-registro'>
-              <h4>Medida y SAF</h4>
-              <div class="detalle-item">
-                <span class="detalle-label">Tipo de medida:</span>
-                <span class="detalle-value">${casoActual.tipoMedida||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Autoridad:</span>
-                <span class="detalle-value">${casoActual.autoridadInterviniente||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Fecha medida:</span>
-                <span class="detalle-value">${casoActual.fechaMedida||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Ingreso SAF:</span>
-                <span class="detalle-value">${casoActual.fechaIngresoSAF||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Tipo familia:</span>
-                <span class="detalle-value">${casoActual.tipoFamilia||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">RUFAAFA:</span>
-                <span class="detalle-value">${casoActual.rufAAFA||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Referente:</span>
-                <span class="detalle-value">${casoActual.faNombre||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">DNI Referente:</span>
-                <span class="detalle-value">${casoActual.faDni||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Fecha nac. referente:</span>
-                <span class="detalle-value">${casoActual.faFechaNac||""} ${edadF!=null?`<span class='badge ${edadF>=25?'badge-ok':'badge-danger'}'>${edadF} años</span>`:""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Contacto FA:</span>
-                <span class="detalle-value">${casoActual.faContacto||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Domicilio FA:</span>
-                <span class="detalle-value">${casoActual.faDomicilio||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Residencia en Misiones:</span>
-                <span class="detalle-value">${casoActual.faResidenciaAnos||"-"} ${casoActual.faResidenciaAnos?`<span class='badge ${(parseInt(casoActual.faResidenciaAnos,10)>=2)?'badge-ok':'badge-warn'}'>${casoActual.faResidenciaAnos} años</span>`:""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Etapas:</span>
-                <span class="detalle-value">${Object.entries(casoActual.etapas||{}).filter(([k,v])=>v).map(([k])=>k).join(', ')||'-'}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Plan de intervención:</span>
-                <span class="detalle-value">${(casoActual.planIntervencion||"").replace(/\n/g,"<br>")}</span>
-              </div>
-              ${diff!=null?`
-              <div class="detalle-item">
-                <span class="detalle-label">Diferencia de edad referente/NNA:</span>
-                <span class="detalle-value">${diff} años ${diff>=15?'<span class="badge badge-ok">OK</span>':'<span class="badge badge-danger">Insuficiente</span>'}</span>
-              </div>`:""}
-            </div>
-            <div class='detalle-registro'>
-              <h4>RUFAAFA</h4>
-              <div class="detalle-item">
-                <span class="detalle-label">Requisitos cumplidos:</span>
-                <span class="detalle-value">${reqList}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Inhabilidades (negativas):</span>
-                <span class="detalle-value">${inhList}</span>
-              </div>
-            </div>
-            <div class='detalle-registro'>
-              <h4>Situación</h4>
-              <div class="detalle-item">
-                <span class="detalle-label">Situación de vulneración:</span>
-                <span class="detalle-value">${(casoActual.situacionVulneracion||"").replace(/\n/g,"<br>")}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Observaciones de derechos:</span>
-                <span class="detalle-value">${(casoActual.obsDerechos||"").replace(/\n/g,"<br>")}</span>
-              </div>
-            </div>
-            <div class='detalle-registro'>
-              <h4>Seguimientos</h4>
-              <div class="detalle-item">
-                <span class="detalle-label">Historial de seguimientos:</span>
-                <span class="detalle-value">${seguimientosHTML}</span>
-              </div>
-            </div>
-            <div class='detalle-registro'>
-              <h4>Egreso</h4>
-              <div class="detalle-item">
-                <span class="detalle-label">Causal:</span>
-                <span class="detalle-value">${casoActual.causalEgreso||"-"}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Fecha:</span>
-                <span class="detalle-value">${casoActual.fechaEgreso||"-"}</span>
-              </div>
-            </div>
-            <div class='detalle-registro'>
-              <h4>Historial de cambios</h4>
-              <div class="detalle-item">
-                <span class="detalle-label">Registro de modificaciones:</span>
-                <span class="detalle-value">${historialHTML}</span>
-              </div>
-            </div>`;
-          const modal = new bootstrap.Modal(document.getElementById('modalCaso'));
-          modal.show();
-        };
-
-        // ===== Modal Expediente =====
-        window.verExpediente = async (numeroCausa)=>{
-          const causaDoc = Object.values(causasIndex).find(c => c.numCausa === numeroCausa);
-          if(!causaDoc) {
-            alert("Detalles del expediente no encontrados.");
-            return;
-          }
-          const seguimientoDocs = await getDocs(collection(db2, "causas", causaDoc.firebaseId, "seguimiento"));
-          const segs = seguimientoDocs.docs
-            .map(doc => {
-              const s = doc.data();
-              return `<p><span style="color:#004085;font-weight:bold">${s.fecha}:</span> ${s.texto}</p>`;
-            })
-            .join("") || "<p style='color:gray'>Sin seguimientos registrados</p>";
-
-          document.getElementById('modalExpedienteBody').innerHTML = `
-            <div class='detalle-registro'>
-              <h4>Datos del Expediente</h4>
-              <div class="detalle-item">
-                <span class="detalle-label">Número de Causa:</span>
-                <span class="detalle-value">${causaDoc.numCausa||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Carátula:</span>
-                <span class="detalle-value">${causaDoc.caratula||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Fecha de Registro:</span>
-                <span class="detalle-value">${causaDoc.fecha||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Estado:</span>
-                <span class="detalle-value">${causaDoc.estado||""}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Detalle del Registro:</span>
-                <span class="detalle-value">${(causaDoc.detalle||"").replace(/\n/g,"<br>")}</span>
-              </div>
-            </div>
-            <div class='detalle-registro'>
-              <h4>Seguimientos</h4>
-              <div class="detalle-item">
-                <span class="detalle-label">Historial de seguimientos:</span>
-                <span class="detalle-value">${segs}</span>
-              </div>
-            </div>`;
-          
-          const modal = new bootstrap.Modal(document.getElementById('modalExpediente'));
-          modal.show();
-        };
-
-        // ===== Funcionalidad de Seguimiento =====
-        window.abrirModalSeguimiento = async (id) => {
-          const s = await get(child(ref(rtdb1), "casos/" + id));
-          if (!s.exists()) return;
-          casoActualSeguimiento = { id, ...(s.val() || {}) };
-          document.getElementById('nuevoSeguimiento').value = '';
-          renderTimelineSeguimiento();
-          const modal = new bootstrap.Modal(document.getElementById('modalSeguimiento'));
-          modal.show();
-        };
-
-        function renderTimelineSeguimiento() {
-          const timeline = document.getElementById('timelineSeguimiento');
-          const arr = Array.isArray(casoActualSeguimiento?.seguimientos) ? casoActualSeguimiento.seguimientos : [];
-          timeline.innerHTML = arr.length
-            ? arr.map((s, i) => `
-                <div class='timeline-item'>
-                  <div class='date'>${s.fecha}</div>
-                  <div>${s.texto}</div>
-                  <button class='delete-btn' title='Eliminar' onclick='eliminarSeguimiento(${i})'>✕</button>
-                </div>
-              `).join("")
-            : "<p>Sin seguimientos</p>";
-        }
-
-        window.guardarSeguimiento = async () => {
-          if (!casoActualSeguimiento) return;
-          const nuevoSeguimientoInput = document.getElementById('nuevoSeguimiento');
-          const texto = nuevoSeguimientoInput.value.trim();
-          if (!texto) return;
-
-          const arr = Array.isArray(casoActualSeguimiento.seguimientos) ? casoActualSeguimiento.seguimientos : [];
-          arr.push({ fecha: formatFechaHora(new Date()), texto });
-
-          await update(ref(rtdb1, "casos/" + casoActualSeguimiento.id), { seguimientos: arr });
-          casoActualSeguimiento.seguimientos = arr;
-          nuevoSeguimientoInput.value = '';
-          renderTimelineSeguimiento();
-        };
-
-        window.eliminarSeguimiento = async (i) => {
-          if (!casoActualSeguimiento) return;
-          const arr = Array.isArray(casoActualSeguimiento.seguimientos) ? casoActualSeguimiento.seguimientos : [];
-          arr.splice(i, 1);
-          await update(ref(rtdb1, "casos/" + casoActualSeguimiento.id), { seguimientos: arr });
-          casoActualSeguimiento.seguimientos = arr;
-          renderTimelineSeguimiento();
-        };
-
-        // ===== Utilidades de impresión/exportación =====
-        window.imprimirSeccion = (id)=>{
-          const el = document.getElementById(id);
-          if(!el) return;
-          const w = window.open("", "_blank");
-          const styles = document.querySelector('style')?.outerHTML || "";
-          w.document.write(`<html><head><title>Imprimir</title>${styles}</head><body>${el.innerHTML}</body></html>`);
-          w.document.close();
-          w.focus();
-          w.print();
-        };
-
-        // ===== Imprimir solo la tabla de casos =====
-        window.imprimirTablaCasos = function() {
-          const tablaHTML = document.querySelector('#tablaCasos').innerHTML;
-          const w = window.open("", "_blank");
-          const styles = document.querySelector('style')?.outerHTML || "";
-          w.document.write(`
-            <html>
-              <head>
-                <title>Listado de Casos - Sistema de Protección de NNyA</title>
-                ${styles}
-                <style>
-                  body { padding: 20px; }
-                  h2 { text-align: center; margin-bottom: 20px; }
-                </style>
-              </head>
-              <body>
-                <h2>Listado de Casos Registrados</h2>
-                ${tablaHTML}
-              </body>
-            </html>
-          `);
-          w.document.close();
-          w.focus();
-          w.print();
-        };
-
-        // ===== Tabs =====
-        window.showTab = (id, e)=>{
-          document.querySelectorAll(".tab-content").forEach(x=>x.classList.remove("active"));
-          const tab = document.getElementById(id);
-          if(tab) tab.classList.add("active");
-        };
-    </script>
+/* ===== Inicio ===== */
+buildForm();limpiar();
+await Promise.all([cargarExpedientes(),cargarCasos()]);
+tabla();tramite(); // vuelve a pintar con las carátulas de expedientes ya cargadas
+</script>
 </body>
 </html>
