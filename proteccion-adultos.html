@@ -139,7 +139,9 @@ dialog,#dReg,#dSeg{width:100%;max-height:100dvh;height:100dvh;border-radius:0}.m
       <div class="fld s1"><label for="fEdad">Edad *</label><input class="inp" id="fEdad" type="number" min="1" required></div>
       <div class="fld s2"><label for="fTel">Teléfono</label><input class="inp" id="fTel" type="tel"></div>
       <div class="fld s2" id="wDir"><label for="fDir">Dirección</label><input class="inp" id="fDir"></div>
-      <div class="fld s2" id="wExp"><label for="fExpS">Expediente de referencia</label>
+      <div class="fld s2" id="wBase"><label for="fBase">Base de expedientes</label>
+        <select class="inp" id="fBase"><option value="activa">Activa</option><option value="historica">Histórica</option></select></div>
+      <div class="fld s6" id="wExp"><label for="fExpS">Expediente de referencia</label>
         <div class="rel"><input class="inp" id="fExpS" autocomplete="off" placeholder="Buscar expediente"><input type="hidden" id="fExp"><div class="res" id="lstExp"></div></div>
         <small class="sub" id="expInfo"></small></div>
       <div class="fld s6"><label for="fDesc" id="lDesc"></label><textarea class="inp" id="fDesc" rows="2" required></textarea></div>
@@ -185,7 +187,9 @@ firebase.initializeApp({
   storageBucket:"proteccion-unificada.firebasestorage.app",messagingSenderId:"536876739483",appId:"1:536876739483:web:6ce9044af245cc116a4f3e"});
 const rtdb=firebase.database();                       // registros (Realtime Database)
 const app2=firebase.initializeApp({apiKey:"AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",authDomain:"causas-defensoria.firebaseapp.com",databaseURL:"https://causas-defensoria-default-rtdb.firebaseio.com",projectId:"causas-defensoria"},"app2");
-const db2=app2.firestore();                           // expedientes (Firestore: causas)
+const db2=app2.firestore();                           // expedientes HISTÓRICOS (Firestore: causas)
+const app3=firebase.initializeApp({apiKey:"AIzaSyBevCwkh4iOWVqhp3gG2ae1eCUMkFpnr6I",authDomain:"causas-2defensoria.firebaseapp.com",projectId:"causas-2defensoria",storageBucket:"causas-2defensoria.firebasestorage.app",messagingSenderId:"663905632804",appId:"1:663905632804:web:4f686a88004dc642ad0eb1"},"app3");
+const db3=app3.firestore();                           // expedientes ACTIVOS (Firestore: causas)
 
 /* ===== Utilidades ===== */
 const $=id=>document.getElementById(id), $$=s=>[...document.querySelectorAll(s)], V=id=>$(id).value.trim();
@@ -223,7 +227,14 @@ const ST={'Abierto':'','En Proceso':'proc','Cerrado':'cer'};
 const pill=s=>`<span class="pill ${ST[s]??''}">${e(s||'Abierto')}</span>`;
 
 /* ===== Estado ===== */
-let organismos=[...DEF_ORG],registros=[],filtrados=[],expedientes={},tipo='proteccion',editId=null,lastId=null,casoSeg=null,verActual=null,pagina=1;const PAGE=8;
+/* Bases de expedientes: activa (causas-2defensoria) e histórica (causas-defensoria) */
+const BASES={activa:'Activa',historica:'Histórica'};
+const DB_EXP={activa:db3,historica:db2};
+const expedientes={activa:{},historica:{}},expCargada={activa:false,historica:false};
+/* Base a la que pertenece un expediente: la guardada en el registro o, en registros antiguos (sin base), la que lo contenga */
+const baseDe=(n,b)=>BASES[b]?b:(expedientes.historica[n]?'historica':(expedientes.activa[n]?'activa':''));
+const getExp=(n,b)=>expedientes[baseDe(n,b)]?.[n];
+let organismos=[...DEF_ORG],registros=[],filtrados=[],tipo='proteccion',editId=null,lastId=null,casoSeg=null,verActual=null,pagina=1;const PAGE=8;
 
 /* ===== Formulario de registro ===== */
 function setTipo(k){
@@ -231,7 +242,7 @@ function setTipo(k){
   $$('#regTabs button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));
   $('regT').textContent=editId?'Editar registro':'Nuevo registro';
   $('lNom').textContent=t.nom+' *';$('lDesc').textContent=t.desc+' *';$('refTxt').textContent=t.ref;
-  $('wDir').hidden=!t.dir;$('wExp').className='fld '+(t.dir?'s2':'s4');
+  $('wDir').hidden=!t.dir;
   $('saveT').textContent=editId?'Actualizar registro':'Guardar registro';
 }
 function fillOrgs(){
@@ -243,17 +254,18 @@ function limpiar(){
   orgChange();$$('#regTabs button').forEach(b=>b.disabled=false);
 }
 function listaExp(q){
-  const ql=(q||'').toLowerCase(),l=$('lstExp');
-  const k=Object.keys(expedientes).filter(n=>!ql||n.toLowerCase().includes(ql)||(expedientes[n].caratula||'').toLowerCase().includes(ql)).slice(0,50);
-  l.innerHTML=k.length?k.map(n=>`<div data-n="${e(n)}">${e(n)} - ${e(expedientes[n].caratula||'Sin carátula')}</div>`).join(''):'<div>No se encontraron expedientes</div>';
+  const ql=(q||'').toLowerCase(),l=$('lstExp'),b=$('fBase').value,ex=expedientes[b];
+  const k=Object.keys(ex).filter(n=>!ql||n.toLowerCase().includes(ql)||(ex[n].caratula||'').toLowerCase().includes(ql)).slice(0,50);
+  l.innerHTML=k.length?k.map(n=>`<div data-n="${e(n)}">${e(n)} - ${e(ex[n].caratula||'Sin carátula')}</div>`).join(''):`<div>${expCargada[b]?'No se encontraron expedientes':'Cargando expedientes de la base '+BASES[b].toLowerCase()+'…'}</div>`;
   l.style.display='block';
 }
+function baseChange(){$('fExp').value='';$('fExpS').value='';$('expInfo').textContent='';$('lstExp').style.display='none'}
 function datosForm(){
   let on='',oc='';
   if($('fOrg').value==='otro'){on=V('fNOrg');oc=V('fNCon')}
   else{const o=organismos[$('fOrg').value];if(o){on=o.nombre||'';oc=o.email||o.telefono||o.contacto||''}}
   return {tipo:TIPOS[tipo].n,nombre:V('fNom'),dni:V('fDni'),edad:V('fEdad'),telefono:V('fTel'),direccion:TIPOS[tipo].dir?V('fDir'):'',
-    expedienteReferencia:$('fExp').value,descripcion:V('fDesc'),intervencion:$('fInt').value,organismo:{nombre:on,contacto:oc},estado:$('fEstado').value||'Abierto'};
+    expedienteReferencia:$('fExp').value,expedienteBase:$('fExp').value?$('fBase').value:'',descripcion:V('fDesc'),intervencion:$('fInt').value,organismo:{nombre:on,contacto:oc},estado:$('fEstado').value||'Abierto'};
 }
 
 /* ===== Guardar (RTDB: registros) ===== */
@@ -270,10 +282,11 @@ async function guardar(){
 }
 
 /* ===== Datos ===== */
-async function cargarExpedientes(){
-  try{(await db2.collection('causas').get()).forEach(d=>{const v=d.data();if(v?.numCausa)expedientes[v.numCausa]={...v,firebaseId:d.id}})}
-  catch(x){console.error('Error al cargar expedientes:',x);toast('Error al cargar expedientes. Verificá la configuración de Firebase.','err')}
+async function cargarBase(b){
+  try{(await DB_EXP[b].collection('causas').get()).forEach(d=>{const v=d.data();if(v?.numCausa)expedientes[b][v.numCausa]={...v,firebaseId:d.id}});expCargada[b]=true}
+  catch(x){console.error('Error al cargar expedientes ('+b+'):',x);toast('Error al cargar la base de expedientes '+BASES[b].toLowerCase()+'. Verificá la configuración de Firebase.','err')}
 }
+const cargarExpedientes=()=>Promise.all(Object.keys(BASES).map(cargarBase));
 function escucharRegistros(){
   rtdb.ref('registros').on('value',s=>{
     const v=s.val();registros=v?Object.keys(v).map(id=>({id,...v[id]})).sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha))):[];
@@ -316,10 +329,10 @@ function tabla(){
 
 /* ===== Detalle / impresión ===== */
 function ficha(r){
-  const x=expedientes[r.expedienteReferencia],ex=r.expedienteReferencia?`${r.expedienteReferencia} - ${x?.caratula||'Sin carátula'}`:'No asociado',k=tipoDe(r.tipo);
+  const bs=r.expedienteReferencia?baseDe(r.expedienteReferencia,r.expedienteBase):'',x=getExp(r.expedienteReferencia,r.expedienteBase),ex=r.expedienteReferencia?`${r.expedienteReferencia} - ${x?.caratula||'Sin carátula'}`:'No asociado',k=tipoDe(r.tipo);
   return {
     resumen:kv([['Tipo de caso',r.tipo],['Estado',R(pill(r.estado))],['Fecha de registro',fmtF(r.fecha,true)],['Nombre',r.nombre],['DNI',r.dni],['Edad',r.edad],['Teléfono',r.telefono||'No especificado'],...(r.direccion?[['Dirección',r.direccion]]:[])]),
-    caso:kv([['Expediente de referencia',ex],[k?TIPOS[k].desc:'Descripción',nl(r.descripcion)],['Intervención de la Defensoría',r.intervencion],['Organismo interviniente',r.organismo?.nombre||'No especificado'],['Contacto del organismo',r.organismo?.contacto||'Sin contacto']])};
+    caso:kv([['Expediente de referencia',ex],...(bs?[['Base de expedientes',BASES[bs]]]:[]),[k?TIPOS[k].desc:'Descripción',nl(r.descripcion)],['Intervención de la Defensoría',r.intervencion],['Organismo interviniente',r.organismo?.nombre||'No especificado'],['Contacto del organismo',r.organismo?.contacto||'Sin contacto']])};
 }
 function verRegistro({id}){
   const r=registros.find(x=>x.id===id);if(!r)return;verActual=r;
@@ -354,7 +367,7 @@ const ACT={
     $$('#regTabs button').forEach(b=>b.disabled=b.dataset.k!==tipo);
     $('fNom').value=r.nombre??'';$('fDni').value=r.dni??'';$('fEdad').value=r.edad??'';$('fTel').value=r.telefono??'';$('fDir').value=r.direccion??'';
     $('fDesc').value=r.descripcion??'';$('fInt').value=r.intervencion??'';$('fEstado').value=r.estado||'Abierto';
-    if(r.expedienteReferencia){const x=expedientes[r.expedienteReferencia];$('fExp').value=r.expedienteReferencia;$('fExpS').value=x?`${r.expedienteReferencia} - ${x.caratula||'Sin carátula'}`:r.expedienteReferencia;$('expInfo').textContent=x?'Carátula: '+(x.caratula||''):''}
+    if(r.expedienteReferencia){const bs=baseDe(r.expedienteReferencia,r.expedienteBase),x=getExp(r.expedienteReferencia,r.expedienteBase);if(bs)$('fBase').value=bs;$('fExp').value=r.expedienteReferencia;$('fExpS').value=x?`${r.expedienteReferencia} - ${x.caratula||'Sin carátula'}`:r.expedienteReferencia;$('expInfo').textContent=x?'Carátula: '+(x.caratula||''):''}
     const on=r.organismo?.nombre,i=organismos.findIndex(o=>o.nombre===on);
     if(i>=0)$('fOrg').value=i;else if(on){$('fOrg').value='otro';orgChange();$('fNOrg').value=on;$('fNCon').value=r.organismo.contacto??''}
     $('dReg').showModal();
@@ -377,7 +390,7 @@ document.addEventListener('click',ev=>{
   const rt=t.closest('#regTabs button');if(rt){if(!rt.disabled)setTipo(rt.dataset.k);return}
   const tb=t.closest('.tabs button');if(tb)return setTab(tb.closest('dialog'),[...tb.parentNode.children].indexOf(tb));
   const ex=t.closest('#lstExp div[data-n]');
-  if(ex){const n=ex.dataset.n;$('fExp').value=n;$('fExpS').value=ex.textContent;$('expInfo').textContent='Carátula: '+(expedientes[n]?.caratula||'');$('lstExp').style.display='none';return}
+  if(ex){const n=ex.dataset.n;$('fExp').value=n;$('fExpS').value=ex.textContent;$('expInfo').textContent='Carátula: '+(expedientes[$('fBase').value][n]?.caratula||'');$('lstExp').style.display='none';return}
   if(t.tagName==='DIALOG'&&t.id!=='dReg')return t.close();
   const b=t.closest('[data-a]');if(!b)return;ev.preventDefault();ACT[b.dataset.a]?.(b.dataset);
 });
@@ -389,6 +402,7 @@ $('fInt').innerHTML='<option value="">Seleccionar intervención…</option>'+INT
 fillOrgs();setTipo('proteccion');
 $('q').oninput=()=>filtrar();$('ftipo').onchange=()=>filtrar();$('fest').onchange=()=>filtrar();
 $('fOrg').onchange=orgChange;
+$('fBase').onchange=baseChange;
 $('fExpS').addEventListener('focus',ev=>listaExp(ev.target.value));
 $('fExpS').addEventListener('input',ev=>{$('fExp').value='';$('expInfo').textContent='';listaExp(ev.target.value)});
 cargarExpedientes();escucharRegistros();
