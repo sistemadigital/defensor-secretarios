@@ -178,9 +178,12 @@ import {getFirestore,collection,getDocs} from "https://www.gstatic.com/firebasej
 // App 1: proteccion-personas (casos, Realtime Database)
 const app1=initializeApp({apiKey:"AIzaSyAWlsFqN09y_DAAIKLLIjGjjyR2_rKJIFs",authDomain:"proteccion-personas.firebaseapp.com",projectId:"proteccion-personas"},"app1");
 const rtdb=getDatabase(app1);
-// App 2: causas-defensoria (expedientes, Firestore)
+// App 2: causas-defensoria (expedientes HISTÓRICOS, Firestore)
 const app2=initializeApp({apiKey:"AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",authDomain:"causas-defensoria.firebaseapp.com",databaseURL:"https://causas-defensoria-default-rtdb.firebaseio.com",projectId:"causas-defensoria"},"app2");
 const db2=getFirestore(app2);
+// App 3: causas-2defensoria (expedientes ACTIVOS, Firestore)
+const app3=initializeApp({apiKey:"AIzaSyBevCwkh4iOWVqhp3gG2ae1eCUMkFpnr6I",authDomain:"causas-2defensoria.firebaseapp.com",projectId:"causas-2defensoria",storageBucket:"causas-2defensoria.firebasestorage.app",messagingSenderId:"663905632804",appId:"1:663905632804:web:4f686a88004dc642ad0eb1"},"app3");
+const db3=getFirestore(app3);
 
 /* ===== Utilidades ===== */
 const $=id=>document.getElementById(id), $$=s=>[...document.querySelectorAll(s)];
@@ -233,6 +236,7 @@ const TABS=[
  {i:'x-circle',n:'Inhabilidades',t:'Inhabilidades',s:'Ley II - N.º 36',f:[
   ['inhabilidades','Inhabilidades (negativas)','chips',CH('',[['inhDelitos','Sin condena por delitos dolosos'],['inhMedidas','Sin medidas cautelares vigentes (L. XIV-6 / IV-68)'],['inhRespParental','Sin privación/suspensión de resp. parental'],['inhTutela','Sin remoción de tutela por mal desempeño']])]]},
  {i:'folder',n:'Expediente',t:'Expediente y seguimiento',s:'',f:[
+  ['expedienteBase','Base de expedientes','sel',[['activa','Activa'],['historica','Histórica']]],
   ['expedienteReferencia','Expediente de referencia','exp','Escribí para buscar un expediente'],
   ['estadoCaso','Estado','sel',['Abierto','En Proceso','Cerrado']],
   ['seguimientoInicial','Seguimiento inicial','area','Anotá el primer seguimiento o acción'],
@@ -247,7 +251,7 @@ function fieldHTML([id,l,t='text',x]){
   if(t==='badge')return `<div class="full info">${x.map(([i,tx])=>`<span class="bd" id="${i}">${tx}</span>`).join('')}</div>`;
   if(t==='chips')return `<div class="fld full"><label>${l}</label><div class="chips">${x.items.map(([k,tx])=>`<label class="chip"><input type="checkbox" id="${cid(x,k)}"> ${tx}</label>`).join('')}</div></div>`;
   let c;
-  if(t==='sel')c=`<select class="inp" id="${id}">${id==='estadoCaso'?'':'<option value=""></option>'}${x.map(o=>`<option>${o}</option>`).join('')}</select>`;
+  if(t==='sel')c=`<select class="inp" id="${id}">${['estadoCaso','expedienteBase'].includes(id)?'':'<option value=""></option>'}${x.map(o=>Array.isArray(o)?`<option value="${o[0]}">${o[1]}</option>`:`<option>${o}</option>`).join('')}</select>`;
   else if(t==='area')c=`<textarea class="inp" id="${id}" rows="2" placeholder="${x||''}"></textarea>`;
   else c=`<input class="inp" id="${id}" type="${t==='exp'?'text':t}" ${t==='number'?'min="0" step="1"':''} ${t==='exp'?'autocomplete="off"':''} placeholder="${x||''}">`;
   if(t==='exp')c=`<div style="position:relative">${c}<div class="res" id="expRes"></div></div><small class="sub" id="expInfo"></small>`;
@@ -265,23 +269,31 @@ function setTab(d,i){
 }
 
 /* ===== Estado ===== */
-let casos=[],filtrados=[],causasIndex={},editandoId=null,lastId=null,casoSeg=null,pagina=1;const PAGE=8;
-const getExp=n=>{const c=causasIndex[n];return c?(c.caratula||c.numCausa||''):(n||'')};
+/* Bases de expedientes: activa (causas-2defensoria) e histórica (causas-defensoria) */
+const BASES={activa:'Activa',historica:'Histórica'};
+const DB_EXP={activa:db3,historica:db2};
+const causasIndex={activa:{},historica:{}},expCargada={activa:false,historica:false};
+/* Base de un expediente: la guardada en el caso o, en casos antiguos (sin base), la que lo contenga */
+const baseDe=(n,b)=>BASES[b]?b:(causasIndex.historica[n]?'historica':(causasIndex.activa[n]?'activa':''));
+let casos=[],filtrados=[],editandoId=null,lastId=null,casoSeg=null,pagina=1;const PAGE=8;
+const getExp=(n,b)=>{const c=causasIndex[baseDe(n,b)]?.[n];return c?(c.caratula||c.numCausa||''):(n||'')};
 
 /* ===== Formulario: leer / llenar / limpiar ===== */
 function readForm(){
   const d={};
   FLAT.forEach(([id])=>{if(id!=='seguimientoInicial')d[id]=$(id).value});
+  if(!d.expedienteReferencia)d.expedienteBase='';
   GROUPS.forEach(([g,,,x])=>{d[g]={};x.items.forEach(([k])=>d[g][k]=$(cid(x,k)).checked)});
   return d;
 }
 function fill(c){
   FLAT.forEach(([id])=>{if(c[id]!=null)$(id).value=c[id]});
+  $('expedienteBase').value=baseDe(c.expedienteReferencia,c.expedienteBase)||'activa';
   GROUPS.forEach(([g,,,x])=>x.items.forEach(([k])=>$(cid(x,k)).checked=!!c[g]?.[k]));
   badges();
 }
 function limpiar(){
-  FLAT.forEach(([id])=>$(id).value='');$('estadoCaso').value='Abierto';
+  FLAT.forEach(([id])=>$(id).value='');$('estadoCaso').value='Abierto';$('expedienteBase').value='activa';
   $$('#regBody input[type=checkbox]').forEach(c=>c.checked=false);
   editandoId=null;$('seguimientoInicial').closest('.fld').hidden=false;$('expRes').style.display='none';
   badges();setTab($('dReg'),0);
@@ -302,8 +314,9 @@ function badges(auto){
 function filtrarExp(q){
   const r=$('expRes');r.innerHTML='';
   if(!q){r.style.display='none';return}
-  const l=Object.keys(causasIndex).filter(n=>`causa ${n} ${causasIndex[n].caratula||''}`.toLowerCase().includes(q.toLowerCase()));
-  r.innerHTML=l.length?l.map(n=>`<div data-n="${e(n)}">Causa ${e(n)}${causasIndex[n].caratula?' – '+e(causasIndex[n].caratula):''}</div>`).join(''):'<div>No se encontraron expedientes</div>';
+  const b=$('expedienteBase').value||'activa',ix=causasIndex[b];
+  const l=Object.keys(ix).filter(n=>`causa ${n} ${ix[n].caratula||''}`.toLowerCase().includes(q.toLowerCase()));
+  r.innerHTML=l.length?l.map(n=>`<div data-n="${e(n)}">Causa ${e(n)}${ix[n].caratula?' – '+e(ix[n].caratula):''}</div>`).join(''):`<div>${expCargada[b]?'No se encontraron expedientes':'Cargando expedientes de la base '+BASES[b].toLowerCase()+'…'}</div>`;
   r.style.display='block';
 }
 
@@ -333,11 +346,12 @@ async function guardar(){
 }
 
 /* ===== Carga de datos ===== */
-async function cargarExpedientes(){
-  causasIndex={};
-  try{(await getDocs(collection(db2,'causas'))).forEach(d=>{const v=d.data();if(v?.numCausa)causasIndex[v.numCausa]={...v,firebaseId:d.id}})}
-  catch(x){console.error('Error al cargar expedientes:',x)}
+async function cargarBase(b){
+  causasIndex[b]={};
+  try{(await getDocs(collection(DB_EXP[b],'causas'))).forEach(d=>{const v=d.data();if(v?.numCausa)causasIndex[b][v.numCausa]={...v,firebaseId:d.id}});expCargada[b]=true}
+  catch(x){console.error('Error al cargar expedientes ('+b+'):',x);toast('No se pudo cargar la base de expedientes '+BASES[b].toLowerCase()+'.','err')}
 }
+const cargarExpedientes=()=>Promise.all(Object.keys(BASES).map(cargarBase));
 async function cargarCasos(){
   try{const s=await get(child(ref(rtdb),'casos'));casos=s.exists()?Object.entries(s.val()).map(([id,v])=>({id,...v})).reverse():[]}
   catch(x){casos=[];console.error(x);toast('No se pudieron cargar los casos.','err')}
@@ -351,7 +365,7 @@ function tramite(){
   const l=casos.filter(c=>c.estadoCaso==='En Proceso');$('tramN').textContent=l.length;
   $('tram').innerHTML=l.length?l.map(c=>{
     const sg=c.seguimientos||[],u=sg[sg.length-1];
-    return `<div class="tr"><button class="go" data-a="view" data-id="${c.id}"><span class="av">${e(ini(c.nombreNNA))}</span><span><b>${e(c.nombreNNA||'Sin nombre')}</b><small>Exp: ${e(c.expedienteReferencia?getExp(c.expedienteReferencia):'—')}</small><small>${u?'Último seguimiento: '+e(String(u.fecha).split(',')[0]):e(c.tipoFamilia||'Sin seguimientos')}</small></span></button><button class="fu" data-a="seg" data-id="${c.id}" title="Agregar seguimiento" aria-label="Agregar seguimiento"><i class="bi bi-journal-plus"></i></button></div>`}).join(''):'<p class="empty">No hay casos en proceso.</p>';
+    return `<div class="tr"><button class="go" data-a="view" data-id="${c.id}"><span class="av">${e(ini(c.nombreNNA))}</span><span><b>${e(c.nombreNNA||'Sin nombre')}</b><small>Exp: ${e(c.expedienteReferencia?getExp(c.expedienteReferencia,c.expedienteBase):'—')}</small><small>${u?'Último seguimiento: '+e(String(u.fecha).split(',')[0]):e(c.tipoFamilia||'Sin seguimientos')}</small></span></button><button class="fu" data-a="seg" data-id="${c.id}" title="Agregar seguimiento" aria-label="Agregar seguimiento"><i class="bi bi-journal-plus"></i></button></div>`}).join(''):'<p class="empty">No hay casos en proceso.</p>';
 }
 function filtrar(){
   const q=$('q').value.toLowerCase(),s=$('est').value;
@@ -371,7 +385,7 @@ function tabla(){
      <td>${pill(c.estadoCaso)}</td>
      <td>${c.tipoFamilia?`<span class="tag">${e(c.tipoFamilia)}</span>`:'—'}<div class="sub">${e(c.tipoMedida||'')}</div></td>
      <td class="h2">${e(c.faNombre||'—')}<div class="sub">${e(c.faContacto||'')}</div></td>
-     <td>${c.expedienteReferencia?`<a href="#" class="lnk" data-a="exp" data-n="${e(c.expedienteReferencia)}">${e(getExp(c.expedienteReferencia))}</a>`:'—'}</td>
+     <td>${c.expedienteReferencia?`<a href="#" class="lnk" data-a="exp" data-n="${e(c.expedienteReferencia)}" data-b="${e(c.expedienteBase||'')}">${e(getExp(c.expedienteReferencia,c.expedienteBase))}</a>`:'—'}</td>
      <td class="h">${e(c.fechaRegistro||'—')}<div class="sub">${s} seguimiento${s===1?'':'s'}</div></td>
      <td><div class="acts"><button data-a="view" data-id="${c.id}" title="Ver detalle" aria-label="Ver detalle"><i class="bi bi-eye"></i></button><button data-a="edit" data-id="${c.id}" title="Editar" aria-label="Editar"><i class="bi bi-pencil-square"></i></button><button data-a="seg" data-id="${c.id}" title="Seguimiento" aria-label="Seguimiento"><i class="bi bi-journal-text"></i></button></div></td></tr>`}).join('')}</tbody></table>`;
   const pb=(p,l,x='',dis=false)=>`<button class="pgb ${x}" data-a="pg" data-p="${p}" ${dis?'disabled':''}>${l}</button>`;
@@ -388,9 +402,9 @@ async function verCaso({id}){
   const n=calcEdad(c.fechaNacimientoNNA),f=calcEdad(c.faFechaNac),df=n!=null&&f!=null?f-n:null;
   const age=(v,ok)=>R(v==null?'':` <span class="bd ${ok?'ok':'no'}">${v} años</span>`);
   const ck=g=>{const x=GROUPS.find(z=>z[0]===g)[3];return R(`<div class="chips">${x.items.map(([k,l])=>{const on=c[g]?.[k];return `<div class="chip ${on?'on':'off'}"><i class="bi bi-${on?'check-circle-fill':'circle'}"></i> ${e(l)}</div>`}).join('')}</div>`)};
-  const exp=c.expedienteReferencia?R(`<a href="#" class="lnk" data-a="exp" data-n="${e(c.expedienteReferencia)}">${e(getExp(c.expedienteReferencia))}</a>`):'';
+  const exp=c.expedienteReferencia?R(`<a href="#" class="lnk" data-a="exp" data-n="${e(c.expedienteReferencia)}" data-b="${e(c.expedienteBase||'')}">${e(getExp(c.expedienteReferencia,c.expedienteBase))}</a>`):'';
   const P=[
-   ['Resumen',kv([['Nombre',c.nombreNNA],['Nombre completo',c.nombreCompletoNNA],['DNI',c.dniNNA],['Fecha de nacimiento',R(e(c.fechaNacimientoNNA)+(n!=null?` <span class="bd ok">${n} años</span>`:''))],['Género',c.generoNNA],['Nacionalidad',c.nacionalidadNNA],['Identidad cultural',c.identidadCulturalNNA],['Centro de vida',c.centroVida],['Vínculos fraternos',c.vinculosFraternos],['Estado',R(pill(c.estadoCaso))],['Expediente',exp],['Lugar de institucionalización',c.lugarInstitucionalizacion],['Contacto de institucionalización',c.contactoInstitucionalizacion]])],
+   ['Resumen',kv([['Nombre',c.nombreNNA],['Nombre completo',c.nombreCompletoNNA],['DNI',c.dniNNA],['Fecha de nacimiento',R(e(c.fechaNacimientoNNA)+(n!=null?` <span class="bd ok">${n} años</span>`:''))],['Género',c.generoNNA],['Nacionalidad',c.nacionalidadNNA],['Identidad cultural',c.identidadCulturalNNA],['Centro de vida',c.centroVida],['Vínculos fraternos',c.vinculosFraternos],['Estado',R(pill(c.estadoCaso))],['Expediente',exp],...(c.expedienteReferencia&&baseDe(c.expedienteReferencia,c.expedienteBase)?[['Base de expedientes',BASES[baseDe(c.expedienteReferencia,c.expedienteBase)]]]:[]),['Lugar de institucionalización',c.lugarInstitucionalizacion],['Contacto de institucionalización',c.contactoInstitucionalizacion]])],
    ['Medida y SAF',kv([['Tipo de medida',c.tipoMedida],['Autoridad',c.autoridadInterviniente],['Fecha de la medida',c.fechaMedida],['Ingreso al SAF',c.fechaIngresoSAF],['Tipo de familia',c.tipoFamilia],['RUFAAFA',c.rufAAFA],['Referente',c.faNombre],['DNI del referente',c.faDni],['Fecha nac. del referente',R(e(c.faFechaNac)+(f!=null?` <span class="bd ${f>=25?'ok':'no'}">${f} años</span>`:''))],['Contacto',c.faContacto],['Domicilio',c.faDomicilio],['Residencia en Misiones',R(e(c.faResidenciaAnos)+(c.faResidenciaAnos?` <span class="bd ${parseInt(c.faResidenciaAnos,10)>=2?'ok':'warn'}">${e(c.faResidenciaAnos)} años</span>`:''))],['Diferencia de edad',df!=null?R(`${df} años <span class="bd ${df>=15?'ok':'no'}">${df>=15?'OK':'Insuficiente'}</span>`):''],['Etapas',ck('etapas')],['Plan de intervención',nl(c.planIntervencion)],['Causal de egreso',c.causalEgreso],['Fecha de egreso',c.fechaEgreso]])],
    ['Situación y familia',kv([['Situación de vulneración',nl(c.situacionVulneracion)],['Derechos (oído / identidad)',nl(c.obsDerechos)],['Opinión del NNA',nl(c.opinionNNA)],['Madre',c.nombreMadre],['Padre',c.nombrePadre],['Vínculo familiar',c.vinculoFamiliar],['Observaciones familiares',nl(c.obsFamilia)],['Medidas aplicadas',ck('medidasAplicadas')],['Observaciones de la medida',nl(c.obsMedida)],['Asistencia letrada',c.asistenciaLetrada],['Acto infractor',c.actoInfractor],['Información a la familia',nl(c.infoFamilia)]])],
    ['Requisitos',`<h4>Requisitos RUFAAFA</h4>${ck('requisitos').r}<h4 style="margin-top:20px">Inhabilidades</h4>${ck('inhabilidades').r}`],
@@ -403,11 +417,11 @@ async function verCaso({id}){
   setTab($('dVer'),0);$('dVer').showModal();
 }
 
-/* ===== Expediente (Firestore app2) ===== */
-async function verExp({n}){
-  const c=causasIndex[n];if(!c)return toast('Detalles del expediente no encontrados.','err');
-  let s=[];try{s=(await getDocs(collection(db2,'causas',c.firebaseId,'seguimiento'))).docs.map(d=>d.data())}catch(x){console.error(x)}
-  $('expBody').innerHTML=`<h4>Datos del expediente</h4>`+kv([['Número de causa',c.numCausa],['Carátula',c.caratula],['Fecha de registro',c.fecha],['Estado',c.estado],['Detalle',nl(c.detalle)]])+`<h4>Seguimientos</h4>`+(s.length?tl(s):'<p class="empty">Sin seguimientos registrados.</p>');
+/* ===== Expediente (Firestore: base activa o histórica) ===== */
+async function verExp({n,b}){
+  const bs=baseDe(n,b),c=causasIndex[bs]?.[n];if(!c)return toast('Detalles del expediente no encontrados.','err');
+  let s=[];try{s=(await getDocs(collection(DB_EXP[bs],'causas',c.firebaseId,'seguimiento'))).docs.map(d=>d.data())}catch(x){console.error(x)}
+  $('expBody').innerHTML=`<h4>Datos del expediente</h4>`+kv([['Número de causa',c.numCausa],['Base de expedientes',BASES[bs]],['Carátula',c.caratula],['Fecha de registro',c.fecha],['Estado',c.estado],['Detalle',nl(c.detalle)]])+`<h4>Seguimientos</h4>`+(s.length?tl(s):'<p class="empty">Sin seguimientos registrados.</p>');
   $('dExp').showModal();
 }
 
@@ -447,6 +461,7 @@ document.addEventListener('click',ev=>{
 });
 $('regBody').addEventListener('input',ev=>{
   if(['fechaNacimientoNNA','faFechaNac','faResidenciaAnos'].includes(ev.target.id))badges(true);
+  if(ev.target.id==='expedienteBase'){$('expedienteReferencia').value='';$('expRes').style.display='none'}
   if(ev.target.id==='expedienteReferencia')filtrarExp(ev.target.value);
 });
 $('prev').onclick=()=>setTab($('dReg'),+$('dReg').dataset.tab-1);
