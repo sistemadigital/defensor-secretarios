@@ -1,2422 +1,397 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protección de Personas Adultas</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    
-    <style>
-        :root {
-            --primary-blue: #007bff;
-            --primary-light-blue: #e7f4ff;
-            --primary-dark-blue: #0056b3;
-            --secondary-gray: #f8f9fa;
-            --secondary-light-gray: #e9ecef;
-            --secondary-dark-gray: #6c757d;
-            --status-success: #28a745;
-            --status-warning: #ffc107;
-            --status-danger: #dc3545;
-            --status-info: #17a2b8;
-            --text-primary: #212529;
-            --text-secondary: #6c757d;
-            --text-link: #007bff;
-            --text-light: #ffffff;
-            --background-default: #ffffff;
-            --background-card: #ffffff;
-            --background-header: #ffffff;
-            --background-table-header: #f8f9fa;
-            --border-default: #dee2e6;
-            --font-family: 'Arial', 'Helvetica', sans-serif;
-            --display-size: 24px;
-            --h1-size: 20px;
-            --h2-size: 18px;
-            --body-large-size: 16px;
-            --body-regular-size: 14px;
-            --caption-size: 12px;
-            --font-weight-regular: 400;
-            --font-weight-semibold: 600;
-            --font-weight-bold: 700;
-            --spacing-unit: 8px;
-            --spacing-xs: 4px;
-            --spacing-s: 8px;
-            --spacing-m: 16px;
-            --spacing-l: 24px;
-            --spacing-xl: 32px;
-            --spacing-gutter: 20px;
-            --border-radius-small: 2px;
-            --border-radius-default: 4px;
-            --border-radius-pill: 20px;
-            --shadow-none: none;
-            --shadow-subtle: 0 1px 3px rgba(0,0,0,0.1);
-            --radius: 12px;
-            --shadow: 0 4px 15px rgba(0,0,0,.08);
-        }
-
-        body {
-            font-family: var(--font-family);
-            background-color: var(--background-default);
-            color: var(--text-primary);
-            line-height: 1.5;
-            min-height: 100vh;
-            padding-top: 80px;
-        }
-
-        /* Header */
-        .header {
-            background-color: var(--background-header);
-            border-bottom: 1px solid var(--border-default);
-            padding: var(--spacing-s) var(--spacing-m);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-subtle);
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1800px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            font-size: var(--h1-size);
-            font-weight: var(--font-weight-bold);
-            color: var(--primary-blue);
-        }
-
-        /* Menú de navegación en el header */
-        .nav-menu {
-            display: flex;
-            gap: var(--spacing-s);
-            flex-wrap: wrap;
-        }
-
-        .nav-button {
-            background-color: var(--background-card);
-            border: 1px solid var(--border-default);
-            border-radius: var(--border-radius-default);
-            padding: var(--spacing-s) var(--spacing-m);
-            text-align: center;
-            box-shadow: var(--shadow-subtle);
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-            text-decoration: none;
-            color: var(--text-primary);
-            font-size: var(--body-regular-size);
-            font-weight: var(--font-weight-semibold);
-        }
-
-        .nav-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-            background-color: var(--primary-blue);
-            color: var(--text-light);
-            text-decoration: none;
-        }
-
-        /* Contenedor principal */
-        .container {
-            max-width: 1800px;
-            margin: 0 auto;
-            padding: var(--spacing-m) var(--spacing-gutter);
-        }
-
-        /* Dashboard con KPIs */
-        .dashboard-section {
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .dashboard-title {
-            font-size: var(--h2-size);
-            font-weight: var(--font-weight-semibold);
-            margin-bottom: var(--spacing-m);
-        }
-
-        .dashboard-cards {
-            display: flex;
-            gap: var(--spacing-m);
-            overflow-x: auto;
-            padding-bottom: var(--spacing-s);
-        }
-
-        .dashboard-card {
-            background-color: var(--background-card);
-            padding: var(--spacing-m) var(--spacing-l);
-            border-radius: var(--border-radius-default);
-            border: 1px solid var(--border-default);
-            text-align: center;
-            box-shadow: var(--shadow-subtle);
-            transition: transform 0.2s, box-shadow 0.2s;
-            min-width: 180px;
-            flex: 1;
-        }
-
-        .dashboard-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-
-        .dashboard-card.total {
-            background-color: var(--primary-blue);
-            color: var(--text-light);
-        }
-
-        .dashboard-card.proteccion {
-            border-left: 4px solid var(--primary-blue);
-        }
-
-        .dashboard-card.capacidad {
-            border-left: 4px solid var(--status-success);
-        }
-
-        .dashboard-card.restriccion {
-            border-left: 4px solid var(--status-warning);
-        }
-
-        .dashboard-card.internacion {
-            border-left: 4px solid var(--status-danger);
-        }
-
-        .dashboard-number {
-            font-size: var(--display-size);
-            font-weight: var(--font-weight-bold);
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .dashboard-card.total .dashboard-number {
-            color: var(--text-light);
-        }
-
-        .dashboard-label {
-            font-size: var(--caption-size);
-            font-weight: var(--font-weight-regular);
-            text-transform: uppercase;
-        }
-
-        .dashboard-card.total .dashboard-label {
-            color: var(--text-light);
-        }
-
-        /* Filtros y tabla de casos */
-        .filters-section {
-            background-color: var(--background-card);
-            padding: var(--spacing-m);
-            border-radius: var(--border-radius-default);
-            border: 1px solid var(--border-default);
-            margin-bottom: var(--spacing-xl);
-            box-shadow: var(--shadow-subtle);
-        }
-
-        .filters-title {
-            font-size: var(--h2-size);
-            font-weight: var(--font-weight-semibold);
-            margin-bottom: var(--spacing-m);
-        }
-
-        .filter-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--spacing-m);
-        }
-
-        .filter-group {
-            flex: 1;
-            min-width: 150px;
-        }
-
-        .filter-label {
-            display: block;
-            font-size: var(--body-regular-size);
-            margin-bottom: var(--spacing-xs);
-            font-weight: var(--font-weight-semibold);
-        }
-
-        .input, .dropdown {
-            border: 1px solid var(--border-default);
-            border-radius: var(--border-radius-default);
-            padding: var(--spacing-s);
-            background-color: var(--background-default);
-            color: var(--text-primary);
-            font-size: var(--body-regular-size);
-            width: 100%;
-            transition: border-color 0.2s;
-        }
-
-        .input:focus, .dropdown:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: var(--spacing-s);
-            margin-top: var(--spacing-m);
-            flex-wrap: wrap;
-        }
-
-        .button {
-            background-color: var(--primary-blue);
-            color: var(--text-light);
-            border: none;
-            border-radius: var(--border-radius-default);
-            padding: var(--spacing-s) var(--spacing-m);
-            font-size: var(--body-regular-size);
-            cursor: pointer;
-            transition: background-color 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-        }
-
-        .button:hover {
-            opacity: 0.9;
-        }
-
-        .button-success {
-            background-color: #1e7e34;
-        }
-
-        .button-secondary {
-            background-color: var(--secondary-dark-gray);
-        }
-
-        .button-danger {
-            background-color: var(--status-danger);
-        }
-
-        .button-info {
-            background-color: var(--status-info);
-        }
-
-        /* Tabla de casos */
-        .table-section {
-            background-color: var(--background-card);
-            border-radius: var(--border-radius-default);
-            border: 1px solid var(--border-default);
-            overflow: hidden;
-            box-shadow: var(--shadow-subtle);
-        }
-
-        .table-title {
-            font-size: var(--h2-size);
-            font-weight: var(--font-weight-semibold);
-            padding: var(--spacing-m);
-            background-color: var(--background-table-header);
-            border-bottom: 1px solid var(--border-default);
-        }
-
-        .table-wrap {
-            overflow-x: auto;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 1000px;
-        }
-
-        .data-table th {
-            background-color: var(--background-table-header);
-            font-weight: var(--font-weight-semibold);
-            border-bottom: 2px solid var(--border-default);
-            padding: var(--spacing-m);
-            color: var(--text-primary);
-            font-size: var(--caption-size);
-            text-transform: uppercase;
-        }
-
-        .data-table td {
-            border-bottom: 1px solid var(--border-default);
-            padding: var(--spacing-m);
-            color: var(--text-primary);
-            font-size: var(--body-regular-size);
-        }
-
-        .data-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .data-table tr:hover td {
-            background-color: var(--secondary-gray);
-        }
-
-        /* Estilos para estado */
-        .estado-pill {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: #fff;
-            text-transform: uppercase;
-        }
-        .estado-abierto { background-color: var(--status-success); }
-        .estado-proceso { background-color: var(--status-warning); }
-        .estado-cerrado { background-color: var(--status-danger); }
-
-        /* Acciones con iconos */
-        .action-buttons-table {
-            display: flex;
-            gap: 6px;
-            justify-content: center;
-        }
-
-        .btn-icon {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-view {
-            background-color: var(--status-info);
-            color: white;
-        }
-
-        .btn-edit {
-            background-color: var(--status-warning);
-            color: white;
-        }
-
-        .btn-follow {
-            background-color: var(--primary-blue);
-            color: white;
-        }
-
-        .btn-icon:hover {
-            opacity: 0.8;
-            transform: scale(1.05);
-        }
-
-        /* Paginación */
-        #paginacion-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--spacing-m);
-            margin-top: var(--spacing-m);
-            background: var(--background-card);
-            border-radius: var(--border-radius-default);
-            box-shadow: var(--shadow-subtle);
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        #paginacion-container .page-info {
-            font-size: var(--body-regular-size);
-            color: var(--text-secondary);
-            font-weight: var(--font-weight-semibold);
-        }
-        #paginacion-container .nav-buttons {
-            display: flex;
-            gap: var(--spacing-s);
-            align-items: center;
-        }
-
-        .pagination-numbers {
-            display: flex;
-            gap: 5px;
-            overflow-x: auto;
-            max-width: 300px;
-            padding: 5px 0;
-        }
-
-        .page-number {
-            min-width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--border-default);
-            border-radius: 4px;
-            background: white;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .page-number:hover {
-            background: var(--secondary-light-gray);
-        }
-
-        .page-number.active {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-
-        /* MODALES */
-        .modal-header {
-            position: sticky;
-            top: 0;
-            background: var(--primary-blue);
-            color: #fff;
-            padding: 12px 16px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 16px 16px 0 0;
-            z-index: 5;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            justify-content: center;
-        }
-        .modal-body {
-            padding: 16px 16px 0;
-            overflow-y: auto;
-        }
-        .controls-form {
-            position: sticky;
-            bottom: 0;
-            background: #fff;
-            padding: 12px 16px;
-            border-top: 1px solid #eee;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: flex-end;
-            z-index: 5;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-        @media(max-width:900px) { 
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        .form-group label {
-            font-weight: 600;
-            color: var(--primary-blue);
-            font-size: 0.9rem;
-            margin-bottom: 4px;
-            display: block;
-        }
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            background: #fafafa;
-            transition: .2s;
-        }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-            background: #fff;
-        }
-
-        /* Búsqueda en expedientes */
-        .expediente-search-container {
-            position: relative;
-        }
-
-        .expediente-search-input {
-            margin-bottom: 8px;
-        }
-
-        .expediente-list {
-            max-height: 150px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            display: none;
-            position: absolute;
-            background: white;
-            width: 100%;
-            z-index: 10;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .expediente-item {
-            padding: 8px 12px;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-        }
-
-        .expediente-item:hover {
-            background-color: #f5f5f5;
-        }
-
-        .expediente-item:last-child {
-            border-bottom: none;
-        }
-
-        /* Estilos para el modal de ver detalles */
-        .detalle-registro {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-        .detalle-registro h4 {
-            color: var(--primary-blue);
-            margin-bottom: 15px;
-            border-bottom: 2px solid var(--primary-blue);
-            padding-bottom: 8px;
-        }
-        .detalle-item {
-            margin-bottom: 10px;
-            display: flex;
-        }
-        .detalle-label {
-            font-weight: 600;
-            min-width: 180px;
-            color: #495057;
-        }
-        .detalle-value {
-            flex: 1;
-            color: #212529;
-        }
-
-        /* Alerta flotante */
-        .floating-alert {
-            position: fixed;
-            top: -100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--status-danger);
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            max-width: 400px;
-            text-align: center;
-            font-size: 1rem;
-        }
-        .floating-alert.success {
-            background-color: var(--status-success);
-        }
-
-        .floating-alert.show {
-            opacity: 1;
-            visibility: visible;
-            top: 20px;
-        }
-
-        /* Estilos para el modal de seguimiento */
-        .timeline-item {
-            border-left: 3px solid var(--primary-blue);
-            margin-left: 10px;
-            padding-left: 12px;
-            margin-bottom: 12px;
-            position: relative;
-        }
-        
-        .timeline-item .date {
-            font-size: 0.82rem;
-            color: var(--text-secondary);
-        }
-        
-        .timeline-item .delete-btn {
-            position: absolute;
-            right: 0;
-            top: 0;
-            background: none;
-            border: none;
-            color: var(--status-danger);
-            cursor: pointer;
-        }
-        
-        .seguimiento-form {
-            border-top: 1px solid var(--border-default);
-            padding: 14px;
-            background: #fafbfc;
-            margin-top: 20px;
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .container {
-                max-width: 100%;
-                padding: var(--spacing-s);
-            }
-            
-            .dashboard-cards {
-                gap: var(--spacing-s);
-            }
-            
-            .dashboard-card {
-                min-width: 160px;
-                padding: var(--spacing-s) var(--spacing-m);
-            }
-            
-            .filter-row {
-                gap: var(--spacing-s);
-            }
-            
-            .filter-group {
-                min-width: 140px;
-            }
-            
-            .nav-menu {
-                gap: var(--spacing-xs);
-            }
-            
-            .nav-button {
-                padding: var(--spacing-xs) var(--spacing-s);
-                font-size: var(--caption-size);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: var(--spacing-s);
-                text-align: center;
-            }
-            
-            .dashboard-cards {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                overflow-x: visible;
-            }
-            
-            .dashboard-card {
-                min-width: auto;
-            }
-            
-            .filter-row {
-                flex-direction: column;
-            }
-            
-            .filter-group {
-                min-width: auto;
-            }
-            
-            #paginacion-container {
-                flex-direction: column;
-                gap: var(--spacing-m);
-                text-align: center;
-            }
-            
-            .table-title {
-                padding: var(--spacing-s);
-            }
-            
-            .data-table th, 
-            .data-table td {
-                padding: var(--spacing-s);
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .controls-form {
-                flex-direction: column;
-            }
-            
-            .nav-menu {
-                justify-content: center;
-                width: 100%;
-            }
-            
-            .detalle-item {
-                flex-direction: column;
-            }
-            .detalle-label {
-                min-width: auto;
-                margin-bottom: 5px;
-            }
-
-            .pagination-numbers {
-                max-width: 100%;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .container {
-                padding: var(--spacing-xs);
-            }
-            
-            .dashboard-cards {
-                grid-template-columns: 1fr;
-            }
-            
-            .dashboard-card {
-                padding: var(--spacing-m);
-            }
-            
-            .dashboard-number {
-                font-size: var(--h1-size);
-            }
-            
-            .filters-section,
-            .table-section {
-                padding: var(--spacing-s);
-            }
-            
-            .filters-title,
-            .table-title {
-                font-size: var(--body-large-size);
-            }
-            
-            .nav-button {
-                padding: var(--spacing-xs);
-                font-size: 0.7rem;
-            }
-
-            .action-buttons-table {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .btn-icon {
-                width: 28px;
-                height: 28px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sistema de Protección de Personas Adultas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<!-- Firebase (sin cambios) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<style>
+:root{--b50:#eff6ff;--b100:#dbeafe;--b200:#bfdbfe;--b500:#3b82f6;--b600:#2563eb;--b700:#1d4ed8;--b900:#1e3a8a;--ink:#0f172a;--mut:#64748b;--line:#e2e8f0;--bg:#f5f8ff;--sh:0 1px 2px rgba(30,58,138,.05),0 6px 20px rgba(37,99,235,.06)}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;font:14px/1.55 'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink);background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+h2{margin:0;font-size:16px;font-weight:700;letter-spacing:-.01em}
+h4{margin:2px 0 14px;font-size:14px;color:var(--b700)}
+.sub{color:var(--mut);font-size:12px}.empty{padding:28px;text-align:center;color:var(--mut);margin:0}
+:focus-visible{outline:2px solid var(--b500);outline-offset:2px}
+.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top>div{max-width:1600px;margin:auto;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px;letter-spacing:-.01em}
+.brand i{background:var(--b600);color:#fff;width:36px;height:36px;border-radius:11px;display:grid;place-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;font-weight:600;cursor:pointer;transition:.15s}
+.btn:hover:not(:disabled){border-color:var(--b500);color:var(--b600)}.btn:disabled{opacity:.5;cursor:default}
+.btn.p{background:var(--b600);border-color:var(--b600);color:#fff}.btn.p:hover:not(:disabled){background:var(--b700);border-color:var(--b700);color:#fff}
+main{max-width:1600px;margin:auto;padding:24px 20px 48px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;align-items:start}
+.side{position:sticky;top:84px;max-height:calc(100dvh - 108px);display:flex;flex-direction:column}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);overflow:hidden}
+.ch{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.inp{border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:#fff;width:100%;min-width:0;transition:.15s}
+.inp:focus{outline:0;border-color:var(--b500);box-shadow:0 0 0 3px var(--b100)}textarea.inp{resize:vertical}
+.srch{position:relative}.srch i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--mut)}.srch .inp{padding-left:35px;min-width:240px}
+.tram{display:flex;flex-direction:column;gap:8px;padding:14px;overflow-y:auto;min-height:0}
+.tr{display:flex;align-items:center;border:1px solid var(--line);border-radius:14px;background:#fff;transition:.15s}.tr:hover{border-color:var(--b500);background:var(--b50)}
+.go{display:flex;align-items:center;gap:10px;flex:1;min-width:0;border:0;background:none;text-align:left;padding:10px 4px 10px 12px;cursor:pointer}
+.go>span:last-child{min-width:0;flex:1}.go b,.go small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.go small{color:var(--mut);font-size:12px}
+.fu{border:0;background:none;color:var(--mut);width:34px;height:34px;margin-right:6px;border-radius:9px;cursor:pointer;flex:none}.fu:hover{background:var(--b100);color:var(--b700)}
+.tw{overflow-x:auto;padding:2px 16px 6px;background:#f8fbff}
+table{width:100%;border-collapse:separate;border-spacing:0 8px;min-width:720px}
+th{text-align:left;font-size:12px;color:var(--mut);font-weight:600;padding:6px 16px;white-space:nowrap}
+td{padding:13px 16px;background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line);vertical-align:middle;transition:.15s}
+td:first-child{border-left:1px solid var(--line);border-radius:14px 0 0 14px;box-shadow:inset 3px 0 0 var(--st,var(--b500))}
+td:last-child{border-right:1px solid var(--line);border-radius:0 14px 14px 0}
+tbody tr:hover td{border-color:var(--b200);background:#fcfdff}
+tr.proc{--st:#f59e0b}tr.cer{--st:#94a3b8}tr.hl td{background:var(--b100)!important}
+.who{display:flex;align-items:center;gap:11px}.who b,.who small{display:block}.who small{color:var(--mut);font-size:12px;font-weight:400}
+.av{width:36px;height:36px;border-radius:50%;background:var(--b100);color:var(--b700);font-weight:700;font-size:13px;display:grid;place-items:center;flex:none}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:99px;padding:3px 11px;font-size:12px;font-weight:600;background:var(--b50);color:var(--b700);white-space:nowrap}
+.pill:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.proc{background:#fef3c7;color:#b45309}.pill.cer{background:#f1f5f9;color:#475569}
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--b50);color:var(--b700);border-radius:8px;padding:3px 9px;font-size:12px;font-weight:500;white-space:nowrap}
+.acts{display:inline-flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.acts button{width:32px;height:32px;border:0;border-radius:9px;background:none;color:var(--mut);cursor:pointer;font-size:15px;transition:.15s}
+.acts button:hover{background:var(--b50);color:var(--b600)}.acts button[data-a=edit]:hover{background:var(--b600);color:#fff}
+.pg{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;padding:12px 20px;border-top:1px solid var(--line)}
+.pgb{min-width:34px;height:34px;border:1px solid var(--line);background:#fff;border-radius:9px;cursor:pointer;font-weight:600;margin-left:4px;transition:.15s}
+.pgb:hover:not(:disabled){border-color:var(--b500);color:var(--b600)}.pgb.on{background:var(--b600);border-color:var(--b600);color:#fff}.pgb:disabled{opacity:.4;cursor:default}
+/* modales */
+dialog{border:0;border-radius:20px;padding:0;width:min(980px,calc(100% - 24px));max-height:calc(100dvh - 24px);box-shadow:0 24px 80px rgba(15,23,42,.28);color:inherit;overflow:hidden}
+dialog[open]{display:flex;flex-direction:column;animation:pop .22s ease}dialog::backdrop{background:rgba(15,23,42,.45);backdrop-filter:blur(3px)}
+@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.98)}}
+#dReg{width:min(920px,calc(100% - 24px))}#dSeg{width:min(720px,calc(100% - 24px))}
+.mh{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 22px}
+.mh h3{margin:0;font-size:18px;font-weight:700;display:flex;gap:10px;align-items:center;letter-spacing:-.01em}.mh h3 i{color:var(--b600)}
+.x{border:0;background:var(--b50);color:var(--b700);width:34px;height:34px;border-radius:50%;cursor:pointer;flex:none}.x:hover{background:var(--b100)}
+.tabs{display:flex;gap:2px;padding:6px 14px 0;border-bottom:1px solid var(--line);background:#fafcff}
+.tabs button{flex:1 1 0;min-width:0;border:0;background:none;padding:10px 4px 9px;font-size:12px;font-weight:600;color:var(--mut);cursor:pointer;border-bottom:2px solid transparent;display:flex;flex-direction:column;align-items:center;gap:3px;transition:.15s}
+.tabs button i{font-size:17px}.tabs button span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tabs button:hover:not(:disabled){color:var(--b600)}.tabs button.on{color:var(--b600);border-color:var(--b600)}.tabs button:disabled{opacity:.4;cursor:default}
+.tabs .sm{display:none}
+.mb{padding:20px 22px;overflow-y:auto;flex:1;min-height:0}.pane{display:none}.pane.on{display:block}
+.mf{display:flex;gap:10px;justify-content:space-between;align-items:center;padding:14px 22px;border-top:1px solid var(--line);background:#fafcff;flex-wrap:wrap}
+.g6{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.s1{grid-column:span 1}.s2{grid-column:span 2}.s3{grid-column:span 3}.s4{grid-column:span 4}.s6{grid-column:span 6}
+.fld label{display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:6px}
+.rel{position:relative}
+.res{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(15,23,42,.14);max-height:210px;overflow-y:auto;z-index:10;display:none}
+.res div{padding:9px 12px;cursor:pointer;border-bottom:1px solid #eef2f9}.res div:hover{background:var(--b50)}.res div:last-child{border:0}
+details.ref{background:var(--b50);border-radius:12px;padding:9px 14px;margin-bottom:16px;color:var(--b900)}
+details.ref summary{cursor:pointer;font-weight:600}details.ref p{margin:8px 0 2px;font-size:12.5px;line-height:1.6}
+.kv{display:grid;grid-template-columns:200px 1fr;margin:0 0 20px}.kv dt,.kv dd{margin:0;padding:9px 0;border-bottom:1px solid #eef2f9}.kv dt{color:var(--mut);font-weight:500;padding-right:12px}
+.tl{display:grid;gap:14px;margin-bottom:16px}.ti{position:relative;border-left:2px solid var(--b200);padding:2px 34px 2px 14px}.ti small{display:block;color:var(--mut)}
+.del{position:absolute;right:0;top:0;border:0;background:none;color:#ef4444;cursor:pointer;padding:4px}
+.addseg{display:grid;gap:10px;justify-content:start;border-top:1px solid var(--line);padding-top:16px}.addseg .inp{width:min(560px,100%)}
+.toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-90px);background:var(--b900);color:#fff;padding:11px 18px;border-radius:12px;box-shadow:0 10px 30px rgba(15,23,42,.25);z-index:1000;transition:.4s;max-width:min(420px,calc(100% - 24px));text-align:center;font-weight:500}
+.toast.show{transform:translate(-50%,0)}.toast.err{background:#b91c1c}
+@media(max-width:1500px){.h{display:none}}
+@media(max-width:1250px){.h2{display:none}}
+@media(max-width:1100px){.layout{grid-template-columns:1fr}.side{position:static;max-height:320px;order:-1}}
+@media(max-width:900px){.g6{grid-template-columns:repeat(2,1fr)}.g6>*{grid-column:auto}.g6>.s6,.g6>.s4{grid-column:1/-1}}
+@media(max-width:700px){.g6{grid-template-columns:1fr}.kv{grid-template-columns:1fr}.kv dt{border:0;padding-bottom:0}.srch .inp{min-width:0}.srch,.tools>*{flex:1 1 100%}
+.tabs .lg{display:none}.tabs .sm{display:inline}
+dialog,#dReg,#dSeg{width:100%;max-height:100dvh;height:100dvh;border-radius:0}.mh,.mb,.mf{padding-left:16px;padding-right:16px}.mf .tools{width:100%}.mf .tools .btn{flex:1}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
 </head>
 <body>
-    <div class="floating-alert" id="floating-alert"></div>
+<div class="toast" id="toast" role="status"></div>
+<header class="top"><div>
+  <div class="brand"><i class="bi bi-shield-check"></i>Protección de Personas Adultas</div>
+  <button class="btn p" data-a="new"><i class="bi bi-plus-lg"></i> Nuevo registro</button>
+</div></header>
 
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">Sistema de Protección de Personas Adultas</div>
-            <div class="nav-menu">
-                <a class="nav-button" data-bs-toggle="modal" data-bs-target="#proteccionModal">Protección Adulto Mayor</a>
-                <a class="nav-button" data-bs-toggle="modal" data-bs-target="#capacidadModal">Determinación de Capacidad</a>
-                <a class="nav-button" data-bs-toggle="modal" data-bs-target="#restriccionModal">Restricción de Capacidad</a>
-                <a class="nav-button" data-bs-toggle="modal" data-bs-target="#internacionModal">Internación Involuntaria</a>
-            </div>
-        </div>
-    </header>
-
-    <main class="container">
-        <section class="dashboard-section">
-            <h2 class="dashboard-title">Resumen de Casos</h2>
-            <div class="dashboard-cards" id="dashboardCards">
-                <div class="loading">Cargando datos...</div>
-            </div>
-        </section>
-
-        <section id="registrosSection">
-            <section class="filters-section">
-                <h2 class="filters-title">Filtros de Búsqueda</h2>
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label class="filter-label" for="buscador">Búsqueda</label>
-                        <input type="text" id="buscador" class="input" placeholder="Buscar...">
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label" for="filtroTipo">Tipo de Caso</label>
-                        <select id="filtroTipo" class="dropdown">
-                            <option value="">Tipo (todos)</option>
-                            <option value="Protección Adulto Mayor">Protección Adulto Mayor</option>
-                            <option value="Determinación de Capacidad">Determinación de Capacidad</option>
-                            <option value="Restricción de Capacidad">Restricción de Capacidad</option>
-                            <option value="Internación Involuntaria">Internación Involuntaria</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label" for="filtroEstado">Estado</label>
-                        <select id="filtroEstado" class="dropdown">
-                            <option value="">Estado (todos)</option>
-                            <option value="Abierto">Abierto</option>
-                            <option value="En Proceso">En Proceso</option>
-                            <option value="Cerrado">Cerrado</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="action-buttons">
-                    <button id="btnActualizar" class="button">
-                        Actualizar
-                    </button>
-                    <button id="btnPrintListado" class="button button-success">
-                        Imprimir Listado
-                    </button>
-                </div>
-            </section>
-
-            <section class="table-section">
-                <h2 class="table-title">Casos Registrados</h2>
-                <div class="table-wrap">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>DNI</th>
-                                <th>Tipo</th>
-                                <th>Estado</th>
-                                <th>Fecha</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbodyCasos">
-                            <tr>
-                                <td colspan="6">Cargando casos...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-            
-            <div id="paginacion-container"></div>
-        </section>
-    </main>
-
-    <div class="modal fade" id="proteccionModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">Protección de Adultos Mayores</h2>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-info">
-                        <h6>Referencia Legal</h6>
-                        <p class="mb-0">Ley Provincial XVI - N° 114 (Antes Ley 4532) - Protección Integral de las Personas Adultas Mayores. Ley Nacional 27.360 - Aprobación de la Convención Interamericana sobre la Protección de los Derechos Humanos de las Personas Mayores.</p>
-                    </div>
-
-                    <form id="proteccionForm" class="form-grid">
-                        <input type="hidden" id="proteccionId">
-                        <div class="form-group">
-                            <label class="form-label">Nombre del Adulto Mayor *</label>
-                            <input type="text" class="form-control" id="proteccionNombre" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">DNI *</label>
-                            <input type="text" class="form-control" id="proteccionDNI" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Edad *</label>
-                            <input type="number" class="form-control" id="proteccionEdad" required min="1">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Teléfono</label>
-                            <input type="tel" class="form-control" id="proteccionTelefono">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Dirección</label>
-                            <input type="text" class="form-control" id="proteccionDireccion">
-                        </div>
-                        <div class="form-group expediente-search-container">
-                            <label class="form-label">Expediente de referencia</label>
-                            <input type="text" class="form-control expediente-search-input" id="proteccionExpedienteSearch" placeholder="Buscar expediente...">
-                            <select class="form-select" id="proteccionExpediente" style="display:none;">
-                                <option value="">Seleccionar expediente...</option>
-                            </select>
-                            <div class="expediente-list" id="proteccionExpedienteList"></div>
-                            <span id="proteccionExpedienteInfo" class="text-muted" style="font-size: 0.8rem;"></span>
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label">Situación de Vulnerabilidad *</label>
-                            <textarea class="form-control" rows="3" id="proteccionSituacion" required></textarea>
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label">Organismos Intervinientes *</label>
-                            <select class="form-select organismo-select" id="proteccionOrganismo" required>
-                                <option value="">Seleccionar organismo...</option>
-                            </select>
-                            <div class="add-organismo mt-2" id="proteccionAddOrganismo" style="display: none;">
-                                <input type="text" class="form-control" id="proteccionNuevoOrganismo" placeholder="Nombre del nuevo organismo">
-                                <input type="text" class="form-control mt-2" id="proteccionNuevoContacto" placeholder="Contacto (email/teléfono)">
-                            </div>
-                            <div class="form-check mt-2">
-                                <input class="form-check-input" type="checkbox" id="proteccionNuevoOrganismoCheck">
-                                <label class="form-check-label" for="proteccionNuevoOrganismoCheck">
-                                    Agregar nuevo organismo
-                                </label>
-                            </div>
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label">Intervención de la Defensoría *</label>
-                            <select class="form-select" id="proteccionIntervencion" required>
-                                <option value="">Seleccionar tipo de intervención...</option>
-                                <option value="Patrocinante Actora">Patrocinante Actora</option>
-                                <option value="Patrocinante Demandada">Patrocinante Demandada</option>
-                                <option value="Patrocinante presunto incapaz">Patrocinante presunto incapaz</option>
-                                <option value="Ministerio Público del incapaz">Ministerio Público del incapaz</option>
-                                <option value="Asistencia Letrada del Incapaz">Asistencia Letrada del Incapaz</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="controls-form">
-                    <button type="button" class="button button-secondary" data-bs-dismiss="modal" onclick="resetForm('proteccion')">Cancelar</button>
-                    <button type="button" class="button button-success" onclick="printModal('proteccion')">Imprimir</button>
-                    <button type="button" class="button" id="saveProteccion">
-                        <span id="proteccionSpinner" class="spinner-border spinner-border-sm" role="status" style="display: none;"></span>
-                        <span id="proteccionButtonText">Guardar Registro</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+<main><div class="layout">
+  <section class="card">
+    <div class="ch"><h2>Casos registrados</h2>
+      <div class="tools">
+        <div class="srch"><i class="bi bi-search"></i><input id="q" class="inp" placeholder="Buscar por nombre, DNI o tipo" aria-label="Buscar"></div>
+        <select id="ftipo" class="inp" style="width:auto" aria-label="Tipo de caso"></select>
+        <select id="fest" class="inp" style="width:auto" aria-label="Estado"><option value="">Todos los estados</option><option>Abierto</option><option>En Proceso</option><option>Cerrado</option></select>
+        <button class="btn" data-a="print"><i class="bi bi-printer"></i> Imprimir listado</button>
+      </div>
     </div>
+    <div class="tw" id="tabla"><p class="empty">Cargando casos…</p></div>
+    <div class="pg"><span class="sub" id="pgi"></span><div id="pgn"></div></div>
+  </section>
 
-    <div class="modal fade" id="capacidadModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">Determinación de Capacidad</h2>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-info">
-                        <h6>Referencia Legal</h6>
-                        <p class="mb-0">Código Civil y Comercial de la Nación, Arts. 31 a 42. Ley Nacional 26.657 - Derecho a la Protección de la Salud Mental. Ley Provincial XVI - N° 26 (Antes Ley 4241) - Adhesión a la Ley Nacional de Salud Mental.</p>
-                    </div>
+  <aside class="card side" aria-label="Casos en trámite">
+    <div class="ch"><h2>Casos en trámite</h2><span class="tag" id="tramN">0</span></div>
+    <div class="tram" id="tram"></div>
+  </aside>
+</div></main>
 
-                    <form id="capacidadForm" class="form-grid">
-                        <input type="hidden" id="capacidadId">
-                        <div class="form-group">
-                            <label class="form-label">Nombre de la Persona *</label>
-                            <input type="text" class="form-control" id="capacidadNombre" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">DNI *</label>
-                            <input type="text" class="form-control" id="capacidadDNI" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Edad *</label>
-                            <input type="number" class="form-control" id="capacidadEdad" required min="1">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Teléfono</label>
-                            <input type="tel" class="form-control" id="capacidadTelefono">
-                        </div>
-                        <div class="form-group expediente-search-container">
-                            <label class="form-label">Expediente de referencia</label>
-                            <input type="text" class="form-control expediente-search-input" id="capacidadExpedienteSearch" placeholder="Buscar expediente...">
-                            <select class="form-select" id="capacidadExpediente" style="display:none;">
-                                <option value="">Seleccionar expediente...</option>
-                            </select>
-                            <div class="expediente-list" id="capacidadExpedienteList"></div>
-                            <span id="capacidadExpedienteInfo" class="text-muted" style="font-size: 0.8rem;"></span>
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label">Motivo de Evaluación *</label>
-                            <textarea class="form-control" rows="3" id="capacidadMotivo" required></textarea>
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label">Organismos Intervinientes *</label>
-                            <select class="form-select organismo-select" id="capacidadOrganismo" required>
-                                <option value="">Seleccionar organismo...</option>
-                            </select>
-                            <div class="add-organismo mt-2" id="capacidadAddOrganismo" style="display: none;">
-                                <input type="text" class="form-control" id="capacidadNuevoOrganismo" placeholder="Nombre del nuevo organismo">
-                                <input type="text" class="form-control mt-2" id="capacidadNuevoContacto" placeholder="Contacto (email/teléfono)">
-                            </div>
-                            <div class="form-check mt-2">
-                                <input class="form-check-input" type="checkbox" id="capacidadNuevoOrganismoCheck">
-                                <label class="form-check-label" for="capacidadNuevoOrganismoCheck">
-                                    Agregar nuevo organismo
-                                </label>
-                            </div>
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label">Intervención de la Defensoría *</label>
-                            <select class="form-select" id="capacidadIntervencion" required>
-                                <option value="">Seleccionar tipo de intervención...</option>
-                                <option value="Patrocinante Actora">Patrocinante Actora</option>
-                                <option value="Patrocinante Demandada">Patrocinante Demandada</option>
-                                <option value="Patrocinante presunto incapaz">Patrocinante presunto incapaz</option>
-                                <option value="Ministerio Público del incapaz">Ministerio Público del incapaz</option>
-                                <option value="Asistencia Letrada del Incapaz">Asistencia Letrada del Incapaz</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="controls-form">
-                    <button type="button" class="button button-secondary" data-bs-dismiss="modal" onclick="resetForm('capacidad')">Cancelar</button>
-                    <button type="button" class="button button-success" onclick="printModal('capacidad')">Imprimir</button>
-                    <button type="button" class="button" id="saveCapacidad">
-                        <span id="capacidadSpinner" class="spinner-border spinner-border-sm" role="status" style="display: none;"></span>
-                        <span id="capacidadButtonText">Guardar Registro</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+<!-- Registro: una solapa por tipo de caso -->
+<dialog id="dReg">
+  <div class="mh"><h3><i class="bi bi-person-plus"></i><span id="regT">Nuevo registro</span></h3><button class="x" data-close aria-label="Cerrar"><i class="bi bi-x-lg"></i></button></div>
+  <div class="tabs" id="regTabs"></div>
+  <div class="mb">
+    <details class="ref"><summary>Referencia legal</summary><p id="refTxt"></p></details>
+    <form id="fReg" class="g6" onsubmit="return false">
+      <div class="fld s3"><label for="fNom" id="lNom"></label><input class="inp" id="fNom" required></div>
+      <div class="fld s2"><label for="fDni">DNI *</label><input class="inp" id="fDni" required></div>
+      <div class="fld s1"><label for="fEdad">Edad *</label><input class="inp" id="fEdad" type="number" min="1" required></div>
+      <div class="fld s2"><label for="fTel">Teléfono</label><input class="inp" id="fTel" type="tel"></div>
+      <div class="fld s2" id="wDir"><label for="fDir">Dirección</label><input class="inp" id="fDir"></div>
+      <div class="fld s2" id="wExp"><label for="fExpS">Expediente de referencia</label>
+        <div class="rel"><input class="inp" id="fExpS" autocomplete="off" placeholder="Buscar expediente"><input type="hidden" id="fExp"><div class="res" id="lstExp"></div></div>
+        <small class="sub" id="expInfo"></small></div>
+      <div class="fld s6"><label for="fDesc" id="lDesc"></label><textarea class="inp" id="fDesc" rows="2" required></textarea></div>
+      <div class="fld s2"><label for="fOrg">Organismo interviniente *</label><select class="inp" id="fOrg" required></select></div>
+      <div class="fld s2"><label for="fInt">Intervención de la Defensoría *</label><select class="inp" id="fInt" required></select></div>
+      <div class="fld s2"><label for="fEstado">Estado</label><select class="inp" id="fEstado"><option>Abierto</option><option>En Proceso</option><option>Cerrado</option></select></div>
+      <div class="fld s3" id="wNOrg" hidden><label for="fNOrg">Nombre del nuevo organismo *</label><input class="inp" id="fNOrg"></div>
+      <div class="fld s3" id="wNCon" hidden><label for="fNCon">Contacto (email/teléfono)</label><input class="inp" id="fNCon"></div>
+    </form>
+  </div>
+  <div class="mf">
+    <button class="btn" data-close>Cancelar</button>
+    <div class="tools">
+      <button class="btn" data-a="printReg"><i class="bi bi-printer"></i> Imprimir</button>
+      <button class="btn p" id="btnSave" data-a="save"><i class="bi bi-check2-circle"></i> <span id="saveT">Guardar registro</span></button>
     </div>
+  </div>
+</dialog>
 
-    <div class="modal fade" id="restriccionModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">Restricción de Capacidad</h2>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-info">
-                        <h6>Referencia Legal</h6>
-                        <p class="mb-0">Código Civil y Comercial de la Nación, Arts. 32, 43 a 61. Proceso de restricción de capacidad e incapacidad con intervención del Ministerio Público. Se debe priorizar sistemas de apoyo que preserven la autonomía de la persona.</p>
-                    </div>
+<!-- Ver registro -->
+<dialog id="dVer">
+  <div class="mh"><h3><i class="bi bi-eye"></i><span id="verT">Detalle del registro</span></h3><button class="x" data-close aria-label="Cerrar"><i class="bi bi-x-lg"></i></button></div>
+  <div class="tabs" id="verTabs"></div>
+  <div class="mb" id="verBody"></div>
+  <div class="mf"><button class="btn" data-close>Cerrar</button><button class="btn" data-a="printVer"><i class="bi bi-printer"></i> Imprimir</button></div>
+</dialog>
 
-                    <form id="restriccionForm" class="form-grid">
-                        <input type="hidden" id="restriccionId">
-                        <div class="form-group">
-                            <label class="form-label">Nombre de la Persona *</label>
-                            <input type="text" class="form-control" id="restriccionNombre" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">DNI *</label>
-                            <input type="text" class="form-control" id="restriccionDNI" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Edad *</label>
-                            <input type="number" class="form-control" id="restriccionEdad" required min="1">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Teléfono</label>
-                            <input type="tel" class="form-control" id="restriccionTelefono">
-                        </div>
-                        <div class="form-group expediente-search-container">
-                            <label class="form-label">Expediente de referencia</label>
-                            <input type="text" class="form-control expediente-search-input" id="restriccionExpedienteSearch" placeholder="Buscar expediente...">
-                            <select class="form-select" id="restriccionExpediente" style="display:none;">
-                                <option value="">Seleccionar expediente...</option>
-                            </select>
-                            <div class="expediente-list" id="restriccionExpedienteList"></div>
-                            <span id="restriccionExpedienteInfo" class="text-muted" style="font-size: 0.8rem;"></span>
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label">Fundamentos de la Restricción *</label>
-                            <textarea class="form-control" rows="3" id="restriccionFundamentos" required></textarea>
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label">Organismos Intervinientes *</label>
-                            <select class="form-select organismo-select" id="restriccionOrganismo" required>
-                                <option value="">Seleccionar organismo...</option>
-                            </select>
-                            <div class="add-organismo mt-2" id="restriccionAddOrganismo" style="display: none;">
-                                <input type="text" class="form-control" id="restriccionNuevoOrganismo" placeholder="Nombre del nuevo organismo">
-                                <input type="text" class="form-control mt-2" id="restriccionNuevoContacto" placeholder="Contacto (email/teléfono)">
-                            </div>
-                            <div class="form-check mt-2">
-                                <input class="form-check-input" type="checkbox" id="restriccionNuevoOrganismoCheck">
-                                <label class="form-check-label" for="restriccionNuevoOrganismoCheck">
-                                    Agregar nuevo organismo
-                                </label>
-                            </div>
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label">Intervención de la Defensoría *</label>
-                            <select class="form-select" id="restriccionIntervencion" required>
-                                <option value="">Seleccionar tipo de intervención...</option>
-                                <option value="Patrocinante Actora">Patrocinante Actora</option>
-                                <option value="Patrocinante Demandada">Patrocinante Demandada</option>
-                                <option value="Patrocinante presunto incapaz">Patrocinante presunto incapaz</option>
-                                <option value="Ministerio Público del incapaz">Ministerio Público del incapaz</option>
-                                <option value="Asistencia Letrada del Incapaz">Asistencia Letrada del Incapaz</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="controls-form">
-                    <button type="button" class="button button-secondary" data-bs-dismiss="modal" onclick="resetForm('restriccion')">Cancelar</button>
-                    <button type="button" class="button button-success" onclick="printModal('restriccion')">Imprimir</button>
-                    <button type="button" class="button" id="saveRestriccion">
-                        <span id="restriccionSpinner" class="spinner-border spinner-border-sm" role="status" style="display: none;"></span>
-                        <span id="restriccionButtonText">Guardar Registro</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+<!-- Seguimiento -->
+<dialog id="dSeg">
+  <div class="mh"><h3><i class="bi bi-journal-text"></i>Seguimiento del caso</h3><button class="x" data-close aria-label="Cerrar"><i class="bi bi-x-lg"></i></button></div>
+  <div class="mb"><div id="tl"></div>
+    <div class="addseg"><textarea id="nuevoSeg" class="inp" rows="3" placeholder="Escribí el nuevo seguimiento"></textarea><button class="btn p" data-a="addSeg"><i class="bi bi-plus-lg"></i> Agregar seguimiento</button></div>
+  </div>
+  <div class="mf"><button class="btn" data-close>Cerrar</button><button class="btn" data-a="printSeg"><i class="bi bi-printer"></i> Imprimir</button></div>
+</dialog>
 
-    <div class="modal fade" id="internacionModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">Internación Involuntaria - Art. 42</h2>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-info">
-                        <h6>Referencia Legal</h6>
-                        <p class="mb-0">Ley Nacional 26.657 - Arts. 20, 21 y 22 sobre Internación Involuntaria. Control judicial obligatorio en un plazo máximo de 5 días. Requisitos: Peligro cierto e inminente para sí o para terceros, y que otras alternativas terapéuticas hayan resultado insuficientes.</p>
-                    </div>
+<script>
+'use strict';
+/* ===== Firebase (sin cambios) ===== */
+firebase.initializeApp({
+  apiKey:"AIzaSyDEo_AZS9Sx-YwePNNqGwLvsWR9X1nlL5A",authDomain:"proteccion-unificada.firebaseapp.com",
+  databaseURL:"https://proteccion-unificada-default-rtdb.firebaseio.com",projectId:"proteccion-unificada",
+  storageBucket:"proteccion-unificada.firebasestorage.app",messagingSenderId:"536876739483",appId:"1:536876739483:web:6ce9044af245cc116a4f3e"});
+const rtdb=firebase.database();                       // registros (Realtime Database)
+const app2=firebase.initializeApp({apiKey:"AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",authDomain:"causas-defensoria.firebaseapp.com",databaseURL:"https://causas-defensoria-default-rtdb.firebaseio.com",projectId:"causas-defensoria"},"app2");
+const db2=app2.firestore();                           // expedientes (Firestore: causas)
 
-                    <form id="internacionForm" class="form-grid">
-                        <input type="hidden" id="internacionId">
-                        <div class="form-group">
-                            <label class="form-label">Nombre del Paciente *</label>
-                            <input type="text" class="form-control" id="internacionNombre" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">DNI *</label>
-                            <input type="text" class="form-control" id="internacionDNI" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Edad *</label>
-                            <input type="number" class="form-control" id="internacionEdad" required min="1">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Teléfono</label>
-                            <input type="tel" class="form-control" id="internacionTelefono">
-                        </div>
-                        <div class="form-group expediente-search-container">
-                            <label class="form-label">Expediente de referencia</label>
-                            <input type="text" class="form-control expediente-search-input" id="internacionExpedienteSearch" placeholder="Buscar expediente...">
-                            <select class="form-select" id="internacionExpediente" style="display:none;">
-                                <option value="">Seleccionar expediente...</option>
-                            </select>
-                            <div class="expediente-list" id="internacionExpedienteList"></div>
-                            <span id="internacionExpedienteInfo" class="text-muted" style="font-size: 0.8rem;"></span>
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label">Diagnóstico y Justificación *</label>
-                            <textarea class="form-control" rows="3" id="internacionDiagnostico" required></textarea>
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label">Organismos Intervinientes *</label>
-                            <select class="form-select organismo-select" id="internacionOrganismo" required>
-                                <option value="">Seleccionar organismo...</option>
-                            </select>
-                            <div class="add-organismo mt-2" id="internacionAddOrganismo" style="display: none;">
-                                <input type="text" class="form-control" id="internacionNuevoOrganismo" placeholder="Nombre del nuevo organismo">
-                                <input type="text" class="form-control mt-2" id="internacionNuevoContacto" placeholder="Contacto (email/teléfono)">
-                            </div>
-                            <div class="form-check mt-2">
-                                <input class="form-check-input" type="checkbox" id="internacionNuevoOrganismoCheck">
-                                <label class="form-check-label" for="internacionNuevoOrganismoCheck">
-                                    Agregar nuevo organismo
-                                </label>
-                            </div>
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label">Intervención de la Defensoría *</label>
-                            <select class="form-select" id="internacionIntervencion" required>
-                                <option value="">Seleccionar tipo de intervención...</option>
-                                <option value="Patrocinante Actora">Patrocinante Actora</option>
-                                <option value="Patrocinante Demandada">Patrocinante Demandada</option>
-                                <option value="Patrocinante presunto incapaz">Patrocinante presunto incapaz</option>
-                                <option value="Ministerio Público del incapaz">Ministerio Público del incapaz</option>
-                                <option value="Asistencia Letrada del Incapaz">Asistencia Letrada del Incapaz</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="controls-form">
-                    <button type="button" class="button button-secondary" data-bs-dismiss="modal" onclick="resetForm('internacion')">Cancelar</button>
-                    <button type="button" class="button button-success" onclick="printModal('internacion')">Imprimir</button>
-                    <button type="button" class="button" id="saveInternacion">
-                        <span id="internacionSpinner" class="spinner-border spinner-border-sm" role="status" style="display: none;"></span>
-                        <span id="internacionButtonText">Guardar Registro</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+/* ===== Utilidades ===== */
+const $=id=>document.getElementById(id), $$=s=>[...document.querySelectorAll(s)], V=id=>$(id).value.trim();
+const e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nl2=s=>e(s).replace(/\n/g,'<br>'), R=s=>({r:s}), nl=s=>R(nl2(s));
+const ini=n=>(n||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const p2=n=>String(n).padStart(2,'0');
+function fmtF(f,h){if(!f)return '';const d=new Date(f);if(isNaN(d))return '';return `${p2(d.getDate())}/${p2(d.getMonth()+1)}/${d.getFullYear()}`+(h?` ${p2(d.getHours())}:${p2(d.getMinutes())}`:'')}
+let tt;function toast(m,k=''){const t=$('toast');t.textContent=m;t.className='toast show '+k;clearTimeout(tt);tt=setTimeout(()=>t.className='toast',3800)}
+function imprimir(titulo,html){const w=window.open('','_blank');w.document.write(`<html><head><title>${e(titulo)}</title>${$$('style,link[rel=stylesheet]').map(n=>n.outerHTML).join('')}<style>body{background:#fff;padding:24px}.pane{display:block!important;margin-bottom:18px}.acts,.tabs{display:none}</style></head><body><h2 style="margin-bottom:16px">${e(titulo)}</h2>${html}</body></html>`);w.document.close();w.onload=()=>w.print()}
+const kv=rows=>`<dl class="kv">${rows.map(([k,v])=>`<dt>${k}</dt><dd>${v?.r??(e(v)||'<span class="sub">—</span>')}</dd>`).join('')}</dl>`;
+const tl=(a,del)=>`<div class="tl">${a.map((x,i)=>`<div class="ti"><small>${e(x.fecha)}</small><div>${nl2(x.texto)}</div>${del?`<button class="del" data-a="delSeg" data-i="${i}" title="Eliminar" aria-label="Eliminar"><i class="bi bi-trash3"></i></button>`:''}</div>`).join('')}</div>`;
 
-    <div class="modal fade" id="verRegistroModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">Detalles del Registro</h2>
-                </div>
-                <div class="modal-body" id="verRegistroBody">
-                    </div>
-                <div class="controls-form">
-                    <button type="button" class="button button-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="button button-success" onclick="printVerRegistro()">Imprimir</button>
-                </div>
-            </div>
-        </div>
-    </div>
+/* ===== Catálogos ===== */
+const TIPOS={
+ proteccion:{n:'Protección Adulto Mayor',s:'Adulto mayor',i:'person-heart',nom:'Nombre del adulto mayor',desc:'Situación de vulnerabilidad',dir:true,
+  ref:'Ley Provincial XVI - N° 114 (Antes Ley 4532) - Protección Integral de las Personas Adultas Mayores. Ley Nacional 27.360 - Aprobación de la Convención Interamericana sobre la Protección de los Derechos Humanos de las Personas Mayores.'},
+ capacidad:{n:'Determinación de Capacidad',s:'Capacidad',i:'clipboard2-pulse',nom:'Nombre de la persona',desc:'Motivo de evaluación',
+  ref:'Código Civil y Comercial de la Nación, Arts. 31 a 42. Ley Nacional 26.657 - Derecho a la Protección de la Salud Mental. Ley Provincial XVI - N° 26 (Antes Ley 4241) - Adhesión a la Ley Nacional de Salud Mental.'},
+ restriccion:{n:'Restricción de Capacidad',s:'Restricción',i:'person-lock',nom:'Nombre de la persona',desc:'Fundamentos de la restricción',
+  ref:'Código Civil y Comercial de la Nación, Arts. 32, 43 a 61. Proceso de restricción de capacidad e incapacidad con intervención del Ministerio Público. Se debe priorizar sistemas de apoyo que preserven la autonomía de la persona.'},
+ internacion:{n:'Internación Involuntaria',s:'Internación',i:'hospital',nom:'Nombre del paciente',desc:'Diagnóstico y justificación',
+  ref:'Art. 42. Ley Nacional 26.657 - Arts. 20, 21 y 22 sobre Internación Involuntaria. Control judicial obligatorio en un plazo máximo de 5 días. Requisitos: Peligro cierto e inminente para sí o para terceros, y que otras alternativas terapéuticas hayan resultado insuficientes.'}
+};
+const DEF_ORG=[
+ {nombre:"Hospital Barreyro",email:"hospitaldepediatriabarreyro@gmail.com",tipo:"Hospital de Pediatría"},
+ {nombre:"Hospital Carrillo",email:"hospitalsaludmentalcarrillo@gmail.com",tipo:"Hospital de Salud Mental"},
+ {nombre:"Ministerio de Salud Pública de Misiones",email:"juridicomspmisiones@gmail.com",tipo:"Oficios dirigidos a cualquier Hospital",contacto:"Jordana Duarte Martinelli - +5493755636878"},
+ {nombre:"Unidad Central de Traslado",email:"mps-uct@hotmail.com",tipo:"Servicios de traslado médico"},
+ {nombre:"Dirección de Asuntos de Familia",telefono:"+5493764856048",tipo:"Atención en asuntos familiares"},
+ {nombre:"Fundación Reto a la Vida",email:"retomisiones@gmail.com",tipo:"Fundación de apoyo social"}];
+const INTERV=['Patrocinante Actora','Patrocinante Demandada','Patrocinante presunto incapaz','Ministerio Público del incapaz','Asistencia Letrada del Incapaz'];
+const tipoDe=n=>Object.keys(TIPOS).find(k=>TIPOS[k].n===n);
+const ST={'Abierto':'','En Proceso':'proc','Cerrado':'cer'};
+const pill=s=>`<span class="pill ${ST[s]??''}">${e(s||'Abierto')}</span>`;
 
-    <div class="modal fade" id="modalSeguimiento" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">
-                        <i class="bi bi-journal-text"></i> Seguimiento del Caso
-                    </h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="modalSeguimientoBody">
-                    <div id="timelineSeguimiento"></div>
-                    <div class="seguimiento-form">
-                        <textarea id="nuevoSeguimiento" rows="3" placeholder="Agregar seguimiento..." class="form-control"></textarea>
-                        <button type="button" class="button" onclick="guardarSeguimiento()" style="margin-top: 10px;">
-                            <i class="bi bi-check-circle"></i> Agregar Seguimiento
-                        </button>
-                    </div>
-                </div>
-                <div class="controls-form">
-                    <button type="button" class="button button-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle"></i> Cerrar
-                    </button>
-                    <button type="button" class="button button-success" onclick="imprimirSeccion('modalSeguimientoBody')">
-                        <i class="bi bi-printer"></i> Imprimir
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+/* ===== Estado ===== */
+let organismos=[...DEF_ORG],registros=[],filtrados=[],expedientes={},tipo='proteccion',editId=null,lastId=null,casoSeg=null,verActual=null,pagina=1;const PAGE=8;
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+/* ===== Formulario de registro ===== */
+function setTipo(k){
+  tipo=k;const t=TIPOS[k];
+  $$('#regTabs button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));
+  $('regT').textContent=editId?'Editar registro':'Nuevo registro';
+  $('lNom').textContent=t.nom+' *';$('lDesc').textContent=t.desc+' *';$('refTxt').textContent=t.ref;
+  $('wDir').hidden=!t.dir;$('wExp').className='fld '+(t.dir?'s2':'s4');
+  $('saveT').textContent=editId?'Actualizar registro':'Guardar registro';
+}
+function fillOrgs(){
+  $('fOrg').innerHTML='<option value="">Seleccionar organismo…</option>'+organismos.map((o,i)=>`<option value="${i}">${e(o.nombre)}</option>`).join('')+'<option value="otro">Otro (agregar nuevo organismo)</option>';
+}
+function orgChange(){const o=$('fOrg').value==='otro';$('wNOrg').hidden=$('wNCon').hidden=!o;$('fNOrg').required=o}
+function limpiar(){
+  $('fReg').reset();editId=null;$('lstExp').style.display='none';$('expInfo').textContent='';
+  orgChange();$$('#regTabs button').forEach(b=>b.disabled=false);
+}
+function listaExp(q){
+  const ql=(q||'').toLowerCase(),l=$('lstExp');
+  const k=Object.keys(expedientes).filter(n=>!ql||n.toLowerCase().includes(ql)||(expedientes[n].caratula||'').toLowerCase().includes(ql)).slice(0,50);
+  l.innerHTML=k.length?k.map(n=>`<div data-n="${e(n)}">${e(n)} - ${e(expedientes[n].caratula||'Sin carátula')}</div>`).join(''):'<div>No se encontraron expedientes</div>';
+  l.style.display='block';
+}
+function datosForm(){
+  let on='',oc='';
+  if($('fOrg').value==='otro'){on=V('fNOrg');oc=V('fNCon')}
+  else{const o=organismos[$('fOrg').value];if(o){on=o.nombre||'';oc=o.email||o.telefono||o.contacto||''}}
+  return {tipo:TIPOS[tipo].n,nombre:V('fNom'),dni:V('fDni'),edad:V('fEdad'),telefono:V('fTel'),direccion:TIPOS[tipo].dir?V('fDir'):'',
+    expedienteReferencia:$('fExp').value,descripcion:V('fDesc'),intervencion:$('fInt').value,organismo:{nombre:on,contacto:oc},estado:$('fEstado').value||'Abierto'};
+}
 
-    <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDEo_AZS9Sx-YwePNNqGwLvsWR9X1nlL5A",
-            authDomain: "proteccion-unificada.firebaseapp.com",
-            databaseURL: "https://proteccion-unificada-default-rtdb.firebaseio.com",
-            projectId: "proteccion-unificada",
-            storageBucket: "proteccion-unificada.firebasestorage.app",
-            messagingSenderId: "536876739483",
-            appId: "1:536876739483:web:6ce9044af245cc116a4f3e"
-        };
-        const firebaseConfig2 = {
-            apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
-            authDomain: "causas-defensoria.firebaseapp.com",
-            databaseURL: "https://causas-defensoria-default-rtdb.firebaseio.com",
-            projectId: "causas-defensoria",
-        };
-        
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const app2 = firebase.initializeApp(firebaseConfig2, "app2");
-        const db2 = app2.firestore();
-        
-        // Variables globales
-        let organismos = [];
-        let registros = [];
-        let expedientesIndex = {};
-        let currentRegistroId = null;
-        let isEditing = false;
-        let currentEditType = null;
-        let paginaActual = 1;
-        const recordsPerPage = 5; // Cambiado a 5 registros por página
-        let registroActual = null;
-        let casoActualSeguimiento = null;
-        
-        // Organismos por defecto
-        const defaultOrganismos = [
-            { nombre: "Hospital Barreyro", email: "hospitaldepediatriabarreyro@gmail.com", tipo: "Hospital de Pediatría" },
-            { nombre: "Hospital Carrillo", email: "hospitalsaludmentalcarrillo@gmail.com", tipo: "Hospital de Salud Mental" },
-            { nombre: "Ministerio de Salud Pública de Misiones", email: "juridicomspmisiones@gmail.com", tipo: "Oficios dirigidos a cualquier Hospital", contacto: "Jordana Duarte Martinelli - +5493755636878" },
-            { nombre: "Unidad Central de Traslado", email: "mps-uct@hotmail.com", tipo: "Servicios de traslado médico" },
-            { nombre: "Dirección de Asuntos de Familia", telefono: "+5493764856048", tipo: "Atención en asuntos familiares" },
-            { nombre: "Fundación Reto a la Vida", email: "retomisiones@gmail.com", tipo: "Fundación de apoyo social" }
-        ];
-        
-        // Inicializar la aplicación
-        document.addEventListener('DOMContentLoaded', function() {
-            initApp();
-        });
-        
-        // Función para inicializar la aplicación
-        async function initApp() {
-            // Configurar eventos
-            setupEventListeners();
-            // Cargar organismos
-            loadOrganismos();
-            // Cargar expedientes
-            await cargarExpedientes();
-            // Cargar registros
-            loadRegistros();
-        }
-        
-        // Configurar eventos
-        function setupEventListeners() {
-            // Botón actualizar
-            document.getElementById('btnActualizar').addEventListener('click', loadRegistros);
-            
-            // Filtros
-            document.getElementById('buscador').addEventListener('input', handleFilterChange);
-            document.getElementById('filtroTipo').addEventListener('change', handleFilterChange);
-            document.getElementById('filtroEstado').addEventListener('change', handleFilterChange);
-            
-            // Botones de guardar en modales
-            document.getElementById('saveProteccion').addEventListener('click', () => saveRegistro('proteccion'));
-            document.getElementById('saveCapacidad').addEventListener('click', () => saveRegistro('capacidad'));
-            document.getElementById('saveRestriccion').addEventListener('click', () => saveRegistro('restriccion'));
-            document.getElementById('saveInternacion').addEventListener('click', () => saveRegistro('internacion'));
-            
-            // Eventos de impresión
-            document.getElementById('btnPrintListado').addEventListener('click', printListado);
-            
-            // Configurar checkboxes para agregar nuevos organismos
-            setupOrganismoCheckboxes();
-            
-            // Configurar búsqueda en expedientes
-            setupExpedienteSearch();
-        }
-        
-        // Configurar búsqueda en expedientes
-        function setupExpedienteSearch() {
-            const tipos = ['proteccion', 'capacidad', 'restriccion', 'internacion'];
-            
-            tipos.forEach(tipo => {
-                const searchInput = document.getElementById(`${tipo}ExpedienteSearch`);
-                const expedienteList = document.getElementById(`${tipo}ExpedienteList`);
-                const expedienteSelect = document.getElementById(`${tipo}Expediente`);
-                const infoSpan = document.getElementById(`${tipo}ExpedienteInfo`);
-                
-                if (searchInput) {
-                    // Mostrar lista al enfocar
-                    searchInput.addEventListener('focus', function() {
-                        filtrarExpedientes(tipo, this.value);
-                        expedienteList.style.display = 'block';
-                    });
-                    
-                    // Filtrar expedientes al escribir
-                    searchInput.addEventListener('input', function() {
-                        filtrarExpedientes(tipo, this.value);
-                        expedienteList.style.display = 'block';
-                    });
-                    
-                    // Ocultar lista al perder el foco (con un pequeño retraso para permitir clics)
-                    searchInput.addEventListener('blur', function() {
-                        setTimeout(() => {
-                            expedienteList.style.display = 'none';
-                        }, 200);
-                    });
-                }
-                
-                // Manejar clic en un elemento de la lista
-                if (expedienteList) {
-                    expedienteList.addEventListener('click', function(e) {
-                        if (e.target.classList.contains('expediente-item')) {
-                            const numCausa = e.target.getAttribute('data-value');
-                            searchInput.value = e.target.textContent;
-                            expedienteSelect.value = numCausa;
-                            expedienteList.style.display = 'none';
-                            
-                            // Mostrar información del expediente
-                            if (numCausa && expedientesIndex[numCausa]) {
-                                const expediente = expedientesIndex[numCausa];
-                                infoSpan.textContent = `Carátula: ${expediente.caratula}`;
-                            } else {
-                                infoSpan.textContent = '';
-                            }
-                        }
-                    });
-                }
-            });
-        }
-        
-        // Filtrar expedientes para búsqueda
-        function filtrarExpedientes(tipo, query) {
-            const expedienteList = document.getElementById(`${tipo}ExpedienteList`);
-            if (!expedienteList) return;
-            
-            expedienteList.innerHTML = '';
-            
-            if (!query) {
-                // Mostrar todos los expedientes si no hay consulta
-                Object.keys(expedientesIndex).forEach(numCausa => {
-                    const expediente = expedientesIndex[numCausa];
-                    const optionText = `${numCausa} - ${expediente.caratula || 'Sin carátula'}`;
-                    const item = document.createElement('div');
-                    item.className = 'expediente-item';
-                    item.setAttribute('data-value', numCausa);
-                    item.textContent = optionText;
-                    expedienteList.appendChild(item);
-                });
-            } else {
-                // Filtrar expedientes por consulta
-                const queryLower = query.toLowerCase();
-                Object.keys(expedientesIndex).forEach(numCausa => {
-                    const expediente = expedientesIndex[numCausa];
-                    const optionText = `${numCausa} - ${expediente.caratula || 'Sin carátula'}`;
-                    
-                    if (numCausa.toLowerCase().includes(queryLower) || 
-                        (expediente.caratula && expediente.caratula.toLowerCase().includes(queryLower))) {
-                        const item = document.createElement('div');
-                        item.className = 'expediente-item';
-                        item.setAttribute('data-value', numCausa);
-                        item.textContent = optionText;
-                        expedienteList.appendChild(item);
-                    }
-                });
-            }
-        }
-        
-        // Funciones de carga de datos
-        async function cargarExpedientes() {
-            try {
-                const querySnapshot = await db2.collection("causas").get();
-                expedientesIndex = {};
-                const selects = [
-                    "proteccionExpediente",
-                    "capacidadExpediente",
-                    "restriccionExpediente",
-                    "internacionExpediente"
-                ];
-                selects.forEach(selectId => {
-                    const select = document.getElementById(selectId);
-                    if (select) {
-                        select.innerHTML = '<option value="">Seleccionar expediente...</option>';
-                    }
-                });
+/* ===== Guardar (RTDB: registros) ===== */
+async function guardar(){
+  if(!$('fReg').reportValidity())return;
+  const d=datosForm(),b=$('btnSave');b.disabled=true;$('saveT').textContent='Guardando…';
+  try{
+    if(editId){lastId=editId;await rtdb.ref('registros/'+editId).update(d)}
+    else{const r=rtdb.ref('registros').push();lastId=r.key;await r.set({...d,fecha:new Date().toISOString(),seguimientos:[]})}
+    if($('fOrg').value==='otro'&&d.organismo.nombre){organismos.push({nombre:d.organismo.nombre,contacto:d.organismo.contacto,tipo:'Otro'});fillOrgs()}
+    toast(editId?'Registro actualizado.':'Registro guardado.');$('dReg').close();
+  }catch(x){console.error(x);toast('No se pudo guardar el registro.','err')}
+  finally{b.disabled=false;setTipo(tipo)}
+}
 
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const numCausa = data.numCausa;
-                    expedientesIndex[numCausa] = {
-                        ...data,
-                        firebaseId: doc.id
-                    };
-                    const optionText = `${numCausa} - ${data.caratula || 'Sin carátula'}`;
-                    selects.forEach(selectId => {
-                        const select = document.getElementById(selectId);
-                        if (select) {
-                            const option = document.createElement("option");
-                            option.value = numCausa;
-                            option.textContent = optionText;
-                            select.appendChild(option);
-                        }
-                    });
-                });
-                console.log("Expedientes cargados exitosamente.");
-            } catch (e) {
-                console.error("Error al cargar expedientes: ", e);
-                mostrarAlertaFlotante("Error al cargar expedientes. Verifica tu configuración de Firebase.", 'danger');
-            }
-        }
-        
-        // Cargar organismos
-        function loadOrganismos() {
-            organismos = [...defaultOrganismos];
-            populateOrganismosSelects();
-        }
-        
-        // Llenar los selects de organismos en todos los formularios
-        function populateOrganismosSelects() {
-            const selects = [
-                "proteccionOrganismo",
-                "capacidadOrganismo",
-                "restriccionOrganismo",
-                "internacionOrganismo"
-            ];
-            selects.forEach(selectId => {
-                const select = document.getElementById(selectId);
-                if (select) {
-                    select.innerHTML = '<option value="">Seleccionar organismo...</option>';
-                    organismos.forEach((org, index) => {
-                        const option = document.createElement("option");
-                        option.value = index;
-                        option.textContent = org.nombre;
-                        select.appendChild(option);
-                    });
-                    const otroOption = document.createElement("option");
-                    otroOption.value = "otro";
-                    otroOption.textContent = "Otro (especificar)";
-                    select.appendChild(otroOption);
-                }
-            });
-        }
-        
-        // Configurar checkboxes para agregar nuevos organismos
-        function setupOrganismoCheckboxes() {
-            const checkboxes = [
-                { checkId: 'proteccionNuevoOrganismoCheck', addId: 'proteccionAddOrganismo', selectId: 'proteccionOrganismo' },
-                { checkId: 'capacidadNuevoOrganismoCheck', addId: 'capacidadAddOrganismo', selectId: 'capacidadOrganismo' },
-                { checkId: 'restriccionNuevoOrganismoCheck', addId: 'restriccionAddOrganismo', selectId: 'restriccionOrganismo' },
-                { checkId: 'internacionNuevoOrganismoCheck', addId: 'internacionAddOrganismo', selectId: 'internacionOrganismo' }
-            ];
+/* ===== Datos ===== */
+async function cargarExpedientes(){
+  try{(await db2.collection('causas').get()).forEach(d=>{const v=d.data();if(v?.numCausa)expedientes[v.numCausa]={...v,firebaseId:d.id}})}
+  catch(x){console.error('Error al cargar expedientes:',x);toast('Error al cargar expedientes. Verificá la configuración de Firebase.','err')}
+}
+function escucharRegistros(){
+  rtdb.ref('registros').on('value',s=>{
+    const v=s.val();registros=v?Object.keys(v).map(id=>({id,...v[id]})).sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha))):[];
+    filtrar(true);tramite();
+  },x=>{console.error(x);toast('No se pudieron cargar los casos.','err')});
+}
 
-            checkboxes.forEach(item => {
-                const checkbox = document.getElementById(item.checkId);
-                const addDiv = document.getElementById(item.addId);
-                const select = document.getElementById(item.selectId);
-                if (checkbox) {
-                    checkbox.addEventListener('change', () => {
-                        if (checkbox.checked) {
-                            addDiv.style.display = 'block';
-                            select.disabled = true;
-                            select.required = false;
-                        } else {
-                            addDiv.style.display = 'none';
-                            select.disabled = false;
-                            select.required = true;
-                        }
-                    });
-                }
-            });
-        }
-        
-        // Cargar registros desde Firebase
-        function loadRegistros() {
-            const tbodyCasos = document.getElementById('tbodyCasos');
-            if (tbodyCasos) {
-                tbodyCasos.innerHTML = `<tr><td colspan="6" class="text-center py-4">
-                                            <div class="spinner-border text-primary" role="status">
-                                                <span class="visually-hidden">Cargando...</span>
-                                            </div>
-                                            <p class="mt-2">Cargando casos...</p>
-                                        </td></tr>`;
-            }
+/* ===== Render ===== */
+function tramite(){
+  const l=registros.filter(c=>c.estado==='En Proceso');$('tramN').textContent=l.length;
+  $('tram').innerHTML=l.length?l.map(c=>{
+    const sg=c.seguimientos||[],u=sg[sg.length-1];
+    return `<div class="tr"><button class="go" data-a="view" data-id="${c.id}"><span class="av">${e(ini(c.nombre))}</span><span><b>${e(c.nombre||'Sin nombre')}</b><small>${e(c.tipo||'')}</small><small>${u?'Último seguimiento: '+e(String(u.fecha).split(',')[0]):'Sin seguimientos'}</small></span></button><button class="fu" data-a="seg" data-id="${c.id}" title="Agregar seguimiento" aria-label="Agregar seguimiento"><i class="bi bi-journal-plus"></i></button></div>`}).join(''):'<p class="empty">No hay casos en proceso.</p>';
+}
+function filtrar(keep){
+  const q=$('q').value.toLowerCase(),t=$('ftipo').value,s=$('fest').value;
+  filtrados=registros.filter(r=>(!q||(r.nombre||'').toLowerCase().includes(q)||(r.dni||'').toLowerCase().includes(q)||(r.tipo||'').toLowerCase().includes(q))&&(!t||r.tipo===t)&&(!s||(r.estado||'Abierto')===s));
+  if(keep!==true)pagina=1;tabla();
+}
+function tabla(){
+  const t=filtrados.length,P=Math.ceil(t/PAGE);
+  if(!t){$('tabla').innerHTML='<p class="empty">No hay registros que coincidan con la búsqueda.</p>';$('pgi').textContent='';$('pgn').innerHTML='';return}
+  pagina=Math.min(pagina,P);const a=(pagina-1)*PAGE,b=Math.min(a+PAGE,t);
+  $('pgi').textContent=`Mostrando ${a+1}–${b} de ${t} registros`;
+  $('tabla').innerHTML=`<table><thead><tr><th>Persona</th><th>Tipo</th><th>Estado</th><th class="h2">Organismo</th><th class="h">Intervención</th><th>Registro</th><th>Acciones</th></tr></thead><tbody>${filtrados.slice(a,b).map(c=>{
+    const s=(c.seguimientos||[]).length,k=tipoDe(c.tipo);
+    return `<tr id="r-${c.id}" class="${ST[c.estado]??''}">
+     <td><div class="who"><span class="av">${e(ini(c.nombre))}</span><div><b>${e(c.nombre)}</b><small>DNI ${e(c.dni||'—')}${c.edad?', '+e(c.edad)+' años':''}</small></div></div></td>
+     <td><span class="tag"><i class="bi bi-${k?TIPOS[k].i:'folder2'}"></i>${e(c.tipo||'—')}</span></td>
+     <td>${pill(c.estado)}</td>
+     <td class="h2">${e(c.organismo?.nombre||'—')}<div class="sub">${e(c.organismo?.contacto||'')}</div></td>
+     <td class="h">${e(c.intervencion||'—')}</td>
+     <td>${e(fmtF(c.fecha)||'—')}<div class="sub">${s} seguimiento${s===1?'':'s'}</div></td>
+     <td><div class="acts"><button data-a="view" data-id="${c.id}" title="Ver detalle" aria-label="Ver detalle"><i class="bi bi-eye"></i></button><button data-a="edit" data-id="${c.id}" title="Editar" aria-label="Editar"><i class="bi bi-pencil-square"></i></button><button data-a="seg" data-id="${c.id}" title="Seguimiento" aria-label="Seguimiento"><i class="bi bi-journal-text"></i></button></div></td></tr>`}).join('')}</tbody></table>`;
+  const pb=(p,l,x='',d=false)=>`<button class="pgb ${x}" data-a="pg" data-p="${p}" ${d?'disabled':''}>${l}</button>`;
+  let i0=Math.max(1,pagina-2),i1=Math.min(P,i0+4);i0=Math.max(1,i1-4);
+  $('pgn').innerHTML=pb(pagina-1,'<i class="bi bi-chevron-left"></i>','',pagina===1)+Array.from({length:i1-i0+1},(_,k)=>pb(i0+k,i0+k,i0+k===pagina?'on':'')).join('')+pb(pagina+1,'<i class="bi bi-chevron-right"></i>','',pagina===P);
+  if(lastId){const r=$('r-'+lastId);if(r){r.classList.add('hl');r.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>r.classList.remove('hl'),2200)}lastId=null}
+}
 
-            database.ref('registros').on('value', (snapshot) => {
-                const data = snapshot.val();
-                registros = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-                actualizarDashboard();
-                handleFilterChange();
-            });
-        }
-        
-        // Actualizar dashboard con KPIs
-        function actualizarDashboard() {
-            const dashboardCards = document.getElementById('dashboardCards');
-            
-            if (registros.length === 0) {
-                dashboardCards.innerHTML = '<div class="loading">No hay datos disponibles</div>';
-                return;
-            }
-            
-            // Calcular KPIs
-            const totalCasos = registros.length;
-            const proteccion = registros.filter(r => r.tipo === 'Protección Adulto Mayor').length;
-            const capacidad = registros.filter(r => r.tipo === 'Determinación de Capacidad').length;
-            const restriccion = registros.filter(r => r.tipo === 'Restricción de Capacidad').length;
-            const internacion = registros.filter(r => r.tipo === 'Internación Involuntaria').length;
-            
-            const kpisData = {
-                total: totalCasos,
-                proteccion: proteccion,
-                capacidad: capacidad,
-                restriccion: restriccion,
-                internacion: internacion
-            };
-            
-            let kpisHTML = '';
-            
-            // KPIs predefinidos con etiquetas formateadas
-            const kpisConfig = [
-                { key: 'total', label: 'Total de Casos', class: 'total' },
-                { key: 'proteccion', label: 'Protección Adulto Mayor', class: 'proteccion' },
-                { key: 'capacidad', label: 'Determinación de Capacidad', class: 'capacidad' },
-                { key: 'restriccion', label: 'Restricción de Capacidad', class: 'restriccion' },
-                { key: 'internacion', label: 'Internación Involuntaria', class: 'internacion' }
-            ];
-            
-            // Generar tarjetas de KPIs basadas en los datos
-            kpisConfig.forEach(kpi => {
-                if (kpisData[kpi.key] !== undefined) {
-                    kpisHTML += `
-                        <div class="dashboard-card ${kpi.class}">
-                            <div class="dashboard-number">${kpisData[kpi.key]}</div>
-                            <div class="dashboard-label">${kpi.label}</div>
-                        </div>
-                    `;
-                }
-            });
-            
-            dashboardCards.innerHTML = kpisHTML;
-        }
-        
-        // Funciones de filtrado y paginación
-        function filtrarDatos() {
-            const q = (document.getElementById('buscador').value || "").toLowerCase();
-            const tipo = (document.getElementById('filtroTipo').value || "").toLowerCase();
-            const estado = (document.getElementById('filtroEstado').value || "").toLowerCase();
-            
-            return registros.filter(reg => {
-                const okTexto = !q || 
-                    reg.nombre?.toLowerCase().includes(q) ||
-                    reg.dni?.toLowerCase().includes(q) ||
-                    reg.tipo?.toLowerCase().includes(q);
-                
-                const okTipo = !tipo || (reg.tipo || "").toLowerCase() === tipo;
-                const okEstado = !estado || (reg.estado || "").toLowerCase() === estado;
-                
-                return okTexto && okTipo && okEstado;
-            });
-        }
-        
-        const handleFilterChange = () => {
-            const datosFiltrados = filtrarDatos();
-            paginaActual = 1;
-            renderTablaPaginada(datosFiltrados);
-        };
-        
-        const renderTablaPaginada = (datosFiltrados) => {
-            const startIndex = (paginaActual - 1) * recordsPerPage;
-            const endIndex = startIndex + recordsPerPage;
-            const dataToRender = datosFiltrados.slice(startIndex, endIndex);
-            renderTabla(dataToRender);
-            renderPaginacion(datosFiltrados.length, dataToRender.length);
-        };
-        
-        // Renderizar tabla
-        function renderTabla(data) {
-            const tbodyCasos = document.getElementById('tbodyCasos');
-            if (!tbodyCasos) return;
-            
-            tbodyCasos.innerHTML = data.length ? "" : "<tr><td colspan='6'>No hay registros que coincidan con la búsqueda</td></tr>";
-            
-            data.forEach(registro => {
-                const estadoClase = registro.estado === 'Abierto' ? 'estado-abierto' : 
-                                  registro.estado === 'En Proceso' ? 'estado-proceso' : 'estado-cerrado';
-                
-                tbodyCasos.insertAdjacentHTML("beforeend", `
-                    <tr>
-                        <td>${registro.nombre || ""}</td>
-                        <td>${registro.dni || ""}</td>
-                        <td>${registro.tipo || ""}</td>
-                        <td><span class="estado-pill ${estadoClase}">${registro.estado || "Abierto"}</span></td>
-                        <td>${formatearFecha(registro.fecha, false)}</td>
-                        <td class="actions">
-                            <div class="action-buttons-table">
-                                <button class="btn-icon btn-view ver-detalles" data-id="${registro.id}" title="Ver">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                                <button class="btn-icon btn-edit editar-detalles" data-id="${registro.id}" title="Editar">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn-icon btn-follow seguir-detalles" data-id="${registro.id}" title="Seguimiento">
-                                    <i class="bi bi-journal-text"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `);
-            });
-            
-            // Asignar eventos a los botones
-            document.querySelectorAll(".ver-detalles").forEach(b => b.onclick = () => verRegistro(b.dataset.id));
-            document.querySelectorAll(".editar-detalles").forEach(b => b.onclick = () => editarRegistro(b.dataset.id));
-            document.querySelectorAll(".seguir-detalles").forEach(b => b.onclick = () => abrirModalSeguimiento(b.dataset.id));
-        }
-        
-        // PAGINACIÓN: Render y Controles
-        function renderPaginacion(totalRecords, recordsOnPage) {
-            const container = document.getElementById("paginacion-container");
-            const totalPages = Math.ceil(totalRecords / recordsPerPage);
-            
-            // No mostrar paginación si no hay registros
-            if (totalPages <= 1) {
-                container.style.display = "none";
-                return;
-            }
-            
-            container.style.display = "flex";
-            
-            // Generar números de página
-            let pageNumbersHTML = '';
-            for (let i = 1; i <= totalPages; i++) {
-                pageNumbersHTML += `
-                    <div class="page-number ${i === paginaActual ? 'active' : ''}" data-page="${i}">
-                        ${i}
-                    </div>
-                `;
-            }
-            
-            container.innerHTML = `
-                <div class="page-info">
-                    Página ${paginaActual} de ${totalPages} | Mostrando ${recordsOnPage} de ${totalRecords} registros
-                </div>
-                <div class="nav-buttons">
-                    <button id="btnPrevPage" class="button" ${paginaActual === 1 ? 'disabled' : ''}>
-                        <i class="bi bi-chevron-left"></i> Anterior
-                    </button>
-                    <div class="pagination-numbers">
-                        ${pageNumbersHTML}
-                    </div>
-                    <button id="btnNextPage" class="button" ${paginaActual === totalPages ? 'disabled' : ''}>
-                        Siguiente <i class="bi bi-chevron-right"></i>
-                    </button>
-                </div>
-            `;
+/* ===== Detalle / impresión ===== */
+function ficha(r){
+  const x=expedientes[r.expedienteReferencia],ex=r.expedienteReferencia?`${r.expedienteReferencia} - ${x?.caratula||'Sin carátula'}`:'No asociado',k=tipoDe(r.tipo);
+  return {
+    resumen:kv([['Tipo de caso',r.tipo],['Estado',R(pill(r.estado))],['Fecha de registro',fmtF(r.fecha,true)],['Nombre',r.nombre],['DNI',r.dni],['Edad',r.edad],['Teléfono',r.telefono||'No especificado'],...(r.direccion?[['Dirección',r.direccion]]:[])]),
+    caso:kv([['Expediente de referencia',ex],[k?TIPOS[k].desc:'Descripción',nl(r.descripcion)],['Intervención de la Defensoría',r.intervencion],['Organismo interviniente',r.organismo?.nombre||'No especificado'],['Contacto del organismo',r.organismo?.contacto||'Sin contacto']])};
+}
+function verRegistro({id}){
+  const r=registros.find(x=>x.id===id);if(!r)return;verActual=r;
+  const f=ficha(r),sg=r.seguimientos||[];
+  const P=[['Resumen','person',f.resumen],['Caso','folder2-open',f.caso],['Seguimientos','journal-text',sg.length?tl(sg):'<p class="empty">Sin seguimientos registrados.</p>']];
+  $('verT').textContent=r.nombre||'Detalle del registro';
+  $('verTabs').innerHTML=P.map(([t,i])=>`<button type="button" title="${t}"><i class="bi bi-${i}"></i><span>${t}</span></button>`).join('');
+  $('verBody').innerHTML=P.map(([t,,h])=>`<div class="pane"><h4>${t}</h4>${h}</div>`).join('');
+  setTab($('dVer'),0);$('dVer').showModal();
+}
+function setTab(d,i){
+  $$('#'+d.id+' .tabs button').forEach((b,j)=>b.classList.toggle('on',i===j));
+  $$('#'+d.id+' .pane').forEach((p,j)=>p.classList.toggle('on',i===j));
+  d.querySelector('.mb').scrollTop=0;
+}
+const imprimirFicha=r=>{const f=ficha(r);imprimir('Registro de caso: '+r.tipo,`<h4>Datos de la persona</h4>${f.resumen}<h4>Detalles del caso</h4>${f.caso}`)};
 
-            // Eventos para botones de paginación
-            document.getElementById("btnPrevPage").onclick = () => {
-                if (paginaActual > 1) {
-                    paginaActual--;
-                    const datosFiltrados = filtrarDatos();
-                    renderTablaPaginada(datosFiltrados);
-                }
-            };
+/* ===== Seguimientos ===== */
+const segArr=()=>Array.isArray(casoSeg?.seguimientos)?casoSeg.seguimientos:[];
+function tlSeg(){const a=segArr();$('tl').innerHTML=a.length?tl(a,true):'<p class="empty">Sin seguimientos registrados.</p>'}
+async function saveSeg(a,msg){
+  try{await rtdb.ref('registros/'+casoSeg.id).update({seguimientos:a});casoSeg.seguimientos=a;tlSeg();toast(msg)}
+  catch(x){console.error(x);toast('No se pudo guardar el seguimiento.','err')}
+}
 
-            document.getElementById("btnNextPage").onclick = () => {
-                if (paginaActual < totalPages) {
-                    paginaActual++;
-                    const datosFiltrados = filtrarDatos();
-                    renderTablaPaginada(datosFiltrados);
-                }
-            };
+/* ===== Acciones (delegación de eventos) ===== */
+const ACT={
+  new:()=>{limpiar();setTipo('proteccion');$('dReg').showModal()},
+  edit:({id})=>{
+    const r=registros.find(x=>x.id===id);if(!r)return;
+    limpiar();editId=id;setTipo(tipoDe(r.tipo)||'proteccion');
+    $$('#regTabs button').forEach(b=>b.disabled=b.dataset.k!==tipo);
+    $('fNom').value=r.nombre??'';$('fDni').value=r.dni??'';$('fEdad').value=r.edad??'';$('fTel').value=r.telefono??'';$('fDir').value=r.direccion??'';
+    $('fDesc').value=r.descripcion??'';$('fInt').value=r.intervencion??'';$('fEstado').value=r.estado||'Abierto';
+    if(r.expedienteReferencia){const x=expedientes[r.expedienteReferencia];$('fExp').value=r.expedienteReferencia;$('fExpS').value=x?`${r.expedienteReferencia} - ${x.caratula||'Sin carátula'}`:r.expedienteReferencia;$('expInfo').textContent=x?'Carátula: '+(x.caratula||''):''}
+    const on=r.organismo?.nombre,i=organismos.findIndex(o=>o.nombre===on);
+    if(i>=0)$('fOrg').value=i;else if(on){$('fOrg').value='otro';orgChange();$('fNOrg').value=on;$('fNCon').value=r.organismo.contacto??''}
+    $('dReg').showModal();
+  },
+  view:verRegistro,save:guardar,
+  seg:({id})=>{const r=registros.find(x=>x.id===id);if(!r)return;casoSeg={...r};$('nuevoSeg').value='';tlSeg();$('dSeg').showModal()},
+  pg:({p})=>{pagina=+p;tabla()},
+  addSeg:async()=>{const t=$('nuevoSeg').value.trim();if(!t)return;
+    await saveSeg([...segArr(),{fecha:new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),texto:t}],'Seguimiento agregado.');$('nuevoSeg').value=''},
+  delSeg:async({i})=>{if(confirm('¿Eliminar este seguimiento?'))await saveSeg(segArr().filter((_,k)=>k!==+i),'Seguimiento eliminado.')},
+  print:()=>imprimir('Listado de casos',`<table><thead><tr><th>Nombre</th><th>DNI</th><th>Tipo</th><th>Estado</th><th>Fecha</th></tr></thead><tbody>${filtrados.map(r=>`<tr><td>${e(r.nombre)}</td><td>${e(r.dni)}</td><td>${e(r.tipo)}</td><td>${e(r.estado||'Abierto')}</td><td>${e(fmtF(r.fecha))}</td></tr>`).join('')}</tbody></table>`),
+  printVer:()=>verActual&&imprimirFicha(verActual),
+  printSeg:()=>imprimir('Seguimiento del caso',$('tl').innerHTML),
+  printReg:()=>imprimirFicha({...datosForm(),estado:'—',edad:V('fEdad'),fecha:new Date().toISOString()})
+};
+document.addEventListener('click',ev=>{
+  const t=ev.target;
+  if(!t.closest('.rel'))$('lstExp').style.display='none';
+  if(t.closest('[data-close]'))return t.closest('dialog').close();
+  const rt=t.closest('#regTabs button');if(rt){if(!rt.disabled)setTipo(rt.dataset.k);return}
+  const tb=t.closest('.tabs button');if(tb)return setTab(tb.closest('dialog'),[...tb.parentNode.children].indexOf(tb));
+  const ex=t.closest('#lstExp div[data-n]');
+  if(ex){const n=ex.dataset.n;$('fExp').value=n;$('fExpS').value=ex.textContent;$('expInfo').textContent='Carátula: '+(expedientes[n]?.caratula||'');$('lstExp').style.display='none';return}
+  if(t.tagName==='DIALOG'&&t.id!=='dReg')return t.close();
+  const b=t.closest('[data-a]');if(!b)return;ev.preventDefault();ACT[b.dataset.a]?.(b.dataset);
+});
 
-            // Eventos para números de página
-            document.querySelectorAll(".page-number").forEach(element => {
-                element.onclick = () => {
-                    paginaActual = parseInt(element.getAttribute('data-page'));
-                    const datosFiltrados = filtrarDatos();
-                    renderTablaPaginada(datosFiltrados);
-                };
-            });
-        }
-        
-        // Funciones auxiliares
-        function formatearFecha(fecha, conHora = false) {
-            if (!fecha) return "";
-            const d = new Date(fecha);
-            if (isNaN(d)) return "";
-            
-            const dia = String(d.getDate()).padStart(2, '0');
-            const mes = String(d.getMonth() + 1).padStart(2, '0');
-            const año = d.getFullYear();
-            
-            if (!conHora) {
-                return `${dia}/${mes}/${año}`;
-            }
-            
-            const horas = String(d.getHours()).padStart(2, '0');
-            const minutos = String(d.getMinutes()).padStart(2, '0');
-            
-            return `${dia}/${mes}/${año} ${horas}:${minutos}`;
-        }
-        
-        function mostrarAlertaFlotante(mensaje, tipo) {
-            const floatingAlert = document.getElementById('floating-alert');
-            floatingAlert.textContent = mensaje;
-            floatingAlert.classList.remove('danger', 'success');
-            floatingAlert.classList.add(tipo);
-            floatingAlert.classList.add('show');
-            setTimeout(() => {
-                floatingAlert.classList.remove('show');
-            }, 3000);
-        }
-        
-        // Funciones para ver, editar y eliminar registros
-        function verRegistro(id) {
-            const registro = registros.find(r => r.id === id);
-            if (registro) {
-                registroActual = registro;
-                mostrarModalVerRegistro(registro);
-            }
-        }
-        
-        function mostrarModalVerRegistro(registro) {
-            const modalBody = document.getElementById('verRegistroBody');
-            const expedienteCaratula = registro.expedienteReferencia && expedientesIndex[registro.expedienteReferencia] 
-                ? `${expedientesIndex[registro.expedienteReferencia].numCausa} - ${expedientesIndex[registro.expedienteReferencia].caratula || 'Sin carátula'}` 
-                : 'No asociado';
-            
-            let descripcionLabel = '';
-            if (registro.tipo === 'Protección Adulto Mayor') {
-                descripcionLabel = 'Situación de Vulnerabilidad';
-            } else if (registro.tipo === 'Determinación de Capacidad') {
-                descripcionLabel = 'Motivo de Evaluación';
-            } else if (registro.tipo === 'Restricción de Capacidad') {
-                descripcionLabel = 'Fundamentos de la Restricción';
-            } else if (registro.tipo === 'Internación Involuntaria') {
-                descripcionLabel = 'Diagnóstico y Justificación';
-            }
-            
-            const estadoClase = registro.estado === 'Abierto' ? 'estado-abierto' : 
-                              registro.estado === 'En Proceso' ? 'estado-proceso' : 'estado-cerrado';
-            
-            // Obtener seguimientos si existen
-            const seguimientosHTML = (registro.seguimientos || []).map(sg => 
-                `<p><span class='status-en'>${sg.fecha}</span>: ${sg.texto}</p>`
-            ).join("") || "<p>Sin seguimientos registrados</p>";
-            
-            modalBody.innerHTML = `
-                <div class="detalle-registro">
-                    <h4>Información General</h4>
-                    <div class="detalle-item">
-                        <span class="detalle-label">Tipo de Caso:</span>
-                        <span class="detalle-value">${registro.tipo}</span>
-                    </div>
-                    <div class="detalle-item">
-                        <span class="detalle-label">Estado:</span>
-                        <span class="detalle-value"><span class="estado-pill ${estadoClase}">${registro.estado || "Abierto"}</span></span>
-                    </div>
-                    <div class="detalle-item">
-                        <span class="detalle-label">Fecha de Registro:</span>
-                        <span class="detalle-value">${formatearFecha(registro.fecha, true)}</span>
-                    </div>
-                </div>
-                
-                <div class="detalle-registro">
-                    <h4>Datos de la Persona</h4>
-                    <div class="detalle-item">
-                        <span class="detalle-label">Nombre:</span>
-                        <span class="detalle-value">${registro.nombre}</span>
-                    </div>
-                    <div class="detalle-item">
-                        <span class="detalle-label">DNI:</span>
-                        <span class="detalle-value">${registro.dni}</span>
-                    </div>
-                    <div class="detalle-item">
-                        <span class="detalle-label">Edad:</span>
-                        <span class="detalle-value">${registro.edad}</span>
-                    </div>
-                    <div class="detalle-item">
-                        <span class="detalle-label">Teléfono:</span>
-                        <span class="detalle-value">${registro.telefono || 'No especificado'}</span>
-                    </div>
-                    ${registro.direccion ? `
-                    <div class="detalle-item">
-                        <span class="detalle-label">Dirección:</span>
-                        <span class="detalle-value">${registro.direccion}</span>
-                    </div>
-                    ` : ''}
-                </div>
-                
-                <div class="detalle-registro">
-                    <h4>Detalles del Caso</h4>
-                    <div class="detalle-item">
-                        <span class="detalle-label">Expediente de Referencia:</span>
-                        <span class="detalle-value">${expedienteCaratula}</span>
-                    </div>
-                    <div class="detalle-item">
-                        <span class="detalle-label">${descripcionLabel}:</span>
-                        <span class="detalle-value">${registro.descripcion}</span>
-                    </div>
-                    <div class="detalle-item">
-                        <span class="detalle-label">Intervención de la Defensoría:</span>
-                        <span class="detalle-value">${registro.intervencion}</span>
-                    </div>
-                    <div class="detalle-item">
-                        <span class="detalle-label">Organismo Interviniente:</span>
-                        <span class="detalle-value">${registro.organismo?.nombre || 'No especificado'}</span>
-                    </div>
-                    ${registro.organismo?.contacto ? `
-                    <div class="detalle-item">
-                        <span class="detalle-label">Contacto del Organismo:</span>
-                        <span class="detalle-value">${registro.organismo.contacto}</span>
-                    </div>
-                    ` : ''}
-                </div>
-                
-                <div class="detalle-registro">
-                    <h4>Seguimientos</h4>
-                    <div class="detalle-item">
-                        <span class="detalle-label">Historial de seguimientos:</span>
-                        <span class="detalle-value">${seguimientosHTML}</span>
-                    </div>
-                </div>
-            `;
-            
-            const modal = new bootstrap.Modal(document.getElementById('verRegistroModal'));
-            modal.show();
-        }
-        
-        function printVerRegistro() {
-            if (!registroActual) return;
-            
-            const html = buildRegistroPrintable(registroActual);
-            printHTMLContent(html);
-        }
-        
-        function editarRegistro(id) {
-            const registro = registros.find(r => r.id === id);
-            if (registro) {
-                // Abrir el modal correspondiente y cargar los datos
-                const tipo = getTipoClass(registro.tipo);
-                abrirModalEdicion(tipo, registro);
-            }
-        }
-        
-        // Funciones auxiliares para tipos
-        function getTipoClass(tipo) {
-            const classes = {
-                'Protección Adulto Mayor': 'proteccion',
-                'Determinación de Capacidad': 'capacidad',
-                'Restricción de Capacidad': 'internacion' // Ajuste según tu código original, nota: puede que haya que mapear a restriccion
-            };
-            // Corrección interna para mapear bien según los modales
-            if(tipo === 'Restricción de Capacidad') return 'restriccion';
-            if(tipo === 'Internación Involuntaria') return 'internacion';
-            return classes[tipo] || '';
-        }
-        
-        // Función para abrir modal de edición
-        function abrirModalEdicion(tipo, registro) {
-            isEditing = true;
-            currentEditType = tipo;
-            const modalElement = document.getElementById(`${tipo}Modal`);
-            const modalInstance = new bootstrap.Modal(modalElement);
-            
-            // Llenar campos del formulario
-            document.getElementById(`${tipo}Id`).value = registro.id;
-            document.getElementById(`${tipo}Nombre`).value = registro.nombre;
-            document.getElementById(`${tipo}DNI`).value = registro.dni;
-            document.getElementById(`${tipo}Edad`).value = registro.edad;
-            document.getElementById(`${tipo}Telefono`).value = registro.telefono;
-            if (tipo === 'proteccion') {
-                document.getElementById(`${tipo}Direccion`).value = registro.direccion;
-            }
-            
-            // Configurar expediente
-            if (registro.expedienteReferencia) {
-                const expedienteSelect = document.getElementById(`${tipo}Expediente`);
-                const expedienteSearch = document.getElementById(`${tipo}ExpedienteSearch`);
-                const infoSpan = document.getElementById(`${tipo}ExpedienteInfo`);
-                
-                if (expedienteSelect) expedienteSelect.value = registro.expedienteReferencia;
-                if (expedienteSearch && expedientesIndex[registro.expedienteReferencia]) {
-                    const expediente = expedientesIndex[registro.expedienteReferencia];
-                    expedienteSearch.value = `${registro.expedienteReferencia} - ${expediente.caratula || 'Sin carátula'}`;
-                }
-                if (infoSpan && expedientesIndex[registro.expedienteReferencia]) {
-                    const expediente = expedientesIndex[registro.expedienteReferencia];
-                    infoSpan.textContent = `Carátula: ${expediente.caratula}`;
-                }
-            }
-            
-            const descripcionId = tipo === 'proteccion' ? 'proteccionSituacion' :
-                                  tipo === 'capacidad' ? 'capacidadMotivo' :
-                                  tipo === 'restriccion' ? 'restriccionFundamentos' : 'internacionDiagnostico';
-            document.getElementById(descripcionId).value = registro.descripcion;
-            document.getElementById(`${tipo}Intervencion`).value = registro.intervencion;
-            
-            // Lógica para el organismo interviniente
-            const selectOrganismo = document.getElementById(`${tipo}Organismo`);
-            const organismoIndex = organismos.findIndex(org => org.nombre === registro.organismo.nombre);
-            const checkbox = document.getElementById(`${tipo}NuevoOrganismoCheck`);
-            const addDiv = document.getElementById(`${tipo}AddOrganismo`);
-
-            if (organismoIndex !== -1) {
-                selectOrganismo.value = organismoIndex;
-                checkbox.checked = false;
-                addDiv.style.display = 'none';
-                selectOrganismo.disabled = false;
-                selectOrganismo.required = true;
-            } else {
-                checkbox.checked = true;
-                addDiv.style.display = 'block';
-                document.getElementById(`${tipo}NuevoOrganismo`).value = registro.organismo.nombre;
-                document.getElementById(`${tipo}NuevoContacto`).value = registro.organismo.contacto;
-                selectOrganismo.disabled = true;
-                selectOrganismo.required = false;
-            }
-            
-            document.getElementById(`${tipo}ButtonText`).textContent = 'Actualizar Registro';
-            modalInstance.show();
-        }
-        
-        // Función para guardar un registro
-        function saveRegistro(tipo) {
-            const form = document.getElementById(`${tipo}Form`);
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-            const spinnerId = `${tipo}Spinner`;
-            const buttonTextId = `${tipo}ButtonText`;
-            const saveButton = document.getElementById(`save${capitalizeFirstLetter(tipo)}`);
-
-            // Mostrar spinner y deshabilitar botón
-            document.getElementById(spinnerId).style.display = 'inline-block';
-            document.getElementById(buttonTextId).textContent = 'Guardando...';
-            saveButton.disabled = true;
-
-            const nombre = getVal(`${tipo}Nombre`);
-            const dni = getVal(`${tipo}DNI`);
-            const edad = getVal(`${tipo}Edad`);
-            const telefono = getVal(`${tipo}Telefono`);
-            const direccion = getVal(`${tipo}Direccion`) || '';
-            const expedienteReferencia = getVal(`${tipo}Expediente`);
-            const descripcion = getVal(`${tipo}Situacion`) || getVal(`${tipo}Motivo`) || getVal(`${tipo}Fundamentos`) || getVal(`${tipo}Diagnostico`);
-            const intervencion = getVal(`${tipo}Intervencion`);
-
-            let organismoNombre = '';
-            let organismoContacto = '';
-
-            if (document.getElementById(`${tipo}NuevoOrganismoCheck`)?.checked) {
-                organismoNombre = getVal(`${tipo}NuevoOrganismo`);
-                organismoContacto = getVal(`${tipo}NuevoContacto`);
-
-                // Guardar el nuevo organismo en la lista
-                if (organismoNombre) {
-                    const nuevoOrganismo = {
-                        nombre: organismoNombre,
-                        contacto: organismoContacto,
-                        tipo: "Otro"
-                    };
-                    organismos.push(nuevoOrganismo);
-                    populateOrganismosSelects(); // Volver a llenar los selects
-                }
-            } else {
-                const sel = document.getElementById(`${tipo}Organismo`);
-                const idx = sel ? sel.value : '';
-                if (idx !== '' && idx !== 'otro' && organismos[idx]) {
-                    organismoNombre = organismos[idx].nombre || '';
-                    organismoContacto = organismos[idx].email || organismos[idx].telefono || organismos[idx].contacto || '';
-                }
-            }
-
-            const nuevoRegistro = {
-                tipo: getTipoNombre(tipo),
-                nombre,
-                dni,
-                edad,
-                telefono,
-                direccion,
-                expedienteReferencia,
-                descripcion,
-                intervencion,
-                organismo: { nombre: organismoNombre, contacto: organismoContacto },
-                fecha: new Date().toISOString(),
-                estado: 'Abierto',
-                seguimientos: [] // Inicializar array de seguimientos vacío
-            };
-
-            const id = getVal(`${tipo}Id`);
-
-            if (isEditing && id) {
-                // Si estamos editando, mantener los seguimientos existentes
-                database.ref('registros/' + id).once('value').then(snapshot => {
-                    const existingData = snapshot.val();
-                    if (existingData && existingData.seguimientos) {
-                        nuevoRegistro.seguimientos = existingData.seguimientos;
-                    }
-                    
-                    database.ref('registros/' + id).set(nuevoRegistro)
-                    .then(() => {
-                        mostrarAlertaFlotante('Registro actualizado exitosamente.', 'success');
-                        resetForm(tipo);
-                        loadRegistros();
-                    })
-                    .catch(error => {
-                        console.error("Error al actualizar:", error);
-                        mostrarAlertaFlotante('Error al actualizar el registro.', 'danger');
-                    })
-                    .finally(() => {
-                        document.getElementById(spinnerId).style.display = 'none';
-                        document.getElementById(buttonTextId).textContent = 'Guardar Registro';
-                        saveButton.disabled = false;
-                    });
-                });
-            } else {
-                const newRegistroRef = database.ref('registros').push();
-                newRegistroRef.set(nuevoRegistro)
-                .then(() => {
-                    mostrarAlertaFlotante('Registro guardado exitosamente.', 'success');
-                    resetForm(tipo);
-                    loadRegistros();
-                })
-                .catch(error => {
-                    console.error("Error al guardar:", error);
-                    mostrarAlertaFlotante('Error al guardar el registro.', 'danger');
-                })
-                .finally(() => {
-                    document.getElementById(spinnerId).style.display = 'none';
-                    document.getElementById(buttonTextId).textContent = 'Guardar Registro';
-                    saveButton.disabled = false;
-                });
-            }
-        }
-
-        function resetForm(tipo) {
-            document.getElementById(`${tipo}Form`).reset();
-
-            const modalElement = document.getElementById(`${tipo}Modal`);
-            const modalInstance = bootstrap.Modal.getInstance(modalElement);
-            if (modalInstance) {
-                modalInstance.hide();
-            }
-
-            const addDiv = document.getElementById(`${tipo}AddOrganismo`);
-            const select = document.getElementById(`${tipo}Organismo`);
-            const checkbox = document.getElementById(`${tipo}NuevoOrganismoCheck`);
-
-            if (addDiv && select && checkbox) {
-                checkbox.checked = false;
-                addDiv.style.display = 'none';
-                select.disabled = false;
-                select.required = true;
-            }
-            
-            document.getElementById(`${tipo}Id`).value = '';
-            isEditing = false;
-            currentEditType = null;
-            document.getElementById(`${tipo}ButtonText`).textContent = 'Guardar Registro';
-        }
-
-        function getVal(id) {
-            const element = document.getElementById(id);
-            return element ? element.value : '';
-        }
-
-        function getTipoNombre(tipo) {
-            switch(tipo) {
-                case 'proteccion': return 'Protección Adulto Mayor';
-                case 'capacidad': return 'Determinación de Capacidad';
-                case 'restriccion': return 'Restricción de Capacidad';
-                case 'internacion': return 'Internación Involuntaria';
-                default: return tipo;
-            }
-        }
-
-        function capitalizeFirstLetter(string) {
-            return string.charAt(0).toUpperCase() + string.slice(1);
-        }
-        
-        // ===== FUNCIONALIDAD DE SEGUIMIENTO =====
-        
-        // Función para abrir el modal de seguimiento
-        function abrirModalSeguimiento(id) {
-            const registro = registros.find(r => r.id === id);
-            if (!registro) return;
-            
-            casoActualSeguimiento = { id, ...registro };
-            document.getElementById('nuevoSeguimiento').value = '';
-            renderTimelineSeguimiento();
-            const modal = new bootstrap.Modal(document.getElementById('modalSeguimiento'));
-            modal.show();
-        }
-
-        // Función para renderizar la línea de tiempo de seguimientos
-        function renderTimelineSeguimiento() {
-            const timeline = document.getElementById('timelineSeguimiento');
-            const arr = Array.isArray(casoActualSeguimiento?.seguimientos) ? casoActualSeguimiento.seguimientos : [];
-            timeline.innerHTML = arr.length
-                ? arr.map((s, i) => `
-                    <div class='timeline-item'>
-                        <div class='date'>${s.fecha}</div>
-                        <div>${s.texto}</div>
-                        <button class='delete-btn' title='Eliminar' onclick='eliminarSeguimiento(${i})'>✕</button>
-                    </div>
-                `).join("")
-                : "<p>Sin seguimientos registrados</p>";
-        }
-
-        // Función para guardar un nuevo seguimiento
-        function guardarSeguimiento() {
-            if (!casoActualSeguimiento) return;
-            const nuevoSeguimientoInput = document.getElementById('nuevoSeguimiento');
-            const texto = nuevoSeguimientoInput.value.trim();
-            if (!texto) return;
-
-            const arr = Array.isArray(casoActualSeguimiento.seguimientos) ? casoActualSeguimiento.seguimientos : [];
-            arr.push({ 
-                fecha: new Date().toLocaleString('es-AR', { 
-                    day: '2-digit', 
-                    month: '2-digit', 
-                    year: 'numeric', 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                }), 
-                texto 
-            });
-
-            // Actualizar en Firebase
-            database.ref('registros/' + casoActualSeguimiento.id).update({ seguimientos: arr })
-                .then(() => {
-                    casoActualSeguimiento.seguimientos = arr;
-                    nuevoSeguimientoInput.value = '';
-                    renderTimelineSeguimiento();
-                    mostrarAlertaFlotante('Seguimiento agregado exitosamente.', 'success');
-                })
-                .catch(error => {
-                    console.error("Error al guardar seguimiento:", error);
-                    mostrarAlertaFlotante('Error al guardar el seguimiento.', 'danger');
-                });
-        }
-
-        // Función para eliminar un seguimiento
-        function eliminarSeguimiento(index) {
-            if (!casoActualSeguimiento) return;
-            const arr = Array.isArray(casoActualSeguimiento.seguimientos) ? casoActualSeguimiento.seguimientos : [];
-            arr.splice(index, 1);
-            
-            // Actualizar en Firebase
-            database.ref('registros/' + casoActualSeguimiento.id).update({ seguimientos: arr })
-                .then(() => {
-                    casoActualSeguimiento.seguimientos = arr;
-                    renderTimelineSeguimiento();
-                    mostrarAlertaFlotante('Seguimiento eliminado exitosamente.', 'success');
-                })
-                .catch(error => {
-                    console.error("Error al eliminar seguimiento:", error);
-                    mostrarAlertaFlotante('Error al eliminar el seguimiento.', 'danger');
-                });
-        }
-
-        // Función para imprimir sección
-        function imprimirSeccion(id) {
-            const el = document.getElementById(id);
-            if(!el) return;
-            const w = window.open("", "_blank");
-            const styles = document.querySelector('style')?.outerHTML || "";
-            w.document.write(`<html><head><title>Imprimir</title>${styles}</head><body>${el.innerHTML}</body></html>`);
-            w.document.close();
-            w.focus();
-            w.print();
-        }
-        
-        // Función para imprimir listado
-        function printListado() {
-            const datosFiltrados = filtrarDatos();
-            const html = buildListadoPrintable(datosFiltrados);
-            printHTMLContent(html);
-        }
-        
-        function buildListadoPrintable(data) {
-            let rows = '';
-            data.forEach(registro => {
-                rows += `
-                    <tr>
-                        <td>${registro.nombre || ""}</td>
-                        <td>${registro.dni || ""}</td>
-                        <td>${registro.tipo || ""}</td>
-                        <td>${registro.estado || "Abierto"}</td>
-                        <td>${formatearFecha(registro.fecha, false)}</td>
-                    </tr>
-                `;
-            });
-            
-            const html = `
-                <!DOCTYPE html>
-                <html lang="es">
-                <head>
-                    <title>Listado de Casos - Imprimir</title>
-                    <style>
-                        body { font-family: 'Arial', sans-serif; margin: 20px; color: #333; }
-                        h1 { color: #007bff; text-align: center; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                        th { background-color: #f8f9fa; }
-                        .footer { margin-top: 30px; font-size: 0.9em; text-align: center; color: #777; }
-                    </style>
-                </head>
-                <body>
-                    <h1>Listado de Casos - Sistema de Protección</h1>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>DNI</th>
-                                <th>Tipo</th>
-                                <th>Estado</th>
-                                <th>Fecha</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${rows}
-                        </tbody>
-                    </table>
-                    <div class="footer">
-                        <p>Generado por el Sistema de Protección de Personas Adultas.</p>
-                    </div>
-                </body>
-                </html>
-            `;
-            return html;
-        }
-        
-        function printHTMLContent(html) {
-            const printWindow = window.open('', '', 'height=600,width=800');
-            printWindow.document.write(html);
-            printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
-        }
-        
-        // Función para imprimir modal
-        function printModal(tipo) {
-            const nombre = getVal(`${tipo}Nombre`);
-            const dni = getVal(`${tipo}DNI`);
-            const edad = getVal(`${tipo}Edad`);
-            const telefono = getVal(`${tipo}Telefono`);
-            const direccion = tipo === 'proteccion' ? getVal('proteccionDireccion') : '';
-            const expedienteReferencia = getVal(`${tipo}Expediente`);
-            const descripcion = tipo === 'proteccion'
-                ? getVal('proteccionSituacion')
-                : tipo === 'capacidad'
-                ? getVal('capacidadMotivo')
-                : tipo === 'restriccion'
-                ? getVal('restriccionFundamentos')
-                : getVal('internacionDiagnostico');
-            const intervencion = getVal(`${tipo}Intervencion`);
-
-            let organismoNombre = '';
-            let organismoContacto = '';
-
-            if (document.getElementById(`${tipo}NuevoOrganismoCheck`)?.checked) {
-                organismoNombre = getVal(`${tipo}NuevoOrganismo`);
-                organismoContacto = getVal(`${tipo}NuevoContacto`);
-            } else {
-                const sel = document.getElementById(`${tipo}Organismo`);
-                const idx = sel ? sel.value : '';
-                if (idx !== '' && idx !== 'otro' && organismos[idx]) {
-                    organismoNombre = organismos[idx].nombre || '';
-                    organismoContacto = organismos[idx].email || organismos[idx].telefono || organismos[idx].contacto || '';
-                }
-            }
-
-            const registroTmp = {
-                tipo: getTipoNombre(tipo),
-                nombre, dni, edad: edad ? parseInt(edad) : '',
-                telefono, direccion, expedienteReferencia, descripcion, intervencion,
-                organismo: { nombre: organismoNombre, contacto: organismoContacto },
-                fecha: new Date().toISOString(),
-                estado: '—'
-            };
-
-            const html = buildRegistroPrintable(registroTmp);
-            printHTMLContent(html);
-        }
-
-        function buildRegistroPrintable(registro) {
-            const expedienteCaratula = registro.expedienteReferencia ? `${expedientesIndex[registro.expedienteReferencia]?.numCausa} - ${expedientesIndex[registro.expedienteReferencia]?.caratula || 'Sin carátula'}` : 'No asociado';
-            const html = `
-                <!DOCTYPE html>
-                <html lang="es">
-                <head>
-                    <title>Registro de Caso - Imprimir</title>
-                    <style>
-                        body { font-family: 'Arial', sans-serif; margin: 20px; color: #333; }
-                        .print-container { max-width: 800px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
-                        h1 { color: #2c3e50; text-align: center; }
-                        h3 { margin-top: 20px; padding-bottom: 5px; border-bottom: 2px solid #3498db; }
-                        p { margin-bottom: 10px; line-height: 1.6; }
-                        .info-box { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
-                        strong { color: #555; }
-                        .footer { margin-top: 30px; font-size: 0.9em; text-align: center; color: #777; }
-                    </style>
-                </head>
-                <body>
-                    <div class="print-container">
-                        <h1>Registro de Caso: ${registro.tipo}</h1>
-                        <p><strong>Fecha de Registro:</strong> ${new Date(registro.fecha).toLocaleString()}</p>
-
-                        <h3>Datos de la Persona</h3>
-                        <div class="info-box">
-                            <p><strong>Nombre:</strong> ${registro.nombre}</p>
-                            <p><strong>DNI:</strong> ${registro.dni}</p>
-                            <p><strong>Edad:</strong> ${registro.edad}</p>
-                            <p><strong>Teléfono:</strong> ${registro.telefono || 'No especificado'}</p>
-                            <p><strong>Dirección:</strong> ${registro.direccion || 'No especificado'}</p>
-                        </div>
-
-                        <h3>Detalles del Caso</h3>
-                        <div class="info-box">
-                            <p><strong>Expediente de referencia:</strong> ${expedienteCaratula}</p>
-                            <p><strong>Descripción/Justificación:</strong> ${registro.descripcion}</p>
-                            <p><strong>Intervención de la Defensoría:</strong> ${registro.intervencion}</p>
-                            <p><strong>Organismo Interviniente:</strong> ${registro.organismo?.nombre || 'No especificado'} (${registro.organismo?.contacto || 'Sin contacto'})</p>
-                        </div>
-
-                        <div class="footer">
-                            <p>Generado por el Sistema Unificado de Protección de Personas.</p>
-                        </div>
-                    </div>
-                </body>
-                </html>
-            `;
-            return html;
-        }
-    </script>
+/* ===== Inicio ===== */
+$('regTabs').innerHTML=Object.entries(TIPOS).map(([k,t])=>`<button type="button" data-k="${k}" title="${t.n}"><i class="bi bi-${t.i}"></i><span class="lg">${t.n}</span><span class="sm">${t.s}</span></button>`).join('');
+$('ftipo').innerHTML='<option value="">Todos los tipos</option>'+Object.values(TIPOS).map(t=>`<option>${t.n}</option>`).join('');
+$('fInt').innerHTML='<option value="">Seleccionar intervención…</option>'+INTERV.map(i=>`<option>${i}</option>`).join('');
+fillOrgs();setTipo('proteccion');
+$('q').oninput=()=>filtrar();$('ftipo').onchange=()=>filtrar();$('fest').onchange=()=>filtrar();
+$('fOrg').onchange=orgChange;
+$('fExpS').addEventListener('focus',ev=>listaExp(ev.target.value));
+$('fExpS').addEventListener('input',ev=>{$('fExp').value='';$('expInfo').textContent='';listaExp(ev.target.value)});
+cargarExpedientes();escucharRegistros();
+</script>
 </body>
 </html>
