@@ -108,12 +108,12 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
 .empty-state{width:100%;padding:28px 12px;text-align:center;color:var(--mute)}
 
 /* Modales */
-#organismModal,#policiaModal,#mapaModal,#viewModal{display:none;position:fixed;inset:0;z-index:1000;padding:16px;background:rgba(8,28,77,.55);justify-content:center;align-items:center}
-:is(#organismModal,#policiaModal,#mapaModal,#viewModal) .content{width:100%;max-width:680px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;background:#fff;border-radius:18px;box-shadow:0 24px 60px -20px rgba(8,28,77,.5);animation:rise .22s ease}
+#organismModal,#policiaModal,#judicialModal,#mapaModal,#viewModal{display:none;position:fixed;inset:0;z-index:1000;padding:16px;background:rgba(8,28,77,.55);justify-content:center;align-items:center}
+:is(#organismModal,#policiaModal,#judicialModal,#mapaModal,#viewModal) .content{width:100%;max-width:680px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;background:#fff;border-radius:18px;box-shadow:0 24px 60px -20px rgba(8,28,77,.5);animation:rise .22s ease}
 #viewModal .content{max-width:560px}
-#policiaModal .content,#mapaModal .content{max-width:1200px;height:92vh;max-height:92vh}
-#policiaModal .modal-body,#mapaModal .modal-body{padding:0;display:flex}
-#policiaModal iframe,#mapaModal iframe{width:100%;height:100%;border:0}
+#policiaModal .content,#judicialModal .content,#mapaModal .content{max-width:1200px;height:92vh;max-height:92vh}
+#policiaModal .modal-body,#judicialModal .modal-body,#mapaModal .modal-body{padding:0;display:flex}
+#policiaModal iframe,#judicialModal iframe,#mapaModal iframe{width:100%;height:100%;border:0}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .modal-header{display:flex;align-items:center;gap:12px;padding:16px 22px;background:var(--navy);color:#fff}
 .modal-header i{color:var(--b2)}
@@ -169,9 +169,9 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
   .action-buttons .button,.controls-form .button{flex:1}
   .header-buttons,.header-buttons .button{width:100%}
   .pagination-container{justify-content:center}
-  #organismModal,#policiaModal,#mapaModal,#viewModal{padding:0;align-items:flex-end}
-  :is(#organismModal,#policiaModal,#mapaModal,#viewModal) .content{max-width:100%;max-height:94vh;border-radius:18px 18px 0 0}
-  #policiaModal .content,#mapaModal .content{max-width:100%;height:94vh}
+  #organismModal,#policiaModal,#judicialModal,#mapaModal,#viewModal{padding:0;align-items:flex-end}
+  :is(#organismModal,#policiaModal,#judicialModal,#mapaModal,#viewModal) .content{max-width:100%;max-height:94vh;border-radius:18px 18px 0 0}
+  #policiaModal .content,#judicialModal .content,#mapaModal .content{max-width:100%;height:94vh}
   .modal-header,.modal-body,.controls-form{padding-left:16px;padding-right:16px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation-duration:.01ms!important}}
@@ -189,6 +189,9 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                 </button>
                 <button id="btnPolicia" class="button">
                     <i class="fas fa-shield-alt"></i> Policia de Misiones
+                </button>
+                <button id="btnJudicial" class="button">
+                    <i class="fas fa-balance-scale"></i> Poder Judicial
                 </button>
                 <button id="btnNuevo" class="button btn-celeste-oscuro">
                     <i class="fas fa-plus"></i> Nuevo Organismo
@@ -424,6 +427,24 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
         </div>
     </div>
 
+    <div id="judicialModal">
+        <div class="content">
+            <div class="modal-header">
+                <i class="fas fa-balance-scale"></i>
+                <h2 style="margin:0;">Poder Judicial</h2>
+            </div>
+            <div class="modal-body">
+                <iframe src="https://sistemadigital.github.io/defensor-secretarios/agendajudicial" 
+                        title="Poder Judicial"></iframe>
+            </div>
+            <div class="controls-form">
+                <button class="button button-secondary" type="button" id="btnCerrarJudicial">
+                    <i class="fa fa-arrow-left"></i> Volver a la pantalla principal
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="mapaModal">
         <div class="content">
             <div class="modal-header">
@@ -465,6 +486,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
         const modal = $("organismModal");
         const viewModal = $("viewModal");
         const policiaModal = $("policiaModal");
+        const judicialModal = $("judicialModal");
         const mapaModal = $("mapaModal");
         const modalTitle = $("modalTitle");
         const buscador = $("buscador");
@@ -1072,11 +1094,13 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
             // Asignar eventos
             $("btnNuevo").onclick = abrirNuevo;
             $("btnPolicia").onclick = () => policiaModal.style.display = "flex";
+            $("btnJudicial").onclick = () => judicialModal.style.display = "flex";
             $("btnMapa").onclick = () => mapaModal.style.display = "flex";
             $("btnGuardar").onclick = guardarOrganismo;
             $("btnCancelar").onclick = () => modal.style.display = "none";
             $("btnCerrarView").onclick = () => viewModal.style.display = "none";
             $("btnCerrarPolicia").onclick = () => policiaModal.style.display = "none";
+            $("btnCerrarJudicial").onclick = () => judicialModal.style.display = "none";
             $("btnCerrarMapa").onclick = () => mapaModal.style.display = "none";
             $("btnPrintModule").onclick = imprimirModulo;
             $("btnPrintListado").onclick = printListado;
@@ -1101,6 +1125,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                 if (e.target === modal) modal.style.display = "none";
                 if (e.target === viewModal) viewModal.style.display = "none";
                 if (e.target === policiaModal) policiaModal.style.display = "none";
+                if (e.target === judicialModal) judicialModal.style.display = "none";
                 if (e.target === mapaModal) mapaModal.style.display = "none";
             });
         }
