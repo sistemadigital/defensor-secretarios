@@ -4,151 +4,486 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Organismos</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
-  
+
   <style>
+/* =========================================================
+   Variables de diseño (réplica de modulos.html)
+   ========================================================= */
+@property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+@property --arc{syntax:'<angle>';initial-value:70deg;inherits:false}
+
 :root{
-  --navy:#0b2a6f;--navy-d:#081c4d;--b7:#1849c4;--b6:#2160e8;--b5:#3b7bf5;
-  --b2:#c3d7ff;--b1:#eef4ff;--ink:#0f1b3d;--mute:#5a6a8a;--rule:#dde5f3;
-  --field:#c9d5ec;--bg:#f4f7fd;--ok:#16a34a;--bad:#dc2626;
-  --ff:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
   --pad:clamp(14px,3vw,28px);
-  --sh:0 1px 2px rgba(11,42,111,.05),0 12px 28px -18px rgba(11,42,111,.25);
+  --gap:clamp(12px,2.6vmin,24px);
+  --ff:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --ink:#0b1f3a;
+  --mute:#64748b;
+  --rule:#e2e8f0;
+  --field:#cbd5e1;
+  --bg:#eef1f6;
+  --card:#ffffff;
+  --ac:#2563eb;
+  --ac2:#4f46e5;
+  --grn:#059669;
+  --ok:#10b981;
+  --bad:#ef4444;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --glow:color-mix(in srgb,var(--ac) 32%,transparent);
+
+  /* Alias compat con tokens originales */
+  --navy:#0b1f3a;
+  --navy-d:#081628;
+  --b7:#1d4ed8;
+  --b6:#2563eb;
+  --b5:#3b82f6;
+  --b2:#dbeafe;
+  --b1:#eff6ff;
+  --sh:0 1px 2px rgba(15,23,42,.04),0 12px 28px -16px rgba(15,23,42,.14);
+
+  color-scheme:light;
 }
+
+@media (prefers-color-scheme:dark){
+  :root{
+    --ink:#e6eeff;
+    --mute:#93a7cb;
+    --rule:#1f3560;
+    --field:#2a4272;
+    --bg:#071225;
+    --card:#0f213f;
+    --ac:#60a5fa;
+    --ac2:#818cf8;
+    --grn:#34d399;
+    --ok:#34d399;
+    --bad:#f87171;
+    --glow:color-mix(in srgb,var(--ac) 42%,transparent);
+
+    --navy:#0f213f;
+    --navy-d:#0a1930;
+    --b7:#93c5fd;
+    --b6:#60a5fa;
+    --b5:#3b82f6;
+    --b2:#1e3a8a;
+    --b1:#132b4e;
+    --sh:0 1px 2px rgba(0,0,0,.3),0 12px 28px -16px rgba(0,0,0,.5);
+
+    color-scheme:dark;
+  }
+}
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
-body{min-height:100vh;font:15px/1.55 var(--ff);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+html,body{height:100%}
+body{min-height:100vh;font:15px/1.55 var(--ff);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 button,input,select,textarea{font-family:inherit}
-:focus-visible{outline:2px solid var(--b5);outline-offset:2px}
-a{color:var(--b7);text-decoration:none}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+a{color:var(--ac);text-decoration:none;transition:color .2s var(--ease)}
 a:hover{text-decoration:underline}
 
-/* Botones */
-.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border:1px solid transparent;border-radius:10px;background:var(--b6);color:#fff;font-size:14px;font-weight:600;line-height:1.2;cursor:pointer;transition:background .15s,border-color .15s}
-.button:hover:not(:disabled){background:var(--b7)}
-.button:disabled{opacity:.45;cursor:not-allowed}
-.button-secondary,.button-warning,.action-buttons .button,.pagination-container .button{background:#fff;color:var(--b7);border-color:var(--b2)}
-.button-secondary:hover:not(:disabled),.button-warning:hover:not(:disabled),.action-buttons .button:hover:not(:disabled),.pagination-container .button:hover:not(:disabled){background:var(--b1)}
+/* =========================================================
+   Botones (firma visual de modulos)
+   ========================================================= */
+.button{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px 16px;border:1.5px solid transparent;border-radius:12px;
+  background:var(--ac);color:#fff;font-size:14px;font-weight:700;
+  letter-spacing:-.01em;line-height:1.2;cursor:pointer;
+  transition:transform .25s var(--ease),box-shadow .25s var(--ease),background-color .25s var(--ease),color .25s var(--ease),border-color .25s var(--ease);
+  box-shadow:0 1px 2px rgba(15,23,42,.04);
+}
+.button:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 22px -10px var(--glow)}
+.button:active:not(:disabled){transform:translateY(0)}
+.button:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 
-/* Cabecera */
-.header{background:var(--navy);color:#fff;padding:22px 0}
-.header-content{width:min(1200px,calc(100% - 2*var(--pad)));margin-inline:auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px 24px}
-.logo h1{font-size:clamp(20px,2.8vw,26px);font-weight:700;letter-spacing:-.02em;line-height:1.2}
-.logo p{margin-top:2px;font-size:13px;font-weight:500;color:var(--b2)}
+.button-secondary,.button-warning,.action-buttons .button,.pagination-container .button{
+  background:transparent;color:var(--ac);border-color:color-mix(in srgb,var(--ac) 30%,var(--rule));
+}
+.button-secondary:hover:not(:disabled),
+.button-warning:hover:not(:disabled),
+.action-buttons .button:hover:not(:disabled),
+.pagination-container .button:hover:not(:disabled){
+  background:color-mix(in srgb,var(--ac) 8%,transparent);
+  border-color:var(--ac);
+}
+
+.button-success{
+  background:var(--ok);
+  color:#fff;
+  border-color:transparent;
+}
+.button-success:hover:not(:disabled){
+  box-shadow:0 10px 22px -10px color-mix(in srgb,var(--ok) 45%,transparent);
+}
+
+/* =========================================================
+   Header (barra con blur, estilo modulos)
+   ========================================================= */
+.header{
+  background:color-mix(in srgb,var(--card) 82%,transparent);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  color:var(--ink);
+  padding:20px 0;
+  border-bottom:1px solid var(--rule);
+  box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 20px -12px rgba(15,23,42,.12);
+  position:sticky;top:0;z-index:80;
+}
+.header-content{
+  width:min(1200px,calc(100% - 2*var(--pad)));margin-inline:auto;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:16px 24px;
+}
+.logo h1{
+  font-size:clamp(20px,2.8vw,26px);font-weight:800;letter-spacing:-.03em;line-height:1.2;
+  background:linear-gradient(135deg,var(--ac),var(--ac2));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.logo p{margin-top:4px;font-size:13px;font-weight:600;color:var(--mute);letter-spacing:-.01em}
 .header-buttons{display:flex;flex-wrap:wrap;gap:8px}
-.header .button{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff}
-.header .button:hover:not(:disabled){background:rgba(255,255,255,.22)}
-.header .btn-celeste-oscuro{background:#fff;border-color:#fff;color:var(--navy)}
-.header .btn-celeste-oscuro:hover:not(:disabled){background:var(--b1)}
+.header .button{
+  background:transparent;
+  border-color:color-mix(in srgb,var(--ac) 30%,var(--rule));
+  color:var(--ac);
+}
+.header .button:hover:not(:disabled){
+  background:color-mix(in srgb,var(--ac) 10%,transparent);
+  border-color:var(--ac);
+}
+.header .btn-celeste-oscuro{
+  background:var(--ac);
+  border-color:var(--ac);
+  color:#fff;
+}
+.header .btn-celeste-oscuro:hover:not(:disabled){
+  box-shadow:0 10px 22px -10px var(--glow);
+  background:var(--ac);
+}
 
-/* Estructura: categorías a la izquierda, contenido a la derecha */
-.container{width:min(1200px,calc(100% - 2*var(--pad)));margin:24px auto 48px;display:grid;grid-template-columns:268px minmax(0,1fr);column-gap:24px;align-items:start}
+/* =========================================================
+   Layout principal (sidebar + contenido)
+   ========================================================= */
+.container{
+  width:min(1200px,calc(100% - 2*var(--pad)));
+  margin:24px auto 48px;
+  display:grid;
+  grid-template-columns:268px minmax(0,1fr);
+  column-gap:24px;
+  align-items:start;
+}
 .container>*{grid-column:2;margin-bottom:14px}
-.container>.modules-section{grid-column:1;grid-row:1/span 6;position:sticky;top:16px;margin-bottom:0}
+.container>.modules-section{
+  grid-column:1;grid-row:1/span 6;
+  position:sticky;top:calc(20px + 24px);
+  margin-bottom:0;
+}
 
-.modules-section{padding:12px;background:#fff;border:1px solid var(--rule);border-radius:18px;box-shadow:var(--sh)}
-.modules-title{padding:6px 8px 10px;font-size:13px;font-weight:600;color:var(--mute)}
-.modules-grid{display:flex;flex-direction:column;gap:2px}
-.module-card{display:grid;grid-template-columns:36px 1fr;column-gap:12px;align-items:center;padding:8px 10px;border-radius:11px;cursor:pointer;transition:background .15s}
+/* =========================================================
+   Sidebar módulos
+   ========================================================= */
+.modules-section{
+  padding:14px;
+  background:var(--card);
+  border:1.5px solid transparent;
+  border-radius:20px;
+  box-shadow:var(--sh);
+  background:
+    linear-gradient(var(--card),var(--card)) padding-box,
+    conic-gradient(from var(--ang),transparent 0deg,transparent calc(360deg - var(--arc)),#06b6d4 calc(360deg - var(--arc)*.65),#818cf8 calc(360deg - var(--arc)*.3),#4338ca calc(360deg - 4deg),transparent 360deg) border-box;
+  animation:orbit 9s linear infinite, fadeInUp .6s var(--ease) backwards;
+  transition:--arc .5s var(--ease);
+}
+.modules-section:hover{--arc:150deg}
+
+.modules-title{
+  padding:6px 8px 12px;
+  font-size:12.5px;font-weight:800;color:var(--mute);
+  letter-spacing:.04em;text-transform:uppercase;
+}
+.modules-grid{display:flex;flex-direction:column;gap:3px}
+.module-card{
+  display:grid;grid-template-columns:36px 1fr;column-gap:12px;align-items:center;
+  padding:9px 10px;border-radius:12px;cursor:pointer;
+  transition:background-color .2s var(--ease),color .2s var(--ease),transform .2s var(--ease);
+}
 .module-card[data-category=todos]{order:-1;margin-bottom:6px}
-.module-card:hover{background:var(--b1)}
-.module-card.active{background:var(--b6);color:#fff}
-.module-icon{grid-row:1/span 2;width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:var(--b1);color:var(--b6);font-size:15px}
-.module-card.active .module-icon{background:rgba(255,255,255,.18);color:#fff}
-.module-name{font-size:14px;font-weight:600;line-height:1.25}
-.module-count{font-size:12px;line-height:1.2;color:var(--mute)}
-.module-card.active .module-count{color:var(--b2)}
+.module-card:hover{background:color-mix(in srgb,var(--ac) 8%,transparent)}
+.module-card.active{
+  background:var(--ac);color:#fff;
+  box-shadow:0 6px 18px -8px var(--glow);
+}
+.module-icon{
+  grid-row:1/span 2;width:36px;height:36px;display:grid;place-items:center;
+  border-radius:10px;
+  background:color-mix(in srgb,var(--ac) 12%,transparent);
+  color:var(--ac);font-size:15px;
+  transition:background-color .2s var(--ease),color .2s var(--ease),transform .2s var(--ease);
+}
+.module-card:hover .module-icon{transform:scale(1.05)}
+.module-card.active .module-icon{
+  background:rgba(255,255,255,.22);color:#fff;
+}
+.module-name{font-size:14px;font-weight:700;line-height:1.25;letter-spacing:-.01em}
+.module-count{font-size:12px;line-height:1.2;color:var(--mute);font-weight:600}
+.module-card.active .module-count{color:rgba(255,255,255,.85)}
 
-.welcome{padding:56px 24px;text-align:center;background:#fff;border:1px dashed var(--field);border-radius:18px;color:var(--mute)}
-.welcome i{display:block;margin-bottom:12px;font-size:28px;color:var(--b5)}
-.welcome h2{margin-bottom:4px;font-size:18px;font-weight:700;letter-spacing:-.015em;color:var(--ink)}
-.welcome p{max-width:44ch;margin-inline:auto;font-size:14px}
+/* =========================================================
+   Welcome (pantalla inicial)
+   ========================================================= */
+.welcome{
+  padding:56px 24px;text-align:center;
+  background:var(--card);
+  border:1.5px solid transparent;border-radius:20px;
+  color:var(--mute);
+  box-shadow:var(--sh);
+  background:
+    linear-gradient(var(--card),var(--card)) padding-box,
+    conic-gradient(from var(--ang),transparent 0deg,transparent calc(360deg - var(--arc)),#06b6d4 calc(360deg - var(--arc)*.65),#818cf8 calc(360deg - var(--arc)*.3),#4338ca calc(360deg - 4deg),transparent 360deg) border-box;
+  animation:orbit 9s linear infinite, fadeInUp .6s var(--ease) .05s backwards;
+  transition:--arc .5s var(--ease);
+}
+.welcome:hover{--arc:150deg}
+.welcome i{
+  display:block;margin-bottom:12px;font-size:32px;color:var(--ac);
+  opacity:.7;
+}
+.welcome h2{margin-bottom:4px;font-size:18px;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+.welcome p{max-width:44ch;margin-inline:auto;font-size:14px;font-weight:500}
 
-/* Filtros */
-.filters-section{display:none;padding:16px 18px;background:#fff;border:1px solid var(--rule);border-radius:18px;box-shadow:var(--sh)}
-.filters-title{margin-bottom:12px;font-size:15px;font-weight:700;letter-spacing:-.01em}
+/* =========================================================
+   Filtros
+   ========================================================= */
+.filters-section{
+  display:none;
+  padding:18px 20px;
+  background:var(--card);
+  border:1.5px solid transparent;border-radius:20px;
+  box-shadow:var(--sh);
+  background:
+    linear-gradient(var(--card),var(--card)) padding-box,
+    conic-gradient(from var(--ang),transparent 0deg,transparent calc(360deg - var(--arc)),#06b6d4 calc(360deg - var(--arc)*.65),#818cf8 calc(360deg - var(--arc)*.3),#4338ca calc(360deg - 4deg),transparent 360deg) border-box;
+  animation:orbit 9s linear infinite, fadeInUp .5s var(--ease) backwards;
+  transition:--arc .5s var(--ease);
+}
+.filters-section:hover{--arc:150deg}
+
+.filters-title{
+  margin-bottom:14px;font-size:15px;font-weight:800;letter-spacing:-.02em;color:var(--ink);
+}
 .filter-row{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:12px 16px}
-.filter-label{display:block;margin-bottom:5px;font-size:13px;font-weight:600}
-.input,.dropdown,.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 13px;border:1px solid var(--field);border-radius:10px;background:#fff;color:var(--ink);font-size:14px;line-height:1.4;transition:border-color .15s,box-shadow .15s}
-.input:focus,.dropdown:focus,.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--b6);box-shadow:0 0 0 4px rgba(33,96,232,.16)}
-.input::placeholder{color:#93a0bd}
-.action-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.filter-label{display:block;margin-bottom:6px;font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
 
-/* Paginación */
-.pagination-container{display:none;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px 12px}
-.page-info{font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums}
+.input,.dropdown,.form-group input,.form-group select,.form-group textarea{
+  width:100%;padding:10px 13px;
+  border:1.5px solid var(--rule);border-radius:12px;
+  background:var(--card);color:var(--ink);
+  font-size:14px;line-height:1.4;
+  transition:border-color .25s var(--ease),box-shadow .25s var(--ease);
+}
+.input:focus,.dropdown:focus,.form-group input:focus,.form-group select:focus,.form-group textarea:focus{
+  outline:none;border-color:var(--ac);
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--ac) 15%,transparent);
+}
+.input::placeholder{color:var(--mute);opacity:.75}
+.action-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+
+/* =========================================================
+   Paginación
+   ========================================================= */
+.pagination-container{
+  display:none;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:10px 12px;
+}
+.page-info{font-size:13px;color:var(--mute);font-weight:600;font-variant-numeric:tabular-nums}
 .pagination-selector{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
 .nav-buttons{display:flex;gap:6px}
-.pagination-container .button{padding:7px 12px;font-size:13px;border-radius:9px}
-.pagination-selector select{width:auto;min-width:104px;padding:7px 10px}
+.pagination-container .button{padding:7px 12px;font-size:13px;border-radius:10px}
+.pagination-selector select{width:auto;min-width:110px;padding:7px 10px;border-radius:10px}
 
-/* Tabla */
-.table-section{display:none;overflow:hidden;background:#fff;border:1px solid var(--rule);border-radius:18px;box-shadow:var(--sh)}
-.table-title{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--rule);font-size:17px;font-weight:700;letter-spacing:-.015em}
-.table-title #tableCount{padding:3px 11px;border-radius:99px;background:var(--b1);color:var(--b7);font-size:13px;font-weight:600;letter-spacing:0}
-.table-wrap{overflow-x:auto}
+/* =========================================================
+   Tabla
+   ========================================================= */
+.table-section{
+  display:none;overflow:hidden;
+  background:var(--card);
+  border:1.5px solid transparent;border-radius:20px;
+  box-shadow:var(--sh);
+  background:
+    linear-gradient(var(--card),var(--card)) padding-box,
+    conic-gradient(from var(--ang),transparent 0deg,transparent calc(360deg - var(--arc)),#06b6d4 calc(360deg - var(--arc)*.65),#818cf8 calc(360deg - var(--arc)*.3),#4338ca calc(360deg - 4deg),transparent 360deg) border-box;
+  animation:orbit 9s linear infinite, fadeInUp .5s var(--ease) backwards;
+  transition:--arc .5s var(--ease);
+}
+.table-section:hover{--arc:150deg}
+
+.table-title{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:16px 20px;border-bottom:1px solid var(--rule);
+  font-size:17px;font-weight:800;letter-spacing:-.02em;color:var(--ink);
+}
+.table-title #tableCount{
+  padding:3px 11px;border-radius:999px;
+  background:color-mix(in srgb,var(--ac) 12%,transparent);
+  color:var(--ac);
+  font-size:12.5px;font-weight:700;letter-spacing:0;
+  border:1px solid color-mix(in srgb,var(--ac) 25%,transparent);
+}
+
+.table-wrap{overflow-x:auto;border-radius:0}
 .data-table{width:100%;border-collapse:collapse}
-.data-table th{padding:11px 14px;text-align:left;white-space:nowrap;background:var(--b1);color:var(--navy);font-size:12.5px;font-weight:700;border-bottom:1px solid var(--rule)}
-.data-table td{padding:12px 14px;border-bottom:1px solid var(--rule);font-size:14px;line-height:1.4;vertical-align:middle;overflow-wrap:anywhere}
-.data-table td strong{font-weight:400}
-.data-table td:first-child strong{font-weight:600}
-.data-table tbody tr:hover{background:var(--b1)}
+.data-table th{
+  padding:11px 14px;text-align:left;white-space:nowrap;
+  background:color-mix(in srgb,var(--ac) 6%,var(--card));
+  color:var(--ac);
+  font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  border-bottom:1px solid var(--rule);
+}
+.data-table td{
+  padding:12px 14px;border-bottom:1px solid color-mix(in srgb,var(--rule) 60%,transparent);
+  font-size:14px;line-height:1.4;vertical-align:middle;overflow-wrap:anywhere;
+  color:var(--ink);
+}
+.data-table td strong{font-weight:600}
+.data-table td:first-child strong{font-weight:700}
+.data-table tbody tr{transition:background-color .2s var(--ease)}
+.data-table tbody tr:hover{background:color-mix(in srgb,var(--ac) 4%,var(--card))}
 .data-table tr:last-child td{border-bottom:0}
-.tag{display:inline-block;padding:2px 10px;border:1px solid var(--b2);border-radius:99px;background:var(--b1);color:var(--b7);font-size:12.5px;font-weight:600;white-space:nowrap}
+
+.tag{
+  display:inline-block;padding:2px 10px;
+  border:1px solid color-mix(in srgb,var(--ac) 30%,transparent);
+  border-radius:999px;
+  background:color-mix(in srgb,var(--ac) 10%,transparent);
+  color:var(--ac);font-size:12.5px;font-weight:700;white-space:nowrap;
+}
+
 td.actions{width:1%;white-space:nowrap;font-size:0}
-.btn-icon{width:36px;height:36px;margin-right:6px;display:inline-grid;place-items:center;vertical-align:middle;border:1px solid var(--b2);border-radius:9px;background:#fff;color:var(--b7);font-size:14px;cursor:pointer;transition:background .15s}
+.btn-icon{
+  width:36px;height:36px;margin-right:6px;
+  display:inline-grid;place-items:center;vertical-align:middle;
+  border:1.5px solid color-mix(in srgb,var(--ac) 30%,var(--rule));
+  border-radius:10px;background:transparent;
+  color:var(--ac);font-size:14px;cursor:pointer;
+  transition:background-color .2s var(--ease),border-color .2s var(--ease),transform .2s var(--ease);
+}
 .btn-icon:last-child{margin-right:0}
-.btn-icon:hover{background:var(--b1)}
-.empty-state{width:100%;padding:28px 12px;text-align:center;color:var(--mute)}
+.btn-icon:hover{
+  background:color-mix(in srgb,var(--ac) 10%,transparent);
+  border-color:var(--ac);
+  transform:translateY(-1px);
+}
+.empty-state{width:100%;padding:32px 12px;text-align:center;color:var(--mute);font-weight:600}
 
-/* Modales */
-#organismModal,#policiaModal,#judicialModal,#mapaModal,#viewModal{display:none;position:fixed;inset:0;z-index:1000;padding:16px;background:rgba(8,28,77,.55);justify-content:center;align-items:center}
-:is(#organismModal,#policiaModal,#judicialModal,#mapaModal,#viewModal) .content{width:100%;max-width:680px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;background:#fff;border-radius:18px;box-shadow:0 24px 60px -20px rgba(8,28,77,.5);animation:rise .22s ease}
+/* =========================================================
+   Modales (con arco de luz orbitando, firma modulos)
+   ========================================================= */
+#organismModal,#policiaModal,#judicialModal,#mapaModal,#viewModal{
+  display:none;position:fixed;inset:0;z-index:1000;padding:16px;
+  background:rgba(7,18,37,.55);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  justify-content:center;align-items:center;
+}
+:is(#organismModal,#policiaModal,#judicialModal,#mapaModal,#viewModal) .content{
+  width:100%;max-width:680px;max-height:90vh;
+  display:flex;flex-direction:column;overflow:hidden;
+  background:var(--card);
+  border:1.5px solid transparent;border-radius:22px;
+  box-shadow:0 24px 60px -20px rgba(7,18,37,.5);
+  background:
+    linear-gradient(var(--card),var(--card)) padding-box,
+    conic-gradient(from var(--ang),transparent 0deg,transparent calc(360deg - var(--arc)),#06b6d4 calc(360deg - var(--arc)*.65),#818cf8 calc(360deg - var(--arc)*.3),#4338ca calc(360deg - 4deg),transparent 360deg) border-box;
+  animation:orbit 9s linear infinite, rise .28s var(--ease);
+}
 #viewModal .content{max-width:560px}
-#policiaModal .content,#judicialModal .content,#mapaModal .content{max-width:1200px;height:92vh;max-height:92vh}
+#policiaModal .content,#judicialModal .content,#mapaModal .content{
+  max-width:1200px;height:92vh;max-height:92vh;
+}
 #policiaModal .modal-body,#judicialModal .modal-body,#mapaModal .modal-body{padding:0;display:flex}
-#policiaModal iframe,#judicialModal iframe,#mapaModal iframe{width:100%;height:100%;border:0}
-@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.modal-header{display:flex;align-items:center;gap:12px;padding:16px 22px;background:var(--navy);color:#fff}
-.modal-header i{color:var(--b2)}
-.modal-header h2{font-size:18px;font-weight:700;letter-spacing:-.015em;line-height:1.3}
-.modal-body{flex:1;overflow-y:auto;padding:20px 22px}
-.controls-form{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:10px;padding:14px 22px;border-top:1px solid var(--rule);background:#fff}
+#policiaModal iframe,#judicialModal iframe,#mapaModal iframe{width:100%;height:100%;border:0;background:var(--card)}
 
+@keyframes rise{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes orbit{to{--ang:360deg}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:none}}
+
+.modal-header{
+  display:flex;align-items:center;gap:12px;
+  padding:16px 22px;
+  background:color-mix(in srgb,var(--ac) 8%,var(--card));
+  color:var(--ac);
+  border-bottom:1px solid var(--rule);
+}
+.modal-header i{color:var(--ac)}
+.modal-header h2{font-size:18px;font-weight:800;letter-spacing:-.02em;line-height:1.3;color:var(--ac)}
+.modal-body{flex:1;overflow-y:auto;padding:20px 22px;color:var(--ink)}
+.controls-form{
+  display:flex;justify-content:flex-end;flex-wrap:wrap;gap:10px;
+  padding:14px 22px;border-top:1px solid var(--rule);
+  background:var(--card);
+}
+
+/* =========================================================
+   Formulario
+   ========================================================= */
 #organismForm{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
 #organismForm .form-group:first-child,#organismForm .form-group:last-child{grid-column:1/-1}
 .form-group{margin-bottom:16px}
-.form-group label{display:block;margin-bottom:6px;font-size:13px;font-weight:600}
+.form-group label{
+  display:block;margin-bottom:6px;
+  font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-.01em;
+}
 .form-group input,.form-group select,.form-group textarea{font-size:15px;padding:11px 13px}
 .form-group textarea{resize:vertical;min-height:84px}
-.error-message{display:none;margin-top:5px;font-size:12.5px;color:var(--bad)}
-.form-group.error input,.form-group.error select{border-color:var(--bad);background:#fef2f2}
+.error-message{display:none;margin-top:5px;font-size:12.5px;color:var(--bad);font-weight:600}
+.form-group.error input,.form-group.error select{
+  border-color:var(--bad);
+  background:color-mix(in srgb,var(--bad) 6%,var(--card));
+}
 .form-group.error .error-message{display:block}
 
+/* Vista (Ver Organismo) */
 .view-field{padding:12px 0;border-bottom:1px solid var(--rule)}
 .view-field:first-child{padding-top:0}
 .view-field:last-child{padding-bottom:0;border-bottom:0}
-.view-field label{display:block;margin-bottom:2px;font-size:12.5px;font-weight:600;color:var(--mute)}
-.view-field .value{font-size:15px;overflow-wrap:anywhere;white-space:pre-wrap}
+.view-field label{
+  display:block;margin-bottom:3px;
+  font-size:12.5px;font-weight:700;color:var(--mute);
+  letter-spacing:.04em;text-transform:uppercase;
+}
+.view-field .value{font-size:15px;font-weight:600;overflow-wrap:anywhere;white-space:pre-wrap;color:var(--ink)}
 
-/* Aviso */
-.floating-alert{position:fixed;top:-100px;left:50%;transform:translateX(-50%);z-index:1100;max-width:min(420px,calc(100% - 32px));padding:12px 20px;border-radius:12px;background:var(--bad);color:#fff;font-size:14px;font-weight:500;text-align:center;box-shadow:0 10px 25px -8px rgba(0,0,0,.35);opacity:0;visibility:hidden;transition:top .35s,opacity .35s,visibility .35s}
+/* =========================================================
+   Aviso flotante (toast)
+   ========================================================= */
+.floating-alert{
+  position:fixed;top:-100px;left:50%;transform:translateX(-50%);
+  z-index:1100;max-width:min(420px,calc(100% - 32px));
+  padding:12px 20px;border-radius:14px;
+  background:var(--bad);color:#fff;
+  font-size:14px;font-weight:700;text-align:center;
+  box-shadow:0 10px 25px -8px rgba(0,0,0,.35);
+  opacity:0;visibility:hidden;
+  transition:top .35s var(--ease),opacity .35s var(--ease),visibility .35s var(--ease);
+}
 .floating-alert.success{background:var(--ok)}
 .floating-alert.show{top:16px;opacity:1;visibility:visible}
 
-/* Responsive */
+/* =========================================================
+   Responsive
+   ========================================================= */
 @media(max-width:960px){
   .container{grid-template-columns:minmax(0,1fr)}
   .container>*,.container>.modules-section{grid-column:1}
   .container>.modules-section{grid-row:auto;position:static}
-  .modules-grid{flex-direction:row;overflow-x:auto;padding-bottom:4px}
-  .module-card{flex:none;min-width:172px}
+  .modules-grid{flex-direction:row;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+  .module-card{flex:none;min-width:180px}
   .module-card[data-category=todos]{margin-bottom:0}
 }
 @media(max-width:900px){
@@ -156,12 +491,23 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
   .data-table,.data-table tbody,.data-table tr,.data-table td{display:block;width:100%}
   .data-table thead{display:none}
   .data-table tbody{padding:12px}
-  .data-table tr{margin-bottom:12px;padding:8px 14px;border:1px solid var(--rule);border-radius:14px;background:#fff}
+  .data-table tr{
+    margin-bottom:12px;padding:10px 16px;
+    border:1.5px solid var(--rule);border-radius:16px;background:var(--card);
+    transition:border-color .2s var(--ease);
+  }
   .data-table tr:last-child{margin-bottom:0}
-  .data-table tbody tr:hover{background:#fff}
+  .data-table tbody tr:hover{background:var(--card);border-color:color-mix(in srgb,var(--ac) 30%,var(--rule))}
   .data-table td{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:7px 0;border:0;text-align:right}
-  .data-table td[data-l]::before{content:attr(data-l);flex:none;width:84px;font-size:12.5px;font-weight:600;color:var(--mute);text-align:left}
-  .data-table td.actions{justify-content:flex-end;gap:6px;margin-top:6px;padding-top:10px;border-top:1px solid var(--rule);font-size:14px}
+  .data-table td[data-l]::before{
+    content:attr(data-l);flex:none;width:84px;
+    font-size:11px;font-weight:800;color:var(--ac);
+    letter-spacing:.04em;text-transform:uppercase;text-align:left;
+  }
+  .data-table td.actions{
+    justify-content:flex-end;gap:6px;margin-top:8px;padding-top:10px;
+    border-top:1px solid var(--rule);font-size:14px;
+  }
   .btn-icon{margin-right:0}
 }
 @media(max-width:600px){
@@ -170,11 +516,20 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
   .header-buttons,.header-buttons .button{width:100%}
   .pagination-container{justify-content:center}
   #organismModal,#policiaModal,#judicialModal,#mapaModal,#viewModal{padding:0;align-items:flex-end}
-  :is(#organismModal,#policiaModal,#judicialModal,#mapaModal,#viewModal) .content{max-width:100%;max-height:94vh;border-radius:18px 18px 0 0}
+  :is(#organismModal,#policiaModal,#judicialModal,#mapaModal,#viewModal) .content{
+    max-width:100%;max-height:94vh;border-radius:22px 22px 0 0;
+  }
   #policiaModal .content,#judicialModal .content,#mapaModal .content{max-width:100%;height:94vh}
   .modal-header,.modal-body,.controls-form{padding-left:16px;padding-right:16px}
 }
-@media(prefers-reduced-motion:reduce){*{transition:none!important;animation-duration:.01ms!important}}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation-duration:.01ms!important}
+  .modules-section,.welcome,.filters-section,.table-section,
+  :is(#organismModal,#policiaModal,#judicialModal,#mapaModal,#viewModal) .content{
+    animation:none!important;
+    background:var(--card);border:1.5px solid var(--ac);
+  }
+}
   </style>
 </head>
 <body>
@@ -236,7 +591,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                     </select>
                 </div>
             </div>
-            
+
             <div class="action-buttons">
                 <button id="btnPrintModule" class="button button-success">
                     <i class="fas fa-print"></i> Imprimir Módulo
@@ -416,7 +771,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                 <h2 style="margin:0;">Policia de Misiones</h2>
             </div>
             <div class="modal-body">
-                <iframe src="https://sistemadigital.github.io/defensor-secretarios/policia.html" 
+                <iframe src="https://sistemadigital.github.io/defensor-secretarios/policia.html"
                         title="Policia de Misiones"></iframe>
             </div>
             <div class="controls-form">
@@ -434,7 +789,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                 <h2 style="margin:0;">Poder Judicial</h2>
             </div>
             <div class="modal-body">
-                <iframe src="https://sistemadigital.github.io/defensor-secretarios/agendajudicial" 
+                <iframe src="https://sistemadigital.github.io/defensor-secretarios/agendajudicial"
                         title="Poder Judicial"></iframe>
             </div>
             <div class="controls-form">
@@ -452,7 +807,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                 <h2 style="margin:0;">Mapa de Ubicación</h2>
             </div>
             <div class="modal-body">
-                <iframe src="https://sistemadigital.github.io/ingreso-sistema/mapa-organismos.html" 
+                <iframe src="https://sistemadigital.github.io/ingreso-sistema/mapa-organismos.html"
                         title="Mapa de Ubicación"></iframe>
             </div>
             <div class="controls-form">
@@ -537,7 +892,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
 
         // ===== Funciones de utilidad =====
         const escapeHtml = (s) => {
-            return String(s || '').replace(/[&<>"']/g, m => 
+            return String(s || '').replace(/[&<>"']/g, m =>
                 ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
         };
 
@@ -554,14 +909,14 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
         // ===== Funciones de módulos =====
         function renderModules() {
             modulesGrid.innerHTML = '';
-            
+
             categories.forEach(category => {
-                const count = category.id === 'todos' 
-                    ? allOrganisms.length 
+                const count = category.id === 'todos'
+                    ? allOrganisms.length
                     : category.id === 'otros'
                     ? allOrganisms.filter(o => o.tipo.toLowerCase() === 'otro').length
                     : allOrganisms.filter(o => o.tipo.toLowerCase() === category.name.toLowerCase()).length;
-                
+
                 const moduleCard = document.createElement('div');
                 moduleCard.className = 'module-card';
                 moduleCard.dataset.category = category.id;
@@ -573,7 +928,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                     <div class="module-name">${category.name}</div>
                     <div class="module-count">${count} ${count === 1 ? 'organismo' : 'organismos'}</div>
                 `;
-                
+
                 moduleCard.onclick = () => selectCategory(category.id);
                 moduleCard.tabIndex = 0;
                 moduleCard.setAttribute('role', 'button');
@@ -590,20 +945,20 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                 card.classList.remove('active');
             });
             document.querySelector(`.module-card[data-category="${categoryId}"]`).classList.add('active');
-            
+
             currentCategory = categoryId;
             $('welcome').hidden = true;
-            
+
             // Mostrar secciones
             filtersSection.style.display = 'block';
             tableSection.style.display = 'block';
             $('paginacion-superior').style.display = 'flex';
             $('paginacion-inferior').style.display = 'flex';
-            
+
             // Actualizar título de tabla
             const category = categories.find(c => c.id === categoryId);
             tableCategory.textContent = category.name;
-            
+
             // Filtrar organismos
             filtrarOrganismos();
         }
@@ -612,7 +967,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
         function validateForm() {
             let isValid = true;
             const requiredFields = ["nombre", "tipo"];
-            
+
             requiredFields.forEach(id => {
                 const field = $(id);
                 const parent = field.closest('.form-group');
@@ -633,19 +988,19 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
             const inicio = (paginaActual - 1) * registrosPorPagina + 1;
             const fin = Math.min(paginaActual * registrosPorPagina, filteredOrganisms.length);
             const total = filteredOrganisms.length;
-            
+
             // Actualizar información de página
             const pageInfoText = `Mostrando ${inicio}-${fin} de ${total} registros`;
             $("pageInfoTop").textContent = pageInfoText;
             $("pageInfoBottom").textContent = pageInfoText;
-            
+
             // Actualizar selectores de página
             const pageSelectTop = $("pageSelectTop");
             const pageSelectBottom = $("pageSelectBottom");
-            
+
             pageSelectTop.innerHTML = '';
             pageSelectBottom.innerHTML = '';
-            
+
             for (let i = 1; i <= totalPaginas; i++) {
                 const option = document.createElement('option');
                 option.value = i;
@@ -656,30 +1011,30 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                 pageSelectTop.appendChild(option.cloneNode(true));
                 pageSelectBottom.appendChild(option);
             }
-            
+
             // Actualizar estado de botones
             const prevButtons = [$("btnPrevPageTop"), $("btnPrevPageBottom")];
             const nextButtons = [$("btnNextPageTop"), $("btnNextPageBottom")];
-            
+
             prevButtons.forEach(btn => {
                 btn.disabled = paginaActual === 1;
             });
-            
+
             nextButtons.forEach(btn => {
                 btn.disabled = paginaActual === totalPaginas;
             });
-            
+
             // Actualizar contador de tabla
             tableCount.textContent = `Total: ${total}`;
         }
 
         function cambiarPagina(nuevaPagina) {
             const totalPaginas = Math.ceil(filteredOrganisms.length / registrosPorPagina);
-            
+
             if (nuevaPagina < 1 || nuevaPagina > totalPaginas) {
                 return;
             }
-            
+
             paginaActual = nuevaPagina;
             renderTable();
             actualizarPaginacion();
@@ -690,9 +1045,9 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
             const inicio = (paginaActual - 1) * registrosPorPagina;
             const fin = inicio + registrosPorPagina;
             const organismsToShow = filteredOrganisms.slice(inicio, fin);
-            
+
             tbody.innerHTML = '';
-            
+
             if (organismsToShow.length === 0) {
                 tbody.innerHTML = `
                     <tr>
@@ -702,16 +1057,16 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                     </tr>`;
                 return;
             }
-            
+
             organismsToShow.forEach(organism => {
-                const emailLink = organism.email ? 
-                    `<a href='mailto:${escapeHtml(organism.email)}'>${escapeHtml(organism.email)}</a>` : 
+                const emailLink = organism.email ?
+                    `<a href='mailto:${escapeHtml(organism.email)}'>${escapeHtml(organism.email)}</a>` :
                     '-';
-                
-                const telefonoLink = organism.telefono ? 
-                    `<a href='tel:${escapeHtml(organism.telefono)}'>${escapeHtml(organism.telefono)}</a>` : 
+
+                const telefonoLink = organism.telefono ?
+                    `<a href='tel:${escapeHtml(organism.telefono)}'>${escapeHtml(organism.telefono)}</a>` :
                     '-';
-                
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td data-l="Nombre"><strong>${escapeHtml(organism.nombre)}</strong></td>
@@ -738,11 +1093,11 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
             document.querySelectorAll(".ver-organismo").forEach(btn => {
                 btn.onclick = () => abrirVer(btn.dataset.id);
             });
-            
+
             document.querySelectorAll(".editar-organismo").forEach(btn => {
                 btn.onclick = () => abrirEditar(btn.dataset.id);
             });
-            
+
             document.querySelectorAll(".imprimir-organismo").forEach(btn => {
                 btn.onclick = () => imprimirOrganismoIndividual(btn.dataset.id);
             });
@@ -752,34 +1107,34 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
         function filtrarOrganismos() {
             const q = (buscador.value || "").toLowerCase();
             const tipo = (filtroTipo.value || "").toLowerCase();
-            
+
             // Filtrar por categoría primero
             if (currentCategory === 'todos') {
                 filteredOrganisms = allOrganisms;
             } else if (currentCategory === 'otros') {
-                filteredOrganisms = allOrganisms.filter(organism => 
+                filteredOrganisms = allOrganisms.filter(organism =>
                     organism.tipo.toLowerCase() === 'otro'
                 );
             } else {
                 const category = categories.find(c => c.id === currentCategory);
-                filteredOrganisms = allOrganisms.filter(organism => 
+                filteredOrganisms = allOrganisms.filter(organism =>
                     organism.tipo.toLowerCase() === category.name.toLowerCase()
                 );
             }
-            
+
             // Aplicar filtros adicionales
             filteredOrganisms = filteredOrganisms.filter(organism => {
-                const okTexto = !q || 
-                    organism.nombre.toLowerCase().includes(q) || 
+                const okTexto = !q ||
+                    organism.nombre.toLowerCase().includes(q) ||
                     organism.tipo.toLowerCase().includes(q) ||
                     (organism.contacto && organism.contacto.toLowerCase().includes(q)) ||
                     (organism.notas && organism.notas.toLowerCase().includes(q));
-                
+
                 const okTipo = !tipo || organism.tipo.toLowerCase() === tipo;
-                
+
                 return okTexto && okTipo;
             });
-            
+
             // Resetear a la primera página después de filtrar
             paginaActual = 1;
             renderTable();
@@ -791,12 +1146,12 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
             editingId = null;
             modalTitle.textContent = "Nuevo Organismo";
             $("organismForm").reset();
-            
+
             // Limpiar errores de validación
             document.querySelectorAll('.form-group.error').forEach(el => {
                 el.classList.remove('error');
             });
-            
+
             modal.style.display = "flex";
         }
 
@@ -811,7 +1166,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                 $("viewTelefono").textContent = organism.telefono || '-';
                 $("viewContacto").textContent = organism.contacto || '-';
                 $("viewNotas").textContent = organism.notas || '-';
-                
+
                 viewModal.style.display = "flex";
             } else {
                 mostrarAlertaFlotante("Organismo no encontrado", "danger");
@@ -821,7 +1176,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
         function abrirEditar(id) {
             editingId = id;
             modalTitle.textContent = "Editar Organismo";
-            
+
             const organism = allOrganisms.find(o => o.id === id);
             if (organism) {
                 $("nombre").value = organism.nombre || "";
@@ -830,12 +1185,12 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                 $("telefono").value = organism.telefono || "";
                 $("contacto").value = organism.contacto || "";
                 $("notas").value = organism.notas || "";
-                
+
                 // Limpiar errores de validación
                 document.querySelectorAll('.form-group.error').forEach(el => {
                     el.classList.remove('error');
                 });
-                
+
                 modal.style.display = "flex";
             } else {
                 mostrarAlertaFlotante("Organismo no encontrado", "danger");
@@ -847,7 +1202,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                 mostrarAlertaFlotante("Por favor, completa los campos obligatorios", "danger");
                 return;
             }
-            
+
             const datos = {
                 nombre: $("nombre").value.trim(),
                 tipo: $("tipo").value.trim(),
@@ -856,7 +1211,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                 contacto: $("contacto").value.trim(),
                 notas: $("notas").value.trim()
             };
-            
+
             try {
                 if (editingId) {
                     await organismsRef.child(editingId).update(datos);
@@ -865,7 +1220,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                     await organismsRef.push(datos);
                     mostrarAlertaFlotante("Organismo creado correctamente", "success");
                 }
-                
+
                 modal.style.display = "none";
             } catch (error) {
                 console.error("Error al guardar organismo:", error);
@@ -879,10 +1234,10 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                 mostrarAlertaFlotante("Selecciona un módulo primero", "danger");
                 return;
             }
-            
+
             const category = categories.find(c => c.id === currentCategory);
             let organismsToPrint = [];
-            
+
             if (currentCategory === 'todos') {
                 organismsToPrint = allOrganisms;
             } else if (currentCategory === 'otros') {
@@ -890,7 +1245,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
             } else {
                 organismsToPrint = allOrganisms.filter(o => o.tipo.toLowerCase() === category.name.toLowerCase());
             }
-            
+
             const head = `
                 <thead>
                     <tr>
@@ -902,7 +1257,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                         <th>Notas</th>
                     </tr>
                 </thead>`;
-            
+
             let body = '<tbody>';
             organismsToPrint.forEach(organism => {
                 body += `
@@ -916,7 +1271,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                     </tr>`;
             });
             body += '</tbody>';
-            
+
             const w = window.open("", "_blank", "width=900,height=700");
             w.document.write(`
                 <html>
@@ -951,7 +1306,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                 mostrarAlertaFlotante("Organismo no encontrado", "danger");
                 return;
             }
-            
+
             const w = window.open("", "_blank", "width=600,height=400");
             w.document.write(`
                 <html>
@@ -1009,22 +1364,22 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
             const table = tbody.closest("table");
             const head = table.querySelector("thead");
             const headClone = head.cloneNode(true);
-            
+
             // Remover la columna de acciones del encabezado
             const headerRow = headClone.querySelector("tr");
             headerRow.deleteCell(5); // Eliminar la columna de acciones (índice 5)
-            
+
             // Crear cuerpo de la tabla sin acciones
             let body = '<tbody>';
             filteredOrganisms.forEach(organism => {
-                const emailLink = organism.email ? 
-                    `${escapeHtml(organism.email)}` : 
+                const emailLink = organism.email ?
+                    `${escapeHtml(organism.email)}` :
                     '-';
-                
-                const telefonoLink = organism.telefono ? 
-                    `${escapeHtml(organism.telefono)}` : 
+
+                const telefonoLink = organism.telefono ?
+                    `${escapeHtml(organism.telefono)}` :
                     '-';
-                
+
                 body += `
                     <tr>
                         <td><strong>${escapeHtml(organism.nombre)}</strong></td>
@@ -1035,7 +1390,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                     </tr>`;
             });
             body += '</tbody>';
-            
+
             const w = window.open("", "_blank", "width=900,height=700");
             w.document.write(`
                 <html>
@@ -1084,7 +1439,7 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
                     id,
                     ...value
                 }));
-                
+
                 renderModules();
                 if (currentCategory) {
                     filtrarOrganismos();
@@ -1105,16 +1460,16 @@ td.actions{width:1%;white-space:nowrap;font-size:0}
             $("btnPrintModule").onclick = imprimirModulo;
             $("btnPrintListado").onclick = printListado;
             $("btnPrintIndividual").onclick = () => imprimirOrganismoIndividual(viewingId);
-            
+
             // Eventos de filtrado
             buscador.oninput = filtrarOrganismos;
             filtroTipo.onchange = filtrarOrganismos;
-            
+
             // Eventos de paginación superiores
             $("btnPrevPageTop").onclick = () => cambiarPagina(paginaActual - 1);
             $("btnNextPageTop").onclick = () => cambiarPagina(paginaActual + 1);
             $("pageSelectTop").onchange = (e) => cambiarPagina(parseInt(e.target.value));
-            
+
             // Eventos de paginación inferiores
             $("btnPrevPageBottom").onclick = () => cambiarPagina(paginaActual - 1);
             $("btnNextPageBottom").onclick = () => cambiarPagina(paginaActual + 1);

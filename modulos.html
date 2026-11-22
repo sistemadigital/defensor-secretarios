@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Módulos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+@property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+@property --arc{syntax:'<angle>';initial-value:70deg;inherits:false}
+:root{--pad:clamp(12px,2.6vmin,32px);--gap:clamp(12px,2.6vmin,32px);--font:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--ink:#0b1f3a;--mut:#64748b;--bd:#e2e8f0;--bg:#eef1f6;--card:#fff;--ac:#2563eb;--ac2:#4f46e5;--ease:cubic-bezier(.16,1,.3,1);--c-ind:#4f46e5;--c-grn:#065f46;color-scheme:light;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root{--ink:#e6eeff;--mut:#93a7cb;--bd:#1f3560;--bg:#071225;--card:#0f213f;--ac:#60a5fa;--ac2:#818cf8;--c-ind:#818cf8;--c-grn:#34d399;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{margin:0;display:block;height:100dvh;padding:max(var(--pad),env(safe-area-inset-top)) max(var(--pad),env(safe-area-inset-right)) max(var(--pad),env(safe-area-inset-bottom)) max(var(--pad),env(safe-area-inset-left));background:var(--bg);color:var(--ink);font:15px/1.5 var(--font);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+main{width:100%;height:100%}
+.mods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:minmax(0,1fr);gap:var(--gap);width:100%;height:100%}
+
+/* módulo: borde fino con arco de luz que orbita (igual que las tarjetas de Expedientes) */
+.mod{--accent:var(--c-ind);--a1:#06b6d4;--a2:#818cf8;--a3:#4338ca;--tint:color-mix(in srgb,var(--accent) 10%,var(--card));--lc:color-mix(in srgb,var(--accent) 14%,var(--bd));--glow:color-mix(in srgb,var(--accent) 32%,transparent);--fs:clamp(1.1rem,3.6vmin,2.6rem);--ic:calc(var(--fs)*2.2);--ring:calc(var(--ic)*.07);--ang:0deg;--arc:70deg;
+min-width:0;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:calc(var(--fs)*.5);padding:clamp(1rem,4vmin,3rem);border-radius:clamp(24px,5vmin,48px);border:1.5px solid transparent;color:inherit;text-decoration:none;cursor:pointer;
+background:linear-gradient(var(--card),var(--card)) padding-box,conic-gradient(from var(--ang),transparent 0deg,transparent calc(360deg - var(--arc)),var(--a1) calc(360deg - var(--arc)*.65),var(--a2) calc(360deg - var(--arc)*.3),var(--a3) calc(360deg - 4deg),transparent 360deg) border-box,linear-gradient(var(--lc),var(--lc)) border-box;
+box-shadow:0 1px 2px rgba(15,23,42,.04),0 12px 28px -16px rgba(15,23,42,.14);animation:orbit 9s linear infinite,fadeInUp .6s var(--ease) backwards;transition:transform .35s var(--ease),box-shadow .35s,--arc .5s}
+.mod:nth-child(2){--accent:var(--c-grn);--a1:#06b6d4;--a2:#10b981;--a3:#065f46;animation-delay:-4.5s,.12s}
+@keyframes orbit{to{--ang:360deg}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px) scale(.95)}to{opacity:1;transform:none}}
+.mod:hover,.mod:focus-visible{--arc:150deg;transform:translateY(-4px);box-shadow:0 1px 2px rgba(15,23,42,.05),0 26px 46px -20px var(--glow)}
+.mod:focus-visible{outline:2px solid var(--ac);outline-offset:4px}
+.mod i.ic{display:inline-flex;align-items:center;justify-content:center;width:var(--ic);height:var(--ic);margin-bottom:calc(var(--fs)*.2);border-radius:calc(var(--ic)*.3);font-size:calc(var(--ic)*.5);color:var(--accent);background:linear-gradient(135deg,var(--a2),var(--a3)) center/0% 0% no-repeat,var(--tint);box-shadow:0 0 0 var(--ring) color-mix(in srgb,var(--accent) 9%,transparent);transition:background-size .4s var(--ease),color .3s,box-shadow .35s,transform .35s var(--ease)}
+.mod:hover i.ic,.mod:focus-visible i.ic{background-size:100% 100%,auto;color:#fff;transform:rotate(-4deg) scale(1.05);box-shadow:0 0 0 calc(var(--ring) + 3px) color-mix(in srgb,var(--accent) 14%,transparent)}
+.mod h2{margin:0;max-width:100%;font-size:var(--fs);font-weight:800;letter-spacing:-.03em;line-height:1.15;text-wrap:balance;overflow-wrap:anywhere}
+.mod .sub{margin:0;max-width:100%;font-size:calc(var(--fs)*.58);font-weight:600;line-height:1.35;color:var(--mut);text-wrap:balance;overflow-wrap:anywhere}
+.mod .tag{margin:calc(var(--fs)*.15) 0 0;padding:.2em .9em;font-size:calc(var(--fs)*.5);font-weight:700;line-height:1.4;color:var(--accent);background:var(--tint);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:999px}
+/* pantallas verticales o angostas: un módulo arriba y otro abajo, cada uno ocupa la mitad */
+@media(max-width:700px),(max-aspect-ratio:1/1){.mods{grid-template-columns:minmax(0,1fr);grid-template-rows:repeat(2,minmax(0,1fr))}.mod{--fs:clamp(1.05rem,min(3.4dvh,6vw),2.3rem)}}
+@media(prefers-reduced-motion:reduce){.mod{animation:none;background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(135deg,var(--a1),var(--a3)) border-box;transition:box-shadow .2s}.mod:hover,.mod:focus-visible{transform:none}.mod i.ic,.mod:hover i.ic,.mod:focus-visible i.ic{transition:none;transform:none}}
+</style>
+</head>
+<body>
+<main>
+  <nav class="mods" aria-label="Módulos">
+    <a class="mod" href="tabla.html">
+      <i class="ic bi bi-folder2-open" aria-hidden="true"></i>
+      <h2>Expedientes</h2>
+      <p class="sub">(Civil, Familia, Laboral, Penal, Violencia Familiar)</p>
+      <p class="tag">Online</p>
+    </a>
+    <a class="mod" href="PenalJuvenil.html">
+      <i class="ic bi bi-journal-text" aria-hidden="true"></i>
+      <h2>Expedientes</h2>
+      <p class="sub">Régimen Penal Juvenil</p>
+      <p class="tag">Local</p>
+    </a>
+  </nav>
+</main>
+</body>
+</html>

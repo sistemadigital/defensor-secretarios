@@ -2,153 +2,208 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Eventos</title>
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-    <!-- Font Awesome -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 
     <style>
-        /* ===== VARIABLES MINIMALISTAS (coherentes con tabla.html) ===== */
+        /* ===== VARIABLES (paleta replicada de modulos.html) ===== */
         :root {
-            --primary: #2563eb;
-            --primary-light: #3b82f6;
-            --primary-soft: #eff6ff;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --gray-900: #111827;
+            --pad: clamp(12px, 2.6vmin, 32px);
+            --gap: clamp(12px, 2.6vmin, 32px);
+            --font: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --font-sans: var(--font);
+
+            --ink: #0b1f3a;
+            --mut: #64748b;
+            --bd: #e2e8f0;
+            --bg: #eef1f6;
+            --card: #fff;
+            --ac: #2563eb;
+            --ac2: #4f46e5;
+            --ac-soft: color-mix(in srgb, var(--ac) 10%, var(--card));
+            --c-ind: #4f46e5;
+            --c-grn: #065f46;
+            --violet: #8b5cf6;
+
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --info: #3b82f6;
-            --white: #ffffff;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --radius-sm: 0.375rem;
-            --radius: 0.5rem;
-            --radius-lg: 0.75rem;
-            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-            --header-height: 0px; /* se actualiza con JS */
+
+            --shadow-sm: 0 1px 2px rgba(15, 23, 42, .04);
+            --shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 12px 28px -16px rgba(15, 23, 42, .14);
+            --shadow-lg: 0 1px 2px rgba(15, 23, 42, .05), 0 26px 46px -20px rgba(15, 23, 42, .18);
+            --radius-sm: 12px;
+            --radius: 18px;
+            --radius-lg: clamp(20px, 3vmin, 32px);
+            --ease: cubic-bezier(.16, 1, .3, 1);
+
+            --primary: var(--ac);
+            --primary-light: var(--ac2);
+            --primary-soft: var(--ac-soft);
+            --white: var(--card);
+            --gray-50: var(--bg);
+            --gray-100: color-mix(in srgb, var(--bd) 55%, var(--card));
+            --gray-200: var(--bd);
+            --gray-300: var(--bd);
+            --gray-400: var(--mut);
+            --gray-500: var(--mut);
+            --gray-600: var(--mut);
+            --gray-700: var(--ink);
+            --gray-800: var(--ink);
+            --gray-900: var(--ink);
+
+            --header-height: 0px;
+            color-scheme: light;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --ink: #e6eeff;
+                --mut: #93a7cb;
+                --bd: #1f3560;
+                --bg: #071225;
+                --card: #0f213f;
+                --ac: #60a5fa;
+                --ac2: #818cf8;
+                --ac-soft: color-mix(in srgb, var(--ac) 18%, var(--card));
+                --c-ind: #818cf8;
+                --c-grn: #34d399;
+                --violet: #a78bfa;
+                --success: #34d399;
+                --warning: #fbbf24;
+                --danger: #f87171;
+                color-scheme: dark;
+            }
         }
 
         /* ===== RESET ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: var(--font-sans);
-            background-color: var(--gray-50);
-            color: var(--gray-800);
+            font-family: var(--font);
+            background-color: var(--bg);
+            color: var(--ink);
             line-height: 1.5;
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
         }
-        body.calendar-open {
-            overflow: hidden !important;
+        body.calendar-open { overflow: hidden !important; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px) scale(.97); }
+            to   { opacity: 1; transform: none; }
         }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .spin { display: inline-block; animation: spin 1s linear infinite; }
 
         /* ===== HEADER ===== */
         .header {
-            background-color: var(--white);
-            border-bottom: 1px solid var(--gray-200);
-            padding: 0.75rem 1.5rem;
+            background-color: var(--card);
+            border-bottom: 1px solid var(--bd);
+            padding: calc(var(--pad) * 0.75) var(--pad);
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            gap: 0.5rem;
+            gap: .5rem;
             box-shadow: var(--shadow-sm);
             position: relative;
             z-index: 1000;
         }
 
         .logo {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--primary);
+            font-size: clamp(1.05rem, 2.4vmin, 1.35rem);
+            font-weight: 800;
+            letter-spacing: -.03em;
+            color: var(--ink);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: .5rem;
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: .5rem;
             flex-wrap: wrap;
         }
 
-        .btn-refresh {
-            background-color: var(--white);
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius-sm);
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--gray-700);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: background-color 0.15s, border-color 0.15s;
-            box-shadow: var(--shadow-sm);
-            white-space: nowrap;
-        }
-
-        .btn-refresh:hover {
-            background-color: var(--gray-50);
-            border-color: var(--gray-400);
-        }
-
-        /* Botón calendario */
-        .btn-calendar {
-            background-color: var(--primary);
-            border: none;
-            border-radius: var(--radius-sm);
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
+        .btn-refresh,
+        .btn-print {
+            background-color: var(--card);
+            border: 1.5px solid var(--bd);
+            border-radius: 14px;
+            padding: .55rem 1.1rem;
+            font-family: var(--font);
+            font-size: .85rem;
             font-weight: 700;
-            color: var(--gray-200);
+            color: var(--ink);
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            transition: background-color 0.15s;
+            gap: .5rem;
+            transition: transform .25s var(--ease), box-shadow .25s var(--ease),
+                        background-color .18s, border-color .18s;
             box-shadow: var(--shadow-sm);
             white-space: nowrap;
         }
+        .btn-refresh:hover,
+        .btn-print:hover {
+            background-color: var(--bg);
+            border-color: color-mix(in srgb, var(--ac) 45%, var(--bd));
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
 
+        .btn-calendar {
+            background-color: var(--ac);
+            border: none;
+            border-radius: 14px;
+            padding: .55rem 1.1rem;
+            font-family: var(--font);
+            font-size: .85rem;
+            font-weight: 700;
+            letter-spacing: -.005em;
+            color: var(--card);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            transition: transform .25s var(--ease), box-shadow .25s var(--ease), background-color .18s;
+            box-shadow: var(--shadow-sm);
+            white-space: nowrap;
+        }
         .btn-calendar:hover {
-            background-color: var(--primary-light);
+            background-color: var(--ac2);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
         }
         .btn-calendar.active {
-            background-color: var(--gray-700);
-            color: white;
+            background-color: var(--ink);
+            color: var(--card);
         }
 
         /* ===== LAYOUT PRINCIPAL ===== */
         .main-layout {
             display: flex;
             flex: 1;
-            padding: 1.5rem;
-            gap: 1.5rem;
+            padding: var(--pad);
+            gap: var(--gap);
             max-width: 1600px;
             margin: 0 auto;
             width: 100%;
@@ -160,94 +215,97 @@
             flex: 0 0 280px;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: var(--gap);
             position: sticky;
-            top: 1.5rem;
+            top: var(--pad);
             height: fit-content;
-            transition: display 0.2s;
         }
-        .left-panel.hidden {
-            display: none;
-        }
+        .left-panel.hidden { display: none; }
 
         .time-panel {
-            background-color: var(--white);
+            background-color: var(--card);
             border-radius: var(--radius-lg);
             padding: 1.5rem 1rem;
-            color: var(--gray-800);
+            color: var(--ink);
             box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
+            border: 1.5px solid var(--bd);
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
+            animation: fadeInUp .6s var(--ease) backwards;
+            animation-delay: .05s;
         }
 
         .month-year {
-            font-size: 0.875rem;
+            font-size: .8rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 500;
-            color: var(--gray-500);
-            margin-bottom: 0.75rem;
+            letter-spacing: .08em;
+            font-weight: 700;
+            color: var(--mut);
+            margin-bottom: .75rem;
         }
 
         .day-number {
             font-size: 4rem;
-            font-weight: 700;
+            font-weight: 800;
+            letter-spacing: -.04em;
             line-height: 1;
-            color: var(--gray-800);
-            margin-bottom: 0.25rem;
+            color: var(--ink);
+            margin-bottom: .25rem;
+            font-variant-numeric: tabular-nums;
         }
 
         .weekday {
-            font-size: 1.25rem;
-            font-weight: 500;
-            color: var(--gray-600);
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -.01em;
+            color: var(--mut);
             margin-bottom: 1.5rem;
         }
 
         .time {
-            font-size: 1.75rem;
-            font-weight: 600;
-            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            font-variant-numeric: tabular-nums;
             background-color: var(--gray-100);
-            padding: 0.5rem 1rem;
+            padding: .5rem 1rem;
             border-radius: var(--radius);
-            color: var(--gray-800);
+            color: var(--ink);
             width: 100%;
-            border: 1px solid var(--gray-200);
+            border: 1.5px solid var(--bd);
         }
 
         .date-separator {
             width: 60px;
             height: 2px;
-            background-color: var(--gray-200);
+            background-color: var(--bd);
             margin: 1rem 0;
+            border-radius: 2px;
         }
 
-        /* Panel de eventos de hoy */
         .today-panel {
-            background-color: var(--white);
+            background-color: var(--card);
             border-radius: var(--radius-lg);
             padding: 1.25rem 1rem;
             box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
+            border: 1.5px solid var(--bd);
+            animation: fadeInUp .6s var(--ease) backwards;
+            animation-delay: .15s;
         }
 
         .today-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--gray-700);
+            font-size: .85rem;
+            font-weight: 700;
+            letter-spacing: -.005em;
+            color: var(--ink);
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: .5rem;
         }
-
-        .today-title i {
-            color: var(--primary);
-        }
+        .today-title i { color: var(--ac); font-size: 1rem; }
 
         .today-list {
             list-style: none;
@@ -255,121 +313,126 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: .5rem;
         }
 
         .today-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.5rem 0.75rem;
+            padding: .55rem .8rem;
             background-color: var(--gray-50);
             border-radius: var(--radius-sm);
-            transition: all 0.15s;
-            border: 1px solid var(--gray-200);
+            transition: all .18s var(--ease);
+            border: 1.5px solid var(--bd);
             cursor: pointer;
         }
-
         .today-item:hover {
-            background-color: var(--primary-soft);
-            border-color: var(--primary);
+            background-color: var(--ac-soft);
+            border-color: var(--ac);
+            transform: translateY(-1px);
         }
-
         .today-item.pasado {
-            opacity: 0.6;
+            opacity: .55;
             background-color: var(--gray-100);
         }
 
         .today-expediente {
-            font-weight: 600;
-            font-size: 0.875rem;
+            font-weight: 700;
+            font-size: .875rem;
             display: flex;
             flex-direction: column;
+            letter-spacing: -.005em;
+            color: var(--ink);
         }
-
         .today-expediente span {
-            font-size: 0.75rem;
-            font-weight: normal;
-            color: var(--gray-500);
+            font-size: .72rem;
+            font-weight: 500;
+            color: var(--mut);
+            letter-spacing: 0;
         }
 
         .today-hora {
-            font-size: 0.75rem;
-            background-color: var(--primary-soft);
-            padding: 0.25rem 0.5rem;
-            border-radius: 9999px;
-            color: var(--gray-700);
+            font-size: .75rem;
+            font-weight: 700;
+            background-color: var(--ac-soft);
+            padding: .25rem .6rem;
+            border-radius: 999px;
+            color: var(--ac);
+            font-variant-numeric: tabular-nums;
         }
 
         .today-empty {
-            color: var(--gray-500);
+            color: var(--mut);
             font-style: italic;
             padding: 1rem;
             text-align: center;
-            font-size: 0.875rem;
+            font-size: .875rem;
         }
 
-        /* Nuevo panel de estadísticas */
         .stats-panel {
-            background-color: var(--white);
+            background-color: var(--card);
             border-radius: var(--radius-lg);
             padding: 1.25rem 1rem;
             box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
+            border: 1.5px solid var(--bd);
+            animation: fadeInUp .6s var(--ease) backwards;
+            animation-delay: .25s;
         }
 
         .stats-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--gray-700);
+            font-size: .85rem;
+            font-weight: 700;
+            letter-spacing: -.005em;
+            color: var(--ink);
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: .5rem;
         }
-
-        .stats-title i {
-            color: var(--primary);
-        }
+        .stats-title i { color: var(--ac); font-size: 1rem; }
 
         .stats-container {
             max-height: 300px;
             overflow-y: auto;
-            font-size: 0.875rem;
+            font-size: .85rem;
         }
 
         .stats-item {
             display: flex;
             justify-content: space-between;
-            padding: 0.5rem 0.75rem;
-            border-bottom: 1px solid var(--gray-100);
+            align-items: center;
+            padding: .5rem .25rem;
+            border-bottom: 1px solid color-mix(in srgb, var(--bd) 60%, transparent);
+            gap: .5rem;
         }
-
-        .stats-item:last-child {
-            border-bottom: none;
-        }
+        .stats-item:last-child { border-bottom: none; }
 
         .stats-category {
-            font-weight: 500;
-            color: var(--gray-700);
+            font-weight: 600;
+            color: var(--ink);
+            font-size: .8rem;
+            line-height: 1.25;
         }
 
         .stats-count {
-            background-color: var(--primary-soft);
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-weight: 600;
-            color: var(--primary);
+            background-color: var(--ac-soft);
+            padding: .2rem .7rem;
+            border-radius: 999px;
+            font-weight: 800;
+            color: var(--ac);
+            font-variant-numeric: tabular-nums;
+            font-size: .8rem;
         }
 
         .stats-empty {
-            color: var(--gray-500);
+            color: var(--mut);
             font-style: italic;
             text-align: center;
             padding: 1rem;
         }
 
-        /* ===== PANEL DERECHO: contenedor de tabla y calendario ===== */
+        /* ===== PANEL DERECHO ===== */
         .right-content {
             flex: 1;
             display: flex;
@@ -379,334 +442,194 @@
         }
 
         .events-panel {
-            background-color: var(--white);
+            background-color: var(--card);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
+            border: 1.5px solid var(--bd);
             overflow: hidden;
             display: flex;
             flex-direction: column;
             flex: 1;
+            animation: fadeInUp .6s var(--ease) backwards;
+            animation-delay: .1s;
         }
 
         .panel-header {
             padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid var(--gray-200);
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: .75rem;
             align-items: center;
         }
 
         .panel-header h2 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--gray-800);
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: -.03em;
+            color: var(--ink);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: .5rem;
             margin-right: auto;
+        }
+        .panel-header h2 i { color: var(--ac); font-size: 1.15rem; }
+
+        .btn-filters-toggle {
+            background-color: var(--card);
+            border: 1.5px solid var(--bd);
+            border-radius: 14px;
+            padding: .55rem 1.1rem;
+            font-family: var(--font);
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--ink);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            transition: transform .25s var(--ease), box-shadow .25s var(--ease),
+                        background-color .18s, border-color .18s, color .18s;
+            box-shadow: var(--shadow-sm);
+            white-space: nowrap;
+        }
+        .btn-filters-toggle:hover {
+            background-color: var(--bg);
+            border-color: color-mix(in srgb, var(--ac) 45%, var(--bd));
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+        .btn-filters-toggle.active {
+            background-color: var(--ac);
+            border-color: var(--ac);
+            color: var(--card);
+        }
+        .filters-chevron {
+            transition: transform .35s var(--ease);
+            font-size: .8rem;
+        }
+        .btn-filters-toggle.active .filters-chevron {
+            transform: rotate(180deg);
+        }
+
+        .filters-wrapper {
+            display: grid;
+            grid-template-rows: 1fr;
+            transition: grid-template-rows .4s var(--ease),
+                        opacity .3s ease,
+                        border-color .3s ease;
+            overflow: hidden;
+            border-bottom: 1.5px solid var(--bd);
+        }
+        .filters-wrapper.collapsed {
+            grid-template-rows: 0fr;
+            opacity: 0;
+            border-bottom-color: transparent;
         }
 
         .filters-row {
+            min-height: 0;
             display: flex;
             flex-wrap: wrap;
-            gap: 0.75rem;
+            gap: .65rem;
             align-items: center;
+            padding: 0 1.5rem 1.25rem;
+            overflow: hidden;
         }
 
-        .search-box {
-            display: flex;
-            align-items: center;
-            background-color: var(--white);
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius);
-            padding: 0.25rem 0.25rem 0.25rem 1rem;
-            transition: border-color 0.15s, box-shadow 0.15s;
-        }
-
-        .search-box:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-soft);
-        }
-
-        .search-box i {
-            color: var(--gray-400);
-            font-size: 0.875rem;
-        }
-
-        .search-box input {
-            border: none;
-            background: transparent;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.875rem;
-            width: 200px;
-            outline: none;
-            color: var(--gray-800);
-        }
-
-        .search-box input::placeholder {
-            color: var(--gray-400);
-        }
-
-        .search-box button {
-            background-color: var(--primary);
-            border: none;
-            color: white;
-            border-radius: var(--radius-sm);
-            padding: 0.5rem 1rem;
-            font-size: 0.75rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.15s;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .search-box button:hover {
-            background-color: var(--primary-light);
-        }
-
-        .date-filter {
-            display: flex;
-            align-items: center;
-            background-color: var(--white);
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius);
-            padding: 0.25rem 0.25rem 0.25rem 1rem;
-        }
-
-        .date-filter:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-soft);
-        }
-
-        .date-filter i {
-            color: var(--gray-400);
-            font-size: 0.875rem;
-        }
-
-        .date-filter input[type="date"] {
-            border: none;
-            background: transparent;
-            padding: 0.5rem 0.5rem;
-            font-size: 0.875rem;
-            width: 150px;
-            outline: none;
-            color: var(--gray-800);
-        }
-
-        .date-filter input[type="date"]::-webkit-calendar-picker-indicator {
-            opacity: 0.5;
-            cursor: pointer;
-        }
-
-        .date-filter button {
-            background-color: transparent;
-            border: none;
-            color: var(--gray-500);
-            border-radius: var(--radius-sm);
-            padding: 0.5rem 0.75rem;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: background-color 0.15s, color 0.15s;
-        }
-
-        .date-filter button:hover {
-            background-color: var(--gray-100);
-            color: var(--danger);
-        }
-
-        /* Filtro por tipo (existente) */
-        .type-filter {
-            display: flex;
-            align-items: center;
-            background-color: var(--white);
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius);
-            padding: 0.25rem 0.25rem 0.25rem 1rem;
-        }
-
-        .type-filter:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-soft);
-        }
-
-        .type-filter i {
-            color: var(--gray-400);
-            font-size: 0.875rem;
-        }
-
-        .type-filter select {
-            border: none;
-            background: transparent;
-            padding: 0.5rem 0.5rem;
-            font-size: 0.875rem;
-            width: 150px;
-            outline: none;
-            color: var(--gray-800);
-            appearance: none;
-            cursor: pointer;
-        }
-
-        .type-filter button {
-            background-color: transparent;
-            border: none;
-            color: var(--gray-500);
-            border-radius: var(--radius-sm);
-            padding: 0.5rem 0.75rem;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: background-color 0.15s, color 0.15s;
-        }
-
-        .type-filter button:hover {
-            background-color: var(--gray-100);
-            color: var(--danger);
-        }
-
-        /* Filtro por proceso (existente) */
-        .process-filter {
-            display: flex;
-            align-items: center;
-            background-color: var(--white);
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius);
-            padding: 0.25rem 0.25rem 0.25rem 1rem;
-        }
-
-        .process-filter:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-soft);
-        }
-
-        .process-filter i {
-            color: var(--gray-400);
-            font-size: 0.875rem;
-        }
-
-        .process-filter select {
-            border: none;
-            background: transparent;
-            padding: 0.5rem 0.5rem;
-            font-size: 0.875rem;
-            width: 150px;
-            outline: none;
-            color: var(--gray-800);
-            appearance: none;
-            cursor: pointer;
-        }
-
-        .process-filter button {
-            background-color: transparent;
-            border: none;
-            color: var(--gray-500);
-            border-radius: var(--radius-sm);
-            padding: 0.5rem 0.75rem;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: background-color 0.15s, color 0.15s;
-        }
-
-        .process-filter button:hover {
-            background-color: var(--gray-100);
-            color: var(--danger);
-        }
-
-        /* NUEVO FILTRO POR TRIMESTRE */
-        .quarter-filter {
-            display: flex;
-            align-items: center;
-            background-color: var(--white);
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius);
-            padding: 0.25rem 0.25rem 0.25rem 1rem;
-        }
-
-        .quarter-filter:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-soft);
-        }
-
-        .quarter-filter i {
-            color: var(--gray-400);
-            font-size: 0.875rem;
-        }
-
-        .quarter-filter select {
-            border: none;
-            background: transparent;
-            padding: 0.5rem 0.5rem;
-            font-size: 0.875rem;
-            width: 150px;
-            outline: none;
-            color: var(--gray-800);
-            appearance: none;
-            cursor: pointer;
-        }
-
-        .quarter-filter button {
-            background-color: transparent;
-            border: none;
-            color: var(--gray-500);
-            border-radius: var(--radius-sm);
-            padding: 0.5rem 0.75rem;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: background-color 0.15s, color 0.15s;
-        }
-
-        .quarter-filter button:hover {
-            background-color: var(--gray-100);
-            color: var(--danger);
-        }
-
-        /* NUEVO FILTRO POR AÑO */
+        .search-box,
+        .date-filter,
+        .type-filter,
+        .process-filter,
+        .quarter-filter,
         .year-filter {
             display: flex;
             align-items: center;
-            background-color: var(--white);
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius);
-            padding: 0.25rem 0.25rem 0.25rem 1rem;
+            background-color: var(--card);
+            border: 1.5px solid var(--bd);
+            border-radius: 14px;
+            padding: .25rem .9rem;
+            transition: border-color .18s, box-shadow .18s;
         }
 
+        .search-box:focus-within,
+        .date-filter:focus-within,
+        .type-filter:focus-within,
+        .process-filter:focus-within,
+        .quarter-filter:focus-within,
         .year-filter:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-soft);
+            border-color: var(--ac);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--ac) 18%, transparent);
         }
 
+        .search-box i,
+        .date-filter i,
+        .type-filter i,
+        .process-filter i,
+        .quarter-filter i,
         .year-filter i {
-            color: var(--gray-400);
-            font-size: 0.875rem;
+            color: var(--mut);
+            font-size: .9rem;
         }
 
+        .search-box input,
+        .date-filter input[type="date"] {
+            border: none;
+            background: transparent;
+            padding: .5rem .65rem;
+            font-size: .85rem;
+            font-family: var(--font);
+            width: 200px;
+            outline: none;
+            color: var(--ink);
+            font-weight: 500;
+        }
+        .search-box input::placeholder { color: var(--mut); }
+
+        .date-filter input[type="date"] { width: 150px; }
+        .date-filter input[type="date"]::-webkit-calendar-picker-indicator {
+            opacity: .5;
+            cursor: pointer;
+        }
+
+        .type-filter select,
+        .process-filter select,
+        .quarter-filter select,
         .year-filter select {
             border: none;
             background: transparent;
-            padding: 0.5rem 0.5rem;
-            font-size: 0.875rem;
+            padding: .5rem .5rem;
+            font-size: .85rem;
+            font-family: var(--font);
+            font-weight: 500;
             width: 150px;
             outline: none;
-            color: var(--gray-800);
+            color: var(--ink);
             appearance: none;
             cursor: pointer;
         }
 
+        .date-filter button,
+        .type-filter button,
+        .process-filter button,
+        .quarter-filter button,
         .year-filter button {
             background-color: transparent;
             border: none;
-            color: var(--gray-500);
-            border-radius: var(--radius-sm);
-            padding: 0.5rem 0.75rem;
-            font-size: 0.875rem;
+            color: var(--mut);
+            border-radius: 10px;
+            padding: .5rem .65rem;
+            font-size: .85rem;
             cursor: pointer;
-            transition: background-color 0.15s, color 0.15s;
+            transition: background-color .15s, color .15s;
+            display: flex;
+            align-items: center;
         }
-
+        .date-filter button:hover,
+        .type-filter button:hover,
+        .process-filter button:hover,
+        .quarter-filter button:hover,
         .year-filter button:hover {
-            background-color: var(--gray-100);
+            background-color: color-mix(in srgb, var(--danger) 12%, transparent);
             color: var(--danger);
         }
 
@@ -720,104 +643,114 @@
             width: 100%;
             border-collapse: collapse;
             min-width: 900px;
-            font-size: 0.875rem;
+            font-size: .85rem;
         }
 
         .events-table th {
             text-align: left;
             padding: 1rem 1rem;
-            background-color: var(--gray-50);
-            font-weight: 600;
-            color: var(--gray-600);
-            border-bottom: 1px solid var(--gray-200);
+            background-color: color-mix(in srgb, var(--bd) 22%, var(--card));
+            font-weight: 700;
+            color: var(--mut);
+            border-bottom: 1.5px solid var(--bd);
             text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.05em;
+            font-size: .7rem;
+            letter-spacing: .07em;
         }
 
         .events-table td {
             padding: 1rem 1rem;
-            border-bottom: 1px solid var(--gray-100);
-            color: var(--gray-700);
+            border-bottom: 1px solid color-mix(in srgb, var(--bd) 60%, transparent);
+            color: var(--ink);
             vertical-align: middle;
+            font-weight: 500;
         }
 
+        .events-table tbody tr {
+            transition: background-color .15s;
+        }
         .events-table tbody tr:hover td {
-            background-color: var(--gray-50);
+            background-color: color-mix(in srgb, var(--ac) 5%, var(--card));
         }
 
         .event-type-badge {
             display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            padding: .3rem .8rem;
+            border-radius: 999px;
+            font-size: .68rem;
+            font-weight: 800;
+            letter-spacing: .04em;
             text-transform: uppercase;
-            color: white;
+            color: #fff;
         }
 
-        .type-audiencia { background-color: var(--primary); }
-        .type-gesell { background-color: var(--success); }
-        .type-vencimiento { background-color: var(--danger); }
-        .type-recurso { background-color: var(--warning); }
+        .type-audiencia  { background-color: #2563eb; }
+        .type-gesell     { background-color: #10b981; }
+        .type-vencimiento{ background-color: #ef4444; }
+        .type-recurso    { background-color: #f59e0b; }
         .type-diligencia { background-color: #8b5cf6; }
 
         /* ===== PAGINACIÓN ===== */
         .pagination {
             padding: 1rem 1.5rem;
-            border-top: 1px solid var(--gray-200);
+            border-top: 1.5px solid var(--bd);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: var(--white);
+            background-color: var(--card);
+            gap: .75rem;
         }
 
         .pagination-info {
-            color: var(--gray-600);
-            font-size: 0.875rem;
+            color: var(--mut);
+            font-size: .82rem;
+            font-weight: 600;
         }
 
         .pagination-buttons {
             display: flex;
-            gap: 0.5rem;
+            gap: .5rem;
         }
 
         .page-btn {
-            background-color: var(--white);
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius-sm);
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--gray-700);
+            background-color: var(--card);
+            border: 1.5px solid var(--bd);
+            border-radius: 12px;
+            padding: .5rem 1rem;
+            font-size: .82rem;
+            font-family: var(--font);
+            font-weight: 700;
+            color: var(--ink);
             cursor: pointer;
-            transition: all 0.15s;
+            transition: transform .2s var(--ease), background-color .15s, border-color .15s, box-shadow .2s;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: .45rem;
         }
-
         .page-btn:not(:disabled):hover {
-            background-color: var(--gray-50);
-            border-color: var(--gray-400);
+            background-color: var(--bg);
+            border-color: color-mix(in srgb, var(--ac) 45%, var(--bd));
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
         }
-
         .page-btn:disabled {
-            opacity: 0.5;
+            opacity: .45;
             cursor: not-allowed;
         }
 
         .loading-row td {
             text-align: center;
             padding: 3rem !important;
-            color: var(--gray-500);
+            color: var(--mut);
             font-style: italic;
+            font-weight: 500;
         }
+        .loading-row i { margin-right: .5rem; color: var(--ac); }
 
-        /* ===== CONTENEDOR DEL CALENDARIO (pantalla completa) ===== */
+        /* ===== CALENDARIO ===== */
         .calendar-container {
             display: none;
-            background-color: var(--white);
+            background-color: var(--card);
             position: fixed;
             top: var(--header-height);
             left: 0;
@@ -848,34 +781,32 @@
             position: fixed;
             bottom: 1.5rem;
             right: 1.5rem;
-            background-color: var(--gray-800);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--radius);
+            background-color: var(--ink);
+            color: var(--card);
+            padding: .85rem 1.5rem;
+            border-radius: 14px;
             box-shadow: var(--shadow-lg);
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            transform: translateY(100px);
+            gap: .75rem;
+            transform: translateY(120px);
             opacity: 0;
-            transition: all 0.3s ease;
+            transition: all .35s var(--ease);
             z-index: 1001;
-            font-weight: 500;
-            font-size: 0.875rem;
+            font-weight: 700;
+            font-size: .85rem;
+            letter-spacing: -.005em;
         }
-
         .floating-alert.show {
             transform: translateY(0);
             opacity: 1;
         }
+        .floating-alert.success { background-color: var(--success); color: var(--card); }
+        .floating-alert.danger  { background-color: var(--danger);  color: var(--card); }
+        .floating-alert i { font-size: 1.25rem; }
 
-        .floating-alert.success {
-            background-color: var(--success);
-        }
-
-        .floating-alert i {
-            font-size: 1.25rem;
-        }
+        /* ===== ÁREA DE IMPRESIÓN (oculta en pantalla) ===== */
+        .print-area { display: none; }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1000px) {
@@ -888,12 +819,8 @@
                 width: 100%;
                 flex: unset;
             }
-            .left-panel.hidden {
-                display: none;
-            }
-            .right-content {
-                min-height: 400px;
-            }
+            .left-panel.hidden { display: none; }
+            .right-content { min-height: 400px; }
             .calendar-container {
                 top: var(--header-height);
                 height: calc(100vh - var(--header-height));
@@ -901,83 +828,180 @@
         }
 
         @media (max-width: 480px) {
-            .header {
-                padding: 0.5rem 0.75rem;
+            .header { padding: .6rem .9rem; }
+            .logo { font-size: 1rem; }
+            .btn-refresh, .btn-calendar, .btn-print {
+                padding: .4rem .8rem;
+                font-size: .75rem;
+                border-radius: 12px;
             }
-            .logo {
-                font-size: 1rem;
+            .btn-calendar i, .btn-refresh i, .btn-print i { font-size: .8rem; }
+            .header-actions { gap: .35rem; }
+            .panel-header { padding: .9rem 1rem; gap: .5rem; }
+            .panel-header h2 { font-size: .95rem; }
+            .btn-filters-toggle {
+                padding: .4rem .8rem;
+                font-size: .75rem;
+                border-radius: 12px;
             }
-            .btn-refresh,
-            .btn-calendar {
-                padding: 0.35rem 0.75rem;
-                font-size: 0.75rem;
-                white-space: nowrap;
-            }
-            .btn-calendar i,
-            .btn-refresh i {
-                font-size: 0.75rem;
-            }
-            .header-actions {
-                gap: 0.3rem;
-            }
-            .panel-header {
-                padding: 0.75rem 1rem;
-            }
-            .panel-header h2 {
-                font-size: 1rem;
-            }
-            .filters-row {
-                gap: 0.5rem;
-            }
-            .search-box input {
-                width: 120px;
-                font-size: 0.75rem;
-            }
-            .search-box button {
-                font-size: 0.7rem;
-                padding: 0.3rem 0.6rem;
-            }
-            .date-filter input[type="date"] {
-                width: 110px;
-                font-size: 0.75rem;
-            }
+            .filters-row { gap: .5rem; padding: 0 1rem 1rem; }
+            .search-box input { width: 130px; font-size: .78rem; }
+            .date-filter input[type="date"] { width: 115px; font-size: .78rem; }
             .type-filter select,
             .process-filter select,
             .quarter-filter select,
-            .year-filter select {
-                width: 110px;
-                font-size: 0.75rem;
-            }
-            .time-panel .day-number {
-                font-size: 3rem;
-            }
-            .time-panel .time {
-                font-size: 1.25rem;
-            }
-            .events-table {
-                min-width: 600px;
-                font-size: 0.75rem;
-            }
-            .events-table th,
-            .events-table td {
-                padding: 0.6rem 0.75rem;
-            }
+            .year-filter select { width: 115px; font-size: .78rem; }
+            .time-panel .day-number { font-size: 3rem; }
+            .time-panel .time { font-size: 1.15rem; }
+            .events-table { min-width: 640px; font-size: .78rem; }
+            .events-table th, .events-table td { padding: .65rem .75rem; }
             .pagination {
                 flex-direction: column;
-                gap: 0.75rem;
-                padding: 0.75rem 1rem;
+                gap: .75rem;
+                padding: .85rem 1rem;
             }
             .calendar-container {
                 top: var(--header-height);
                 height: calc(100vh - var(--header-height));
-                /* Permitir scroll horizontal en móviles */
                 overflow: auto;
                 -webkit-overflow-scrolling: touch;
             }
-            .calendar-frame {
-                min-width: 100%;
+            .calendar-frame { min-width: 100%; width: 100%; height: 100%; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .time-panel, .today-panel, .stats-panel, .events-panel { animation: none; }
+            .spin { animation: none; }
+            .filters-wrapper, .filters-chevron { transition: none; }
+        }
+
+        /* ===== ESTILOS DE IMPRESIÓN ===== */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 1cm;
+            }
+
+            body {
+                background: #fff !important;
+                color: #000 !important;
+            }
+
+            /* Ocultar todo excepto el área de impresión */
+            body > *:not(.print-area) {
+                display: none !important;
+            }
+
+            .print-area {
+                display: block !important;
+                color: #000 !important;
+                background: #fff !important;
+                font-family: var(--font);
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .print-header {
+                margin-bottom: 1rem;
+                padding-bottom: .75rem;
+                border-bottom: 2px solid #000;
+            }
+
+            .print-header h1 {
+                font-size: 1.4rem;
+                font-weight: 800;
+                letter-spacing: -.02em;
+                color: #000;
+                margin-bottom: .3rem;
+            }
+
+            .print-meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1.25rem;
+                font-size: .78rem;
+                color: #333;
+            }
+
+            .print-meta strong {
+                color: #000;
+                font-weight: 700;
+            }
+
+            .print-filters {
+                margin-top: .5rem;
+                font-size: .75rem;
+                color: #444;
+                font-style: italic;
+            }
+
+            .print-filters strong {
+                font-style: normal;
+                color: #000;
+            }
+
+            .print-table {
                 width: 100%;
-                height: 100%;
+                border-collapse: collapse;
+                font-size: .78rem;
+            }
+
+            .print-table thead { display: table-header-group; }
+
+            .print-table th {
+                background-color: #eaeaea !important;
+                color: #000 !important;
+                border: 1px solid #888 !important;
+                padding: .45rem .55rem;
+                text-align: left;
+                font-size: .68rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: .05em;
+            }
+
+            .print-table td {
+                border: 1px solid #bbb !important;
+                padding: .4rem .55rem;
+                vertical-align: top;
+                color: #000 !important;
+                font-size: .78rem;
+                line-height: 1.35;
+            }
+
+            .print-table tbody tr {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            .print-table tbody tr:nth-child(even) td {
+                background-color: #f7f7f7 !important;
+            }
+
+            .print-table .event-type-badge {
+                display: inline-block;
+                padding: .15rem .55rem;
+                border-radius: 999px;
+                font-size: .62rem;
+                font-weight: 800;
+                letter-spacing: .04em;
+                text-transform: uppercase;
+                color: #000 !important;
+                border: 1px solid #555;
+                background: #e6e6e6 !important;
+            }
+
+            .print-table .event-type-badge.type-audiencia   { background: #dbe7ff !important; border-color: #2563eb; }
+            .print-table .event-type-badge.type-gesell      { background: #d7f5e7 !important; border-color: #10b981; }
+            .print-table .event-type-badge.type-vencimiento { background: #ffe0e0 !important; border-color: #ef4444; }
+            .print-table .event-type-badge.type-recurso     { background: #fff0d1 !important; border-color: #f59e0b; }
+            .print-table .event-type-badge.type-diligencia  { background: #ece1ff !important; border-color: #8b5cf6; }
+
+            .print-empty {
+                text-align: center;
+                padding: 2rem;
+                color: #666;
+                font-style: italic;
             }
         }
     </style>
@@ -990,16 +1014,19 @@
         </div>
         <div class="header-actions">
             <button class="btn-calendar" id="btnCalendar">
-                <i class="fas fa-calendar-alt"></i> <span id="btnCalendarText">Ver Calendario mensual</span>
+                <i class="bi bi-calendar3"></i> <span id="btnCalendarText">Ver Calendario mensual</span>
+            </button>
+            <button class="btn-print" id="btnPrint" title="Imprimir tabla completa o filtrada">
+                <i class="bi bi-printer"></i> Imprimir
             </button>
             <button class="btn-refresh" id="btnRefresh">
-                <i class="fas fa-sync-alt"></i> Actualizar
+                <i class="bi bi-arrow-clockwise"></i> Actualizar
             </button>
         </div>
     </header>
 
     <div class="main-layout" id="mainLayout">
-        <!-- Panel izquierdo: fecha + eventos de hoy + estadísticas -->
+        <!-- Panel izquierdo -->
         <div class="left-panel" id="leftPanel">
             <aside class="time-panel" id="timePanel">
                 <div class="month-year" id="currentMonthYear">MAYO 2026</div>
@@ -1011,7 +1038,7 @@
 
             <div class="today-panel">
                 <div class="today-title">
-                    <i class="fas fa-calendar-check"></i> Eventos de hoy
+                    <i class="bi bi-calendar-check"></i> Eventos de hoy
                 </div>
                 <div id="todayListContainer">
                     <div class="today-empty">Cargando...</div>
@@ -1020,7 +1047,7 @@
 
             <div class="stats-panel">
                 <div class="stats-title">
-                    <i class="fas fa-chart-pie"></i> Estadísticas
+                    <i class="bi bi-pie-chart"></i> Estadísticas
                 </div>
                 <div id="statsContainer" class="stats-container">
                     Cargando...
@@ -1028,25 +1055,33 @@
             </div>
         </div>
 
-        <!-- Panel derecho: alterna entre tabla y calendario -->
+        <!-- Panel derecho -->
         <div class="right-content">
-            <!-- TABLA DE EVENTOS (visible por defecto) -->
+            <!-- TABLA DE EVENTOS -->
             <section class="events-panel" id="eventsPanel">
                 <div class="panel-header">
-                    <h2><i class="fas fa-calendar-alt" style="color:#2563eb;"></i> Todos los eventos (Base Histórica + Activos)</h2>
+                    <h2><i class="bi bi-calendar3"></i> Todos los eventos (Base Histórica + Activos)</h2>
+                    <button class="btn-filters-toggle" id="btnFiltersToggle" aria-expanded="false" aria-controls="filtersWrapper">
+                        <i class="bi bi-funnel"></i>
+                        <span>Usar Filtros</span>
+                        <i class="bi bi-chevron-down filters-chevron"></i>
+                    </button>
+                </div>
+
+                <!-- Contenedor colapsable de filtros -->
+                <div class="filters-wrapper collapsed" id="filtersWrapper">
                     <div class="filters-row">
                         <div class="search-box">
-                            <i class="fas fa-search"></i>
+                            <i class="bi bi-search"></i>
                             <input type="text" id="searchInput" placeholder="Buscar N° o carátula...">
-                            <button id="btnSearch"><i class="fas fa-arrow-right"></i></button>
                         </div>
                         <div class="date-filter">
-                            <i class="fas fa-calendar-day"></i>
+                            <i class="bi bi-calendar-date"></i>
                             <input type="date" id="filterDate">
-                            <button id="btnClearDate" title="Limpiar filtro de fecha"><i class="fas fa-times"></i></button>
+                            <button id="btnClearDate" title="Limpiar filtro de fecha"><i class="bi bi-x-lg"></i></button>
                         </div>
                         <div class="type-filter">
-                            <i class="fas fa-tag"></i>
+                            <i class="bi bi-tag"></i>
                             <select id="filterType">
                                 <option value="">Todos los tipos</option>
                                 <option value="audiencia">Audiencias</option>
@@ -1055,17 +1090,17 @@
                                 <option value="recurso">Recursos</option>
                                 <option value="diligencia">Diligencias</option>
                             </select>
-                            <button id="btnClearType" title="Limpiar filtro de tipo"><i class="fas fa-times"></i></button>
+                            <button id="btnClearType" title="Limpiar filtro de tipo"><i class="bi bi-x-lg"></i></button>
                         </div>
                         <div class="process-filter">
-                            <i class="fas fa-gavel"></i>
+                            <i class="bi bi-hammer"></i>
                             <select id="filterProcess">
                                 <option value="">Todos los procesos</option>
                             </select>
-                            <button id="btnClearProcess" title="Limpiar filtro de proceso"><i class="fas fa-times"></i></button>
+                            <button id="btnClearProcess" title="Limpiar filtro de proceso"><i class="bi bi-x-lg"></i></button>
                         </div>
                         <div class="quarter-filter">
-                            <i class="fas fa-calendar-alt"></i>
+                            <i class="bi bi-calendar3"></i>
                             <select id="filterQuarter">
                                 <option value="">Trimestre</option>
                                 <option value="1">1T (Ene-Mar)</option>
@@ -1073,14 +1108,14 @@
                                 <option value="3">3T (Jul-Sep)</option>
                                 <option value="4">4T (Oct-Dic)</option>
                             </select>
-                            <button id="btnClearQuarter" title="Limpiar trimestre"><i class="fas fa-times"></i></button>
+                            <button id="btnClearQuarter" title="Limpiar trimestre"><i class="bi bi-x-lg"></i></button>
                         </div>
                         <div class="year-filter">
-                            <i class="fas fa-calendar"></i>
+                            <i class="bi bi-calendar"></i>
                             <select id="filterYear">
                                 <option value="">Año</option>
                             </select>
-                            <button id="btnClearYear" title="Limpiar año"><i class="fas fa-times"></i></button>
+                            <button id="btnClearYear" title="Limpiar año"><i class="bi bi-x-lg"></i></button>
                         </div>
                     </div>
                 </div>
@@ -1098,7 +1133,7 @@
                         </thead>
                         <tbody id="tablaEventos">
                             <tr class="loading-row">
-                                <td colspan="5"><i class="fas fa-spinner fa-pulse"></i> Cargando eventos...</td>
+                                <td colspan="5"><i class="bi bi-arrow-clockwise spin"></i> Cargando eventos...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1109,7 +1144,7 @@
                 </div>
             </section>
 
-            <!-- CALENDARIO (oculto por defecto) -->
+            <!-- CALENDARIO -->
             <div class="calendar-container" id="calendarContainer">
                 <iframe class="calendar-frame" src="https://sistemadigital.github.io/defensor-secretarios/calendario-eventos" title="Calendario mensual" scrolling="yes"></iframe>
             </div>
@@ -1117,15 +1152,38 @@
     </div>
 
     <div class="floating-alert" id="floatingAlert">
-        <i class="fas fa-check-circle"></i>
+        <i class="bi bi-check-circle"></i>
         <span id="alertMessage">Eventos actualizados</span>
+    </div>
+
+    <!-- ÁREA DE IMPRESIÓN (solo visible al imprimir) -->
+    <div class="print-area" id="printArea">
+        <div class="print-header">
+            <h1>Eventos Agendados</h1>
+            <div class="print-meta">
+                <span><strong>Generado:</strong> <span id="printDate"></span></span>
+                <span><strong>Total de eventos:</strong> <span id="printTotal">0</span></span>
+            </div>
+            <div class="print-filters" id="printFilters"></div>
+        </div>
+        <table class="print-table">
+            <thead>
+                <tr>
+                    <th style="width: 10%;">Tipo</th>
+                    <th style="width: 15%;">Fecha y hora</th>
+                    <th style="width: 15%;">Expediente</th>
+                    <th style="width: 40%;">Carátula</th>
+                    <th style="width: 20%;">Juzgado</th>
+                </tr>
+            </thead>
+            <tbody id="printBody"></tbody>
+        </table>
     </div>
 
     <script>
         // ====================================================
         // Configuración de las DOS bases de datos
         // ====================================================
-        // Base Histórica (original)
         const firebaseConfigHistorica = {
             apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
             authDomain: "causas-defensoria.firebaseapp.com",
@@ -1134,7 +1192,6 @@
             messagingSenderId: "186064671470",
             appId: "1:186064671470:web:b58bae5eadbe6e469f19ff"
         };
-        // Base Nueva (activos, la misma que usa tabla.html)
         const firebaseConfigNueva = {
             apiKey: "AIzaSyBevCwkh4iOWVqhp3gG2ae1eCUMkFpnr6I",
             authDomain: "causas-2defensoria.firebaseapp.com",
@@ -1147,20 +1204,17 @@
         let dbHistorica, dbNueva;
 
         try {
-            // Inicializar apps si no existen
             let appHistorica, appNueva;
             if (firebase.apps.length === 0) {
                 appHistorica = firebase.initializeApp(firebaseConfigHistorica, "historica");
                 appNueva = firebase.initializeApp(firebaseConfigNueva, "nueva");
             } else {
-                // Ya hay apps inicializadas, intentamos obtener las específicas
                 appHistorica = firebase.app("historica") || firebase.initializeApp(firebaseConfigHistorica, "historica");
                 appNueva = firebase.app("nueva") || firebase.initializeApp(firebaseConfigNueva, "nueva");
             }
             dbHistorica = appHistorica.firestore();
             dbNueva = appNueva.firestore();
 
-            // Habilitar persistencia opcional (sin bloqueo)
             dbHistorica.enablePersistence().catch(err => console.warn("Persistencia histórica:", err));
             dbNueva.enablePersistence().catch(err => console.warn("Persistencia nueva:", err));
         } catch (e) {
@@ -1175,13 +1229,12 @@
         let paginaActual = 1;
         const EVENTOS_POR_PAGINA = 15;
 
-        // Elementos DOM
         const $ = id => document.getElementById(id);
         const tablaBody = $("tablaEventos");
         const paginacionDiv = $("paginacionContainer");
         const searchInput = $("searchInput");
-        const btnSearch = $("btnSearch");
         const btnRefresh = $("btnRefresh");
+        const btnPrint = $("btnPrint");
         const floatingAlert = $("floatingAlert");
         const alertMessage = $("alertMessage");
         const todayListContainer = $("todayListContainer");
@@ -1202,6 +1255,8 @@
         const calendarContainer = $("calendarContainer");
         const leftPanel = $("leftPanel");
         const mainHeader = $("mainHeader");
+        const btnFiltersToggle = $("btnFiltersToggle");
+        const filtersWrapper = $("filtersWrapper");
 
         // ====================================================
         // Utilidades de fecha
@@ -1242,11 +1297,11 @@
             const now = new Date();
             const meses = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
             const diasSemana = ["DOMINGO", "LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SÁBADO"];
-            
+
             $("currentMonthYear").textContent = `${meses[now.getMonth()]} ${now.getFullYear()}`;
             $("currentDay").textContent = now.getDate();
             $("currentWeekday").textContent = diasSemana[now.getDay()];
-            
+
             const horas = String(now.getHours()).padStart(2, '0');
             const minutos = String(now.getMinutes()).padStart(2, '0');
             const segundos = String(now.getSeconds()).padStart(2, '0');
@@ -1256,7 +1311,7 @@
         updateDateTimePanel();
 
         // ====================================================
-        // Función para determinar el proceso a partir del juzgado
+        // Determinar el proceso a partir del juzgado
         // ====================================================
         function determinarProceso(juzgado) {
             if (!juzgado) return "Penal";
@@ -1274,7 +1329,6 @@
         // ====================================================
         async function cargarEventos() {
             try {
-                // Obtener ambas colecciones en paralelo
                 const [snapshotHistorica, snapshotNueva] = await Promise.all([
                     dbHistorica.collection("causas").get(),
                     dbNueva.collection("causas").get()
@@ -1284,13 +1338,11 @@
                 const procesosSet = new Set();
                 const añosSet = new Set();
 
-                // Función para procesar una causa (extraer eventos)
                 const procesarCausa = (causa) => {
                     const juzgado = causa.juzgado || '';
                     const proceso = determinarProceso(juzgado);
                     if (proceso) procesosSet.add(proceso);
 
-                    // Audiencias
                     if (Array.isArray(causa.audiencias)) {
                         causa.audiencias.forEach(fecha => {
                             const fechaObj = toDate(fecha);
@@ -1311,7 +1363,6 @@
                         });
                     }
 
-                    // Cámara Gesell
                     if (causa.audienciaGesell) {
                         const fechaObj = toDate(causa.audienciaGesell);
                         if (fechaObj) {
@@ -1330,7 +1381,6 @@
                         }
                     }
 
-                    // Vencimiento
                     if (causa.vencimiento) {
                         const fechaObj = toDate(causa.vencimiento);
                         if (fechaObj) {
@@ -1349,7 +1399,6 @@
                         }
                     }
 
-                    // Vencimiento de Recursos
                     if (causa.vencimientoRecursos) {
                         const fechaObj = toDate(causa.vencimientoRecursos);
                         if (fechaObj) {
@@ -1368,7 +1417,6 @@
                         }
                     }
 
-                    // Diligencias
                     if (Array.isArray(causa.diligencias)) {
                         causa.diligencias.forEach(d => {
                             const fechaObj = toDate(d.fecha);
@@ -1390,22 +1438,19 @@
                     }
                 };
 
-                // Procesar documentos de la base histórica
                 snapshotHistorica.forEach(doc => {
                     const causa = { id: doc.id, ...doc.data() };
                     procesarCausa(causa);
                 });
 
-                // Procesar documentos de la base nueva
                 snapshotNueva.forEach(doc => {
                     const causa = { id: doc.id, ...doc.data() };
                     procesarCausa(causa);
                 });
 
-                // Ordenar todos los eventos por fecha descendente
                 eventos.sort((a, b) => b.fecha - a.fecha);
                 const procesos = Array.from(procesosSet).sort();
-                const años = Array.from(añosSet).sort((a,b) => a - b);
+                const años = Array.from(añosSet).sort((a, b) => a - b);
                 return { eventos, procesos, años };
             } catch (error) {
                 console.error("Error al cargar eventos desde ambas bases:", error);
@@ -1415,7 +1460,7 @@
         }
 
         // ====================================================
-        // Filtros: texto, fecha, tipo, proceso, trimestre, año
+        // Filtros
         // ====================================================
         function filtrarEventos() {
             let resultados = eventosPlanos;
@@ -1423,8 +1468,8 @@
             const texto = searchInput.value.trim();
             if (texto) {
                 const busqueda = texto.toLowerCase();
-                resultados = resultados.filter(ev => 
-                    ev.numCausa.toLowerCase().includes(busqueda) || 
+                resultados = resultados.filter(ev =>
+                    ev.numCausa.toLowerCase().includes(busqueda) ||
                     ev.caratula.toLowerCase().includes(busqueda)
                 );
             }
@@ -1470,7 +1515,7 @@
         }
 
         // ====================================================
-        // Obtener eventos de hoy (fecha actual)
+        // Obtener eventos de hoy
         // ====================================================
         function getEventosHoy() {
             const hoy = new Date();
@@ -1485,7 +1530,7 @@
         }
 
         // ====================================================
-        // Renderizar lista de eventos de hoy
+        // Render eventos de hoy
         // ====================================================
         function renderEventosHoy() {
             const eventosHoy = getEventosHoy();
@@ -1531,7 +1576,7 @@
         }
 
         // ====================================================
-        // Renderizar tabla
+        // Render tabla
         // ====================================================
         function renderTabla() {
             const inicio = (paginaActual - 1) * EVENTOS_POR_PAGINA;
@@ -1539,7 +1584,7 @@
             const eventosPagina = eventosFiltrados.slice(inicio, fin);
 
             if (eventosFiltrados.length === 0) {
-                tablaBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:50px; color: var(--gray-500);">No se encontraron eventos</td></tr>`;
+                tablaBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:50px; color: var(--mut);">No se encontraron eventos</td></tr>`;
             } else {
                 tablaBody.innerHTML = eventosPagina.map(ev => {
                     let claseTipo = 'type-audiencia';
@@ -1571,8 +1616,8 @@
             paginacionDiv.innerHTML = `
                 <span class="pagination-info">Página ${paginaActual} de ${totalPaginas} (${eventosFiltrados.length} eventos)</span>
                 <div class="pagination-buttons">
-                    <button class="page-btn" id="btnPrevPage" ${paginaActual === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i> Anterior</button>
-                    <button class="page-btn" id="btnNextPage" ${paginaActual === totalPaginas ? 'disabled' : ''}>Siguiente <i class="fas fa-chevron-right"></i></button>
+                    <button class="page-btn" id="btnPrevPage" ${paginaActual === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i> Anterior</button>
+                    <button class="page-btn" id="btnNextPage" ${paginaActual === totalPaginas ? 'disabled' : ''}>Siguiente <i class="bi bi-chevron-right"></i></button>
                 </div>
             `;
 
@@ -1592,7 +1637,7 @@
         }
 
         // ====================================================
-        // Renderizar estadísticas
+        // Render estadísticas
         // ====================================================
         function renderEstadisticas() {
             if (eventosFiltrados.length === 0) {
@@ -1622,14 +1667,13 @@
         }
 
         // ====================================================
-        // Actualizar eventos, filtros y opciones
+        // Refresh general
         // ====================================================
         async function refreshEventos() {
-            tablaBody.innerHTML = `<tr class="loading-row"><td colspan="5"><i class="fas fa-spinner fa-pulse"></i> Cargando eventos desde ambas bases...</td></tr>`;
+            tablaBody.innerHTML = `<tr class="loading-row"><td colspan="5"><i class="bi bi-arrow-clockwise spin"></i> Cargando eventos desde ambas bases...</td></tr>`;
             const { eventos, procesos, años } = await cargarEventos();
             eventosPlanos = eventos;
 
-            // Actualizar select de procesos
             filterProcess.innerHTML = '<option value="">Todos los procesos</option>';
             if (procesos.length > 0) {
                 procesos.forEach(proc => {
@@ -1645,7 +1689,6 @@
                 filterProcess.appendChild(option);
             }
 
-            // Actualizar select de años
             filterYear.innerHTML = '<option value="">Año</option>';
             if (años.length > 0) {
                 años.forEach(año => {
@@ -1677,8 +1720,9 @@
 
         function mostrarAlerta(mensaje, tipo = 'success') {
             alertMessage.textContent = mensaje;
-            floatingAlert.classList.remove('success');
+            floatingAlert.classList.remove('success', 'danger');
             if (tipo === 'success') floatingAlert.classList.add('success');
+            else if (tipo === 'danger') floatingAlert.classList.add('danger');
             floatingAlert.classList.add('show');
             setTimeout(() => {
                 floatingAlert.classList.remove('show');
@@ -1686,7 +1730,96 @@
         }
 
         // ====================================================
-        // Alternar vista (tabla <-> calendario) con pantalla completa
+        // IMPRESIÓN: construir área de impresión con TODOS
+        // los eventos filtrados (no solo la página actual)
+        // ====================================================
+        function getFiltrosActivosTexto() {
+            const filtros = [];
+
+            const texto = searchInput.value.trim();
+            if (texto) filtros.push(`Búsqueda: "${texto}"`);
+
+            if (filterDate.value) {
+                const d = new Date(filterDate.value + "T00:00:00");
+                filtros.push(`Fecha: ${d.toLocaleDateString('es-AR')}`);
+            }
+
+            if (filterType.value) {
+                const opt = filterType.options[filterType.selectedIndex];
+                filtros.push(`Tipo: ${opt.textContent}`);
+            }
+
+            if (filterProcess.value) {
+                filtros.push(`Proceso: ${filterProcess.value}`);
+            }
+
+            if (filterQuarter.value) {
+                const opt = filterQuarter.options[filterQuarter.selectedIndex];
+                filtros.push(`Trimestre: ${opt.textContent}`);
+            }
+
+            if (filterYear.value) {
+                filtros.push(`Año: ${filterYear.value}`);
+            }
+
+            return filtros;
+        }
+
+        function prepararImpresion() {
+            const printBody = $("printBody");
+            const printDate = $("printDate");
+            const printTotal = $("printTotal");
+            const printFilters = $("printFilters");
+
+            // Fecha/hora de generación
+            printDate.textContent = new Date().toLocaleString('es-AR', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+
+            // Total
+            printTotal.textContent = eventosFiltrados.length;
+
+            // Filtros aplicados
+            const filtros = getFiltrosActivosTexto();
+            if (filtros.length > 0) {
+                printFilters.innerHTML = `<strong>Filtros aplicados:</strong> ${filtros.join(' · ')}`;
+            } else {
+                printFilters.innerHTML = `<strong>Sin filtros aplicados</strong> — mostrando todos los eventos`;
+            }
+
+            // Filas
+            if (eventosFiltrados.length === 0) {
+                printBody.innerHTML = `<tr><td colspan="5" class="print-empty">No se encontraron eventos para los criterios seleccionados.</td></tr>`;
+            } else {
+                printBody.innerHTML = eventosFiltrados.map(ev => {
+                    let claseTipo = 'type-audiencia';
+                    if (ev.tipo === 'gesell') claseTipo = 'type-gesell';
+                    else if (ev.tipo === 'vencimiento') claseTipo = 'type-vencimiento';
+                    else if (ev.tipo === 'recurso') claseTipo = 'type-recurso';
+                    else if (ev.tipo === 'diligencia') claseTipo = 'type-diligencia';
+
+                    return `<tr>
+                        <td><span class="event-type-badge ${claseTipo}">${ev.tipoLabel}</span></td>
+                        <td>${ev.fechaStr}</td>
+                        <td><strong>${ev.numCausa}</strong></td>
+                        <td>${ev.caratula}</td>
+                        <td>${ev.juzgado}</td>
+                    </tr>`;
+                }).join('');
+            }
+        }
+
+        function imprimirTabla() {
+            prepararImpresion();
+            // Pequeño delay para asegurar el pintado antes de abrir el diálogo
+            setTimeout(() => {
+                window.print();
+            }, 60);
+        }
+
+        // ====================================================
+        // Alternar vista (tabla <-> calendario)
         // ====================================================
         function actualizarAlturaHeader() {
             const headerHeight = mainHeader.offsetHeight;
@@ -1719,11 +1852,21 @@
             refreshEventos();
             actualizarAlturaHeader();
 
-            btnSearch.addEventListener('click', aplicarFiltros);
-            searchInput.addEventListener('keypress', e => {
-                if (e.key === 'Enter') aplicarFiltros();
+            // Búsqueda: live search con debounce + Enter
+            let searchDebounce;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchDebounce);
+                searchDebounce = setTimeout(aplicarFiltros, 250);
             });
+            searchInput.addEventListener('keypress', e => {
+                if (e.key === 'Enter') {
+                    clearTimeout(searchDebounce);
+                    aplicarFiltros();
+                }
+            });
+
             btnRefresh.addEventListener('click', refreshEventos);
+            btnPrint.addEventListener('click', imprimirTabla);
             filterDate.addEventListener('change', aplicarFiltros);
             btnClearDate.addEventListener('click', () => {
                 filterDate.value = '';
@@ -1752,6 +1895,14 @@
             btnClearYear.addEventListener('click', () => {
                 filterYear.value = '';
                 aplicarFiltros();
+            });
+
+            // Toggle de filtros
+            btnFiltersToggle.addEventListener('click', () => {
+                const isCollapsed = filtersWrapper.classList.toggle('collapsed');
+                const isOpen = !isCollapsed;
+                btnFiltersToggle.classList.toggle('active', isOpen);
+                btnFiltersToggle.setAttribute('aria-expanded', String(isOpen));
             });
 
             btnCalendar.addEventListener('click', () => {

@@ -4,214 +4,399 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Módulos – Inasistencia y Feria Judicial</title>
+
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
     <style>
-        /* Reset y estilos base (misma línea que el ejemplo) */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+        /* =========================================================
+           Variables de diseño (réplica de modulos.html)
+           ========================================================= */
+        @property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+        @property --arc{syntax:'<angle>';initial-value:70deg;inherits:false}
+
+        :root{
+            --pad:clamp(12px,2.6vmin,32px);
+            --gap:clamp(12px,2.6vmin,32px);
+            --font:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+            --ink:#0b1f3a;
+            --mut:#64748b;
+            --bd:#e2e8f0;
+            --bg:#eef1f6;
+            --card:#ffffff;
+            --ac:#2563eb;
+            --ac2:#4f46e5;
+            --grn:#059669;
+            --ease:cubic-bezier(.16,1,.3,1);
+            --glow:color-mix(in srgb,var(--ac) 32%,transparent);
+
+            /* Alias compat con tokens originales */
+            --primary-blue:#2563eb;
+            --primary-dark-blue:#1d4ed8;
+            --text-secondary:#64748b;
+            --border-default:#e2e8f0;
+
+            color-scheme:light;
         }
 
-        body {
-            background-color: #f5f7fa;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+        @media (prefers-color-scheme:dark){
+            :root{
+                --ink:#e6eeff;
+                --mut:#93a7cb;
+                --bd:#1f3560;
+                --bg:#071225;
+                --card:#0f213f;
+                --ac:#60a5fa;
+                --ac2:#818cf8;
+                --grn:#34d399;
+                --glow:color-mix(in srgb,var(--ac) 42%,transparent);
 
-        /* Contenedor principal */
-        .container {
-            max-width: 1200px;
-            width: 100%;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-            padding: 30px;
-        }
+                --primary-blue:#60a5fa;
+                --primary-dark-blue:#818cf8;
+                --text-secondary:#93a7cb;
+                --border-default:#1f3560;
 
-        /* Contenedor de tarjetas – dos columnas fijas */
-        .cards-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
-            justify-items: center;
-        }
-
-        /* Wrapper para cada módulo (sin botones extra) */
-        .module-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 350px;
-        }
-
-        /* Tarjetas de módulos */
-        .card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e1e5eb;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(26, 86, 219, 0.12);
-            border-color: #1a56db;
-        }
-
-        .card-icon {
-            width: 70px;
-            height: 70px;
-            background-color: #e8f1ff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            color: #1a56db;
-            font-size: 1.8rem;
-        }
-
-        .card-title {
-            color: #1a56db;
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .card-description {
-            color: #6b7280;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-
-        .card-button {
-            background-color: #1a56db;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 1rem;
-            width: 100%;
-            max-width: 200px;
-        }
-
-        .card-button:hover {
-            background-color: #0d47a1;
-        }
-
-        /* Vista del módulo seleccionado (iframe) */
-        .module-view {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-        }
-
-        .module-header {
-            background-color: #f8fafc;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: flex-start;
-        }
-
-        .back-button {
-            background-color: #f3f4f6;
-            color: #4b5563;
-            border: 1px solid #d1d5db;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
-        }
-
-        .back-button:hover {
-            background-color: #e5e7eb;
-        }
-
-        .module-content {
-            flex: 1;
-            width: 100%;
-            height: calc(100% - 70px);
-        }
-
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-
-        /* Responsive */
-        @media (max-width: 900px) {
-            .cards-container {
-                grid-template-columns: 1fr;
+                color-scheme:dark;
             }
         }
 
-        @media (max-width: 768px) {
-            body {
-                padding: 15px;
-            }
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
 
-            .container {
-                padding: 20px;
-            }
+        body{
+            font-family:var(--font);
+            background-color:var(--bg);
+            color:var(--ink);
+            min-height:100vh;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            padding:var(--pad);
+            -webkit-font-smoothing:antialiased;
+            text-rendering:optimizeLegibility;
+        }
 
-            .cards-container {
-                gap: 20px;
-            }
+        /* =========================================================
+           Contenedor principal (tarjeta con arco de luz orbitando)
+           ========================================================= */
+        .container{
+            max-width:1200px;
+            width:100%;
+            background-color:var(--card);
+            border-radius:clamp(20px,3vmin,32px);
+            border:1.5px solid transparent;
+            padding:clamp(20px,4vmin,40px);
+            background:
+                linear-gradient(var(--card),var(--card)) padding-box,
+                conic-gradient(from var(--ang),transparent 0deg,transparent calc(360deg - var(--arc)),#06b6d4 calc(360deg - var(--arc)*.65),#818cf8 calc(360deg - var(--arc)*.3),#4338ca calc(360deg - 4deg),transparent 360deg) border-box;
+            box-shadow:0 1px 2px rgba(15,23,42,.04),0 24px 48px -20px rgba(15,23,42,.18);
+            animation:orbit 9s linear infinite, fadeInUp .6s var(--ease) backwards;
+            transition:--arc .5s var(--ease);
+        }
 
-            .card {
-                padding: 25px;
+        .container:hover{
+            --arc:150deg;
+        }
+
+        /* =========================================================
+           Grid de tarjetas (2 columnas fijas, igual que el original)
+           ========================================================= */
+        .cards-container{
+            display:grid;
+            grid-template-columns:repeat(2,minmax(0,1fr));
+            gap:var(--gap);
+            justify-items:center;
+        }
+
+        /* Wrapper de cada módulo */
+        .module-wrapper{
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            width:100%;
+            max-width:400px;
+        }
+
+        /* =========================================================
+           Tarjeta de módulo (con arco de luz, firma de modulos)
+           ========================================================= */
+        .card{
+            --accent:var(--ac2);
+            --a1:#06b6d4;
+            --a2:#818cf8;
+            --a3:#4338ca;
+            --tint:color-mix(in srgb,var(--accent) 10%,var(--card));
+            --lc:color-mix(in srgb,var(--accent) 14%,var(--bd));
+            --glowC:color-mix(in srgb,var(--accent) 32%,transparent);
+            --fs:clamp(1.05rem,2.8vmin,1.4rem);
+            --ic:clamp(60px,10vmin,80px);
+            position:relative;
+            width:100%;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+            gap:1rem;
+            padding:clamp(24px,4vmin,40px) clamp(20px,3vmin,30px);
+            border-radius:clamp(20px,3vmin,28px);
+            border:1.5px solid transparent;
+            cursor:pointer;
+            color:inherit;
+            text-decoration:none;
+            background:
+                linear-gradient(var(--card),var(--card)) padding-box,
+                conic-gradient(from var(--ang),transparent 0deg,transparent calc(360deg - var(--arc)),var(--a1) calc(360deg - var(--arc)*.65),var(--a2) calc(360deg - var(--arc)*.3),var(--a3) calc(360deg - 4deg),transparent 360deg) border-box,
+                linear-gradient(var(--lc),var(--lc)) border-box;
+            box-shadow:0 1px 2px rgba(15,23,42,.04),0 12px 28px -16px rgba(15,23,42,.14);
+            animation:orbit 9s linear infinite, fadeInUp .6s var(--ease) backwards;
+            animation-delay:var(--orbit-delay,0s),var(--fade-delay,0s);
+            transition:transform .35s var(--ease),box-shadow .35s var(--ease),--arc .5s var(--ease);
+        }
+
+        /* Paleta alternada: verde (par) como en modulos */
+        .module-wrapper:nth-child(2) .card{
+            --accent:var(--grn);
+            --a1:#06b6d4;
+            --a2:#10b981;
+            --a3:#065f46;
+            --tint:color-mix(in srgb,var(--accent) 10%,var(--card));
+            --lc:color-mix(in srgb,var(--accent) 14%,var(--bd));
+            --glowC:color-mix(in srgb,var(--accent) 32%,var(--transparent));
+            --glowC:color-mix(in srgb,var(--accent) 32%,transparent);
+        }
+
+        /* Stagger */
+        .module-wrapper:nth-child(1) .card{--orbit-delay:0s;--fade-delay:0s}
+        .module-wrapper:nth-child(2) .card{--orbit-delay:-4.5s;--fade-delay:.1s}
+
+        .card:hover,
+        .card:focus-visible{
+            --arc:150deg;
+            transform:translateY(-4px);
+            box-shadow:0 1px 2px rgba(15,23,42,.05),0 26px 46px -20px var(--glowC);
+        }
+
+        .card:focus-visible{
+            outline:2px solid var(--ac);
+            outline-offset:4px;
+        }
+
+        /* Icono (con hover rotación + escala, como en modulos) */
+        .card-icon{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            width:var(--ic);
+            height:var(--ic);
+            border-radius:calc(var(--ic)*.3);
+            font-size:calc(var(--ic)*.42);
+            color:var(--accent);
+            background:linear-gradient(135deg,var(--a2),var(--a3)) center/0% 0% no-repeat,var(--tint);
+            box-shadow:0 0 0 calc(var(--ic)*.07) color-mix(in srgb,var(--accent) 9%,transparent);
+            transition:background-size .4s var(--ease),color .3s,box-shadow .35s,transform .35s var(--ease);
+        }
+
+        .card:hover .card-icon,
+        .card:focus-visible .card-icon{
+            background-size:100% 100%,auto;
+            color:#fff;
+            transform:rotate(-4deg) scale(1.05);
+            box-shadow:0 0 0 calc(var(--ic)*.07 + 3px) color-mix(in srgb,var(--accent) 14%,transparent);
+        }
+
+        .card-title{
+            font-size:var(--fs);
+            font-weight:800;
+            letter-spacing:-.03em;
+            line-height:1.15;
+            color:var(--ink);
+            text-wrap:balance;
+            overflow-wrap:anywhere;
+            transition:color .3s var(--ease);
+        }
+
+        /* Botón de la tarjeta (pill tipo tag de modulos) */
+        .card-button{
+            margin-top:.25rem;
+            padding:.55em 1.4em;
+            font-family:inherit;
+            font-size:calc(var(--fs)*.7);
+            font-weight:700;
+            line-height:1.3;
+            color:var(--accent);
+            background:var(--tint);
+            border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);
+            border-radius:999px;
+            cursor:pointer;
+            transition:background-color .3s var(--ease),color .3s var(--ease),border-color .3s var(--ease),transform .25s var(--ease),box-shadow .25s var(--ease);
+        }
+
+        .card:hover .card-button,
+        .card:focus-visible .card-button{
+            background:var(--accent);
+            color:#fff;
+            border-color:var(--accent);
+            transform:translateY(-1px);
+            box-shadow:0 10px 22px -10px var(--glowC);
+        }
+
+        .card-button:focus-visible{
+            outline:2px solid var(--accent);
+            outline-offset:2px;
+        }
+
+        /* =========================================================
+           Vista del módulo (iframe) – overlay a pantalla completa
+           ========================================================= */
+        .module-view{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background-color:var(--bg);
+            z-index:1000;
+            display:none;
+            flex-direction:column;
+            animation:fadeInUp .4s var(--ease) backwards;
+        }
+
+        .module-header{
+            background:color-mix(in srgb,var(--card) 82%,transparent);
+            backdrop-filter:blur(14px);
+            -webkit-backdrop-filter:blur(14px);
+            padding:clamp(12px,2vmin,16px) clamp(14px,2.5vmin,20px);
+            border-bottom:1px solid var(--bd);
+            display:flex;
+            justify-content:flex-start;
+            box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 20px -12px rgba(15,23,42,.12);
+        }
+
+        .back-button{
+            display:inline-flex;
+            align-items:center;
+            gap:.5rem;
+            background-color:transparent;
+            color:var(--ac);
+            border:1.5px solid color-mix(in srgb,var(--ac) 30%,var(--bd));
+            padding:.55rem 1.1rem;
+            border-radius:12px;
+            font-family:inherit;
+            font-weight:700;
+            font-size:.9rem;
+            letter-spacing:-.01em;
+            cursor:pointer;
+            transition:transform .25s var(--ease),background-color .25s var(--ease),color .25s var(--ease),border-color .25s var(--ease),box-shadow .25s var(--ease);
+        }
+
+        .back-button:hover{
+            background-color:var(--ac);
+            color:#fff;
+            border-color:var(--ac);
+            transform:translateY(-1px);
+            box-shadow:0 10px 22px -10px var(--glow);
+        }
+
+        .back-button:focus-visible{
+            outline:2px solid var(--ac);
+            outline-offset:2px;
+        }
+
+        .module-content{
+            flex:1;
+            width:100%;
+            height:calc(100% - 70px);
+            background:var(--card);
+        }
+
+        iframe{
+            width:100%;
+            height:100%;
+            border:none;
+            display:block;
+            background:var(--card);
+        }
+
+        /* =========================================================
+           Animaciones
+           ========================================================= */
+        @keyframes orbit{to{--ang:360deg}}
+
+        @keyframes fadeInUp{
+            from{opacity:0;transform:translateY(20px) scale(.98)}
+            to{opacity:1;transform:none}
+        }
+
+        @media (prefers-reduced-motion:reduce){
+            .container,
+            .card,
+            .module-view{
+                animation:none !important;
+            }
+            .container{
+                background:var(--card);
+                border:1.5px solid var(--ac);
+            }
+            .card{
+                background:
+                    linear-gradient(var(--card),var(--card)) padding-box,
+                    linear-gradient(135deg,var(--a1),var(--a3)) border-box;
+            }
+            .card:hover .card-icon,
+            .card:focus-visible .card-icon{
+                transform:none;
             }
         }
 
-        @media (max-width: 480px) {
-            .card {
-                padding: 20px;
+        /* =========================================================
+           Responsive (mantiene comportamiento original)
+           ========================================================= */
+        @media (max-width:900px){
+            .cards-container{
+                grid-template-columns:minmax(0,1fr);
             }
-
-            .card-icon {
-                width: 60px;
-                height: 60px;
-                font-size: 1.5rem;
+            .module-wrapper{
+                max-width:100%;
             }
+        }
 
-            .back-button {
-                padding: 8px 16px;
-                font-size: 0.9rem;
+        @media (max-width:768px){
+            body{
+                padding:calc(var(--pad)*.75);
+            }
+            .container{
+                padding:clamp(16px,3vmin,24px);
+            }
+            .cards-container{
+                gap:var(--gap);
+            }
+            .card{
+                padding:clamp(20px,3.5vmin,28px) clamp(16px,2.5vmin,22px);
+            }
+        }
+
+        @media (max-width:480px){
+            .card{
+                padding:18px;
+            }
+            .card-icon{
+                --ic:56px;
+            }
+            .back-button{
+                padding:.45rem .9rem;
+                font-size:.82rem;
             }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
 

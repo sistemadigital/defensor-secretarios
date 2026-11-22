@@ -12,295 +12,450 @@
     <!-- Font Awesome -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
 
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 
     <style>
-        :root {
-            --primary: #2563eb;        /* Azul moderno (Fecha actual) */
-            --future: #0369a1;         /* Celeste oscuro (Fechas futuras) */
-            --past: #9ca3af;           /* Gris (Fechas pasadas) */
-            --bg-body: #f9fafb;
-            --border-color: #e5e7eb;
-            --text-main: #1f2937;
-            --white: #ffffff;
-            --font-sans: 'Inter', sans-serif;
+        /* =========================================================
+           Variables de diseño (réplica de modulos.html)
+           ========================================================= */
+        @property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+        @property --arc{syntax:'<angle>';initial-value:70deg;inherits:false}
+
+        :root{
+            --pad:clamp(12px,2.6vmin,32px);
+            --gap:clamp(12px,2.6vmin,32px);
+            --font:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+            --ink:#0b1f3a;
+            --mut:#64748b;
+            --bd:#e2e8f0;
+            --bg:#eef1f6;
+            --card:#ffffff;
+            --ac:#2563eb;
+            --ac2:#4f46e5;
+            --ease:cubic-bezier(.16,1,.3,1);
+            --past:#94a3b8;
+            --future:#0369a1;
+            --glow:color-mix(in srgb,var(--ac) 32%,transparent);
+            color-scheme:light;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        @media (prefers-color-scheme:dark){
+            :root{
+                --ink:#e6eeff;
+                --mut:#93a7cb;
+                --bd:#1f3560;
+                --bg:#071225;
+                --card:#0f213f;
+                --ac:#60a5fa;
+                --ac2:#818cf8;
+                --past:#64748b;
+                --future:#7dd3fc;
+                --glow:color-mix(in srgb,var(--ac) 42%,transparent);
+                color-scheme:dark;
+            }
         }
 
-        body {
-            font-family: var(--font-sans);
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
         }
 
-        /* ===== HEADER CALENDARIO ===== */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            background-color: var(--white);
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            z-index: 10;
+        body{
+            font-family:var(--font);
+            background-color:var(--bg);
+            color:var(--ink);
+            height:100vh;
+            display:flex;
+            flex-direction:column;
+            overflow:hidden;
+            padding:var(--pad);
+            gap:var(--gap);
+            -webkit-font-smoothing:antialiased;
+            text-rendering:optimizeLegibility;
         }
 
-        .controls {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
+        /* =========================================================
+           HEADER CALENDARIO  (tarjeta estilo modulos)
+           ========================================================= */
+        header{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:1rem;
+            padding:clamp(.6rem,1.8vmin,1rem) clamp(1rem,2.5vmin,1.5rem);
+            background-color:var(--card);
+            border:1.5px solid var(--bd);
+            border-radius:clamp(16px,2.5vmin,24px);
+            box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 20px -12px rgba(15,23,42,.12);
+            animation:fadeInUp .6s var(--ease) backwards;
+            z-index:10;
         }
 
-        .controls button {
-            background-color: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-family: inherit;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .controls{
+            display:flex;
+            gap:.6rem;
+            align-items:center;
         }
 
-        .controls button:hover {
-            background-color: var(--primary);
-            color: var(--white);
+        .controls button{
+            background-color:var(--card);
+            border:1.5px solid color-mix(in srgb,var(--ac) 30%,var(--bd));
+            color:var(--ac);
+            padding:.55rem 1.05rem;
+            border-radius:12px;
+            font-family:inherit;
+            font-weight:700;
+            font-size:.9rem;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            gap:.5rem;
+            transition:background-color .25s var(--ease),color .25s var(--ease),border-color .25s var(--ease),transform .25s var(--ease),box-shadow .25s var(--ease);
+            box-shadow:0 1px 2px rgba(15,23,42,.04);
         }
 
-        .month-display {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-transform: capitalize;
+        .controls button:hover{
+            background-color:var(--ac);
+            color:#fff;
+            border-color:var(--ac);
+            transform:translateY(-1px);
+            box-shadow:0 10px 22px -10px var(--glow);
         }
 
-        /* ===== CUADRICULA DEL CALENDARIO ===== */
-        .calendar-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--white);
-            padding: 1rem;
+        .controls button:focus-visible{
+            outline:2px solid var(--ac);
+            outline-offset:2px;
         }
 
-        .weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            font-weight: 700;
-            color: var(--primary);
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--primary);
-            margin-bottom: 0.5rem;
+        .month-display{
+            font-size:clamp(1.35rem,3.4vmin,1.8rem);
+            font-weight:800;
+            letter-spacing:-.03em;
+            color:var(--ac);
+            text-transform:capitalize;
+            text-wrap:balance;
         }
 
-        .days-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            grid-auto-rows: 1fr; /* Para que todas las semanas midan lo mismo */
-            flex: 1;
-            gap: 4px;
+        /* =========================================================
+           CUADRICULA DEL CALENDARIO (tarjeta estilo modulos)
+           ========================================================= */
+        .calendar-container{
+            flex:1;
+            min-height:0;
+            display:flex;
+            flex-direction:column;
+            background-color:var(--card);
+            padding:clamp(.75rem,2vmin,1.25rem);
+            border:1.5px solid var(--bd);
+            border-radius:clamp(20px,3vmin,32px);
+            box-shadow:0 1px 2px rgba(15,23,42,.04),0 12px 28px -16px rgba(15,23,42,.14);
+            animation:fadeInUp .6s var(--ease) .08s backwards;
         }
 
-        .day-cell {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 0.5rem;
-            display: flex;
-            flex-direction: column;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-            background-color: var(--white);
-            position: relative;
+        .weekdays{
+            display:grid;
+            grid-template-columns:repeat(7,1fr);
+            text-align:center;
+            font-weight:700;
+            font-size:.85rem;
+            letter-spacing:-.01em;
+            color:var(--ac);
+            padding-bottom:.6rem;
+            border-bottom:2px solid color-mix(in srgb,var(--ac) 30%,var(--bd));
+            margin-bottom:.6rem;
         }
 
-        .day-cell:hover:not(.empty) {
-            background-color: #eff6ff;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        .days-grid{
+            display:grid;
+            grid-template-columns:repeat(7,1fr);
+            grid-auto-rows:1fr;
+            flex:1;
+            gap:6px;
+            min-height:0;
         }
 
-        .day-cell.empty {
-            background-color: transparent;
-            border: none;
-            cursor: default;
+        .day-cell{
+            border:1px solid var(--bd);
+            border-radius:14px;
+            padding:.55rem;
+            display:flex;
+            flex-direction:column;
+            cursor:pointer;
+            background-color:var(--card);
+            position:relative;
+            min-height:0;
+            transition:transform .3s var(--ease),box-shadow .3s var(--ease),background-color .25s var(--ease),border-color .25s var(--ease);
         }
 
-        .day-number {
-            font-size: 1.25rem;
-            text-align: right;
-            margin-bottom: 0.5rem;
+        .day-cell:hover:not(.empty){
+            background-color:color-mix(in srgb,var(--ac) 6%,var(--card));
+            border-color:color-mix(in srgb,var(--ac) 40%,var(--bd));
+            transform:translateY(-3px);
+            box-shadow:0 14px 26px -14px var(--glow);
         }
 
-        /* Estilos requeridos para las fechas */
-        .past .day-number {
-            color: var(--past);
-            font-weight: bold;
+        .day-cell.empty{
+            background-color:transparent;
+            border:none;
+            cursor:default;
         }
 
-        .today {
-            background-color: #f0fdf4;
-            border-color: var(--primary);
+        .day-number{
+            font-size:1.15rem;
+            font-weight:700;
+            text-align:right;
+            margin-bottom:.35rem;
+            letter-spacing:-.02em;
         }
 
-        .today .day-number {
-            color: var(--primary);
-            font-weight: bold;
-            font-size: 1.5rem;
+        /* Estados de fecha */
+        .day-cell.past .day-number{
+            color:var(--past);
+            font-weight:700;
         }
 
-        .future .day-number {
-            color: var(--future);
-            font-weight: bold;
+        .day-cell.future .day-number{
+            color:var(--future);
+            font-weight:700;
         }
 
-        /* Indicador de que hay eventos ese día */
-        .event-indicator {
-            background-color: var(--primary);
-            color: white;
-            font-size: 0.75rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-top: auto;
-            text-align: center;
-            font-weight: 600;
+        /* HOY: borde con arco de luz orbitando (firma de modulos) */
+        .day-cell.today{
+            border:1.5px solid transparent;
+            background:
+                linear-gradient(var(--card),var(--card)) padding-box,
+                conic-gradient(from var(--ang),transparent 0deg,transparent calc(360deg - var(--arc)),#06b6d4 calc(360deg - var(--arc)*.65),#818cf8 calc(360deg - var(--arc)*.3),#4338ca calc(360deg - 4deg),transparent 360deg) border-box;
+            animation:orbit 9s linear infinite;
+            transition:transform .3s var(--ease),box-shadow .3s var(--ease),--arc .5s var(--ease);
         }
 
-        /* ===== MODAL ===== */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
+        .day-cell.today:hover{
+            --arc:150deg;
+            transform:translateY(-3px);
+            box-shadow:0 14px 26px -14px var(--glow);
         }
 
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
+        .day-cell.today .day-number{
+            color:var(--ac);
+            font-weight:800;
+            font-size:1.4rem;
         }
 
-        .modal-content {
-            background-color: var(--white);
-            border-radius: 12px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-            transform: scale(0.95);
-            transition: transform 0.3s;
+        /* Indicador de eventos: píldora tipo "tag" de modulos */
+        .event-indicator{
+            background:color-mix(in srgb,var(--ac) 12%,transparent);
+            color:var(--ac);
+            font-size:.7rem;
+            font-weight:700;
+            padding:2px 8px;
+            border-radius:999px;
+            border:1px solid color-mix(in srgb,var(--ac) 28%,transparent);
+            margin-top:auto;
+            align-self:center;
+            text-align:center;
+            white-space:nowrap;
+            transition:background-color .2s var(--ease),color .2s var(--ease);
         }
 
-        .modal-overlay.active .modal-content {
-            transform: scale(1);
+        /* =========================================================
+           MODAL (tarjeta con arco de luz)
+           ========================================================= */
+        .modal-overlay{
+            position:fixed;
+            inset:0;
+            background-color:rgba(7,18,37,.55);
+            backdrop-filter:blur(4px);
+            -webkit-backdrop-filter:blur(4px);
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            z-index:1000;
+            opacity:0;
+            pointer-events:none;
+            transition:opacity .3s var(--ease);
         }
 
-        .modal-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .modal-overlay.active{
+            opacity:1;
+            pointer-events:auto;
         }
 
-        .modal-title {
-            color: var(--primary);
-            font-size: 1.5rem;
-            font-weight: 700;
+        .modal-content{
+            width:90%;
+            max-width:600px;
+            max-height:80vh;
+            display:flex;
+            flex-direction:column;
+            border-radius:clamp(20px,3vmin,32px);
+            border:1.5px solid transparent;
+            background:
+                linear-gradient(var(--card),var(--card)) padding-box,
+                conic-gradient(from var(--ang),transparent 0deg,transparent calc(360deg - var(--arc)),#06b6d4 calc(360deg - var(--arc)*.65),#818cf8 calc(360deg - var(--arc)*.3),#4338ca calc(360deg - 4deg),transparent 360deg) border-box;
+            box-shadow:0 24px 48px -16px rgba(15,23,42,.3),0 0 0 1px color-mix(in srgb,var(--ac) 8%,transparent);
+            transform:scale(.96);
+            transition:transform .35s var(--ease);
+            animation:orbit 9s linear infinite;
+            animation-play-state:paused;
         }
 
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--past);
-            cursor: pointer;
-            transition: color 0.2s;
+        .modal-overlay.active .modal-content{
+            transform:scale(1);
+            animation-play-state:running;
         }
 
-        .close-btn:hover {
-            color: var(--text-main);
+        .modal-header{
+            padding:1.25rem 1.5rem;
+            border-bottom:1px solid var(--bd);
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:1rem;
         }
 
-        .modal-body {
-            padding: 1.5rem;
-            overflow-y: auto;
-            flex: 1;
+        .modal-title{
+            color:var(--ac);
+            font-size:1.25rem;
+            font-weight:800;
+            letter-spacing:-.02em;
+            line-height:1.25;
         }
 
-        .event-item {
-            background-color: #f8fafc;
-            border-left: 4px solid var(--primary);
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border-radius: 0 8px 8px 0;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        .close-btn{
+            background:none;
+            border:none;
+            width:36px;
+            height:36px;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            border-radius:10px;
+            font-size:1.15rem;
+            color:var(--mut);
+            cursor:pointer;
+            transition:background-color .2s var(--ease),color .2s var(--ease),transform .2s var(--ease);
         }
 
-        .event-item:last-child {
-            margin-bottom: 0;
+        .close-btn:hover{
+            background:color-mix(in srgb,var(--ac) 10%,transparent);
+            color:var(--ac);
+            transform:rotate(90deg);
         }
 
-        .event-type {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--primary);
-            margin-bottom: 0.25rem;
+        .modal-body{
+            padding:1.25rem 1.5rem;
+            overflow-y:auto;
+            flex:1;
         }
 
-        .event-expediente {
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 0.25rem;
+        /* Items de evento dentro del modal */
+        .event-item{
+            background:color-mix(in srgb,var(--ac) 5%,var(--card));
+            border-left:4px solid var(--ac);
+            padding:1rem 1rem 1rem 1.1rem;
+            margin-bottom:.9rem;
+            border-radius:0 14px 14px 0;
+            transition:transform .25s var(--ease),box-shadow .25s var(--ease),background-color .25s var(--ease);
         }
 
-        .event-details {
-            font-size: 0.875rem;
-            color: #4b5563;
+        .event-item:last-child{
+            margin-bottom:0;
         }
 
-        .no-events {
-            text-align: center;
-            color: var(--past);
-            font-style: italic;
-            padding: 2rem 0;
+        .event-item:hover{
+            transform:translateX(3px);
+            background:color-mix(in srgb,var(--ac) 9%,var(--card));
+            box-shadow:-6px 0 20px -10px var(--glow);
         }
 
-        /* Cargando overlay */
-        .loading-screen {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(255,255,255,0.9);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            color: var(--primary);
-            font-weight: 600;
-            font-size: 1.25rem;
+        .event-type{
+            display:inline-block;
+            font-size:.7rem;
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:.04em;
+            color:var(--ac);
+            background:color-mix(in srgb,var(--ac) 12%,transparent);
+            border:1px solid color-mix(in srgb,var(--ac) 28%,transparent);
+            padding:2px 9px;
+            border-radius:999px;
+            margin-bottom:.5rem;
+        }
+
+        .event-expediente{
+            font-weight:800;
+            font-size:1.05rem;
+            letter-spacing:-.01em;
+            margin-bottom:.3rem;
+        }
+
+        .event-details{
+            font-size:.875rem;
+            color:var(--mut);
+            line-height:1.5;
+        }
+
+        .no-events{
+            text-align:center;
+            color:var(--mut);
+            font-style:italic;
+            padding:2rem 0;
+        }
+
+        /* =========================================================
+           Pantalla de carga
+           ========================================================= */
+        .loading-screen{
+            position:fixed;
+            inset:0;
+            background-color:color-mix(in srgb,var(--bg) 92%,transparent);
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            align-items:center;
+            z-index:2000;
+            color:var(--ac);
+            font-weight:700;
+            font-size:1.1rem;
+            gap:.75rem;
+        }
+
+        /* =========================================================
+           Animaciones (réplica de modulos)
+           ========================================================= */
+        @keyframes orbit{
+            to{--ang:360deg}
+        }
+
+        @keyframes fadeInUp{
+            from{
+                opacity:0;
+                transform:translateY(20px) scale(.98);
+            }
+            to{
+                opacity:1;
+                transform:none;
+            }
+        }
+
+        @media (prefers-reduced-motion:reduce){
+            header,
+            .calendar-container,
+            .day-cell.today,
+            .modal-content{
+                animation:none !important;
+            }
+            .day-cell.today{
+                border:1.5px solid var(--ac);
+                background:var(--card);
+            }
+            .modal-content{
+                border:1.5px solid var(--ac);
+                background:var(--card);
+            }
         }
     </style>
 </head>
@@ -308,7 +463,7 @@
 
     <!-- Pantalla de carga inicial -->
     <div id="loadingScreen" class="loading-screen">
-        <i class="fas fa-circle-notch fa-spin fa-3x" style="margin-bottom: 1rem;"></i>
+        <i class="fas fa-circle-notch fa-spin fa-3x"></i>
         <p>Cargando eventos desde la base de datos...</p>
     </div>
 
@@ -343,7 +498,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title" id="modalDateTitle">Eventos del Día</h3>
-                <button class="close-btn" id="closeModalBtn"><i class="fas fa-times"></i></button>
+                <button class="close-btn" id="closeModalBtn" aria-label="Cerrar"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body" id="modalBody">
                 <!-- Los eventos del día se inyectan aquí -->
@@ -393,7 +548,7 @@
         // ====================================================
         let eventosPlanos = [];
         let currentDate = new Date(); // Fecha actual real
-        let navDate = new Date();     // Fecha que controla el mes visible (se traslada en el tiempo)
+        let navDate = new Date();     // Fecha que controla el mes visible
 
         const monthDisplay = document.getElementById('monthDisplay');
         const calendarGrid = document.getElementById('calendarGrid');
@@ -403,7 +558,7 @@
         const modalDateTitle = document.getElementById('modalDateTitle');
 
         // ====================================================
-        // 3. Funciones de Extracción y Formateo (Idénticas a tu origen)
+        // 3. Funciones de Extracción y Formateo
         // ====================================================
         function toDate(val) {
             if (!val) return null;
@@ -432,8 +587,7 @@
                 const eventos = [];
                 const procesarCausa = (causa) => {
                     const juzgado = causa.juzgado || '';
-                    
-                    // Helper para pushear eventos
+
                     const agregar = (fechaRaw, tipoId, tipoLabel) => {
                         const fechaObj = toDate(fechaRaw);
                         if (fechaObj) {
@@ -470,40 +624,32 @@
         // ====================================================
         function renderizarCalendario() {
             calendarGrid.innerHTML = '';
-            
+
             const year = navDate.getFullYear();
             const month = navDate.getMonth();
-            
-            // Textos superior derecho
+
             const options = { month: 'long', year: 'numeric' };
             monthDisplay.textContent = navDate.toLocaleDateString('es-ES', options);
 
-            // Obtener primer día del mes (0=Domingo ... 6=Sábado)
             const firstDayOfMonth = new Date(year, month, 1).getDay();
-            
-            // Cantidad de días en el mes actual
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            // Fechas de control (a media noche para evitar problemas de horas)
             const todayReset = new Date();
-            todayReset.setHours(0,0,0,0);
+            todayReset.setHours(0, 0, 0, 0);
 
-            // Celdas vacías previas (padding)
             for (let i = 0; i < firstDayOfMonth; i++) {
                 const emptyCell = document.createElement('div');
                 emptyCell.className = 'day-cell empty';
                 calendarGrid.appendChild(emptyCell);
             }
 
-            // Días del mes
             for (let i = 1; i <= daysInMonth; i++) {
                 const cellDate = new Date(year, month, i);
-                cellDate.setHours(0,0,0,0);
-                
+                cellDate.setHours(0, 0, 0, 0);
+
                 const cell = document.createElement('div');
                 cell.className = 'day-cell';
-                
-                // Aplicar estilos requeridos (Negrita y Colores específicos según el prompt)
+
                 if (cellDate.getTime() === todayReset.getTime()) {
                     cell.classList.add('today');
                 } else if (cellDate < todayReset) {
@@ -512,20 +658,17 @@
                     cell.classList.add('future');
                 }
 
-                // Número del día
                 const numberDiv = document.createElement('div');
                 numberDiv.className = 'day-number';
                 numberDiv.textContent = i;
                 cell.appendChild(numberDiv);
 
-                // Buscar eventos para este día
                 const eventosDelDia = eventosPlanos.filter(ev => {
                     const evDate = new Date(ev.fecha);
-                    evDate.setHours(0,0,0,0);
+                    evDate.setHours(0, 0, 0, 0);
                     return evDate.getTime() === cellDate.getTime();
                 });
 
-                // Si hay eventos, mostrar indicador
                 if (eventosDelDia.length > 0) {
                     const indicator = document.createElement('div');
                     indicator.className = 'event-indicator';
@@ -533,9 +676,7 @@
                     cell.appendChild(indicator);
                 }
 
-                // Evento click para abrir modal
                 cell.addEventListener('click', () => abrirModal(cellDate, eventosDelDia));
-
                 calendarGrid.appendChild(cell);
             }
         }
@@ -544,8 +685,8 @@
         // 6. Lógica del Modal
         // ====================================================
         function abrirModal(fechaObj, eventosDelDia) {
-            modalDateTitle.textContent = fechaObj.toLocaleDateString('es-ES', { 
-                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+            modalDateTitle.textContent = fechaObj.toLocaleDateString('es-ES', {
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
             }).toUpperCase();
 
             modalBody.innerHTML = '';
@@ -553,13 +694,12 @@
             if (eventosDelDia.length === 0) {
                 modalBody.innerHTML = '<div class="no-events">No hay eventos registrados para esta fecha.</div>';
             } else {
-                // Ordenar por hora
                 eventosDelDia.sort((a, b) => a.fecha - b.fecha);
-                
+
                 eventosDelDia.forEach(ev => {
                     const hora = formatearHora(ev.fecha);
                     const horaTxt = hora ? `<i class="fas fa-clock"></i> ${hora}` : '';
-                    
+
                     modalBody.innerHTML += `
                         <div class="event-item">
                             <div class="event-type">${ev.tipoLabel}</div>
@@ -580,7 +720,6 @@
             eventModal.classList.remove('active');
         });
 
-        // Cerrar modal al clickear afuera
         eventModal.addEventListener('click', (e) => {
             if (e.target === eventModal) eventModal.classList.remove('active');
         });
@@ -599,7 +738,7 @@
         });
 
         document.getElementById('btnToday').addEventListener('click', () => {
-            navDate = new Date(); // Resetear a hoy
+            navDate = new Date();
             renderizarCalendario();
         });
 
@@ -607,13 +746,8 @@
         // 8. Inicialización
         // ====================================================
         document.addEventListener('DOMContentLoaded', async () => {
-            // Cargar datos de ambas bases de datos
             eventosPlanos = await cargarEventos();
-            
-            // Ocultar pantalla de carga
             loadingScreen.style.display = 'none';
-            
-            // Dibujar el calendario inicial
             renderizarCalendario();
         });
 
