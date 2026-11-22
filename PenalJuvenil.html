@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Expedientes-Régimen Penal Juvenil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style id="pgs"></style>
+<style>
+@property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+@property --arc{syntax:'<angle>';initial-value:70deg;inherits:false}
+:root{--font:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--ink:#0b1f3a;--mut:#64748b;--bd:#e2e8f0;--bg:#eef1f6;--stage:#f5f7fb;--card:#fff;--ac:#2563eb;--ac2:#4f46e5;--rb:#fee2e2;--rf:#991b1b;--yb:#fdf0e3;--yf:#8a4108;--ib:#e9eef9;--if:#1e3a8a;--sh:0 1px 2px rgba(15,23,42,.04),0 20px 40px -24px rgba(15,23,42,.14);--ease:cubic-bezier(.16,1,.3,1);--c-ind:#4f46e5;--c-red:#dc2626;--c-blu:#1e3a8a;--c-grn:#065f46;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#e6eeff;--mut:#93a7cb;--bd:#1f3560;--bg:#071225;--stage:#0b1a33;--card:#0f213f;--ac:#60a5fa;--ac2:#818cf8;--rb:#3b1a22;--rf:#fecaca;--yb:#3a2f12;--yf:#fde68a;--ib:#15335f;--if:#bfdbfe;--sh:0 20px 40px -24px rgba(0,0,0,.6);--c-ind:#818cf8;--c-red:#f87171;--c-blu:#60a5fa;--c-grn:#34d399;color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#e6eeff;--mut:#93a7cb;--bd:#1f3560;--bg:#071225;--stage:#0b1a33;--card:#0f213f;--ac:#60a5fa;--ac2:#818cf8;--rb:#3b1a22;--rf:#fecaca;--yb:#3a2f12;--yf:#fde68a;--ib:#15335f;--if:#bfdbfe;--sh:0 20px 40px -24px rgba(0,0,0,.6);--c-ind:#818cf8;--c-red:#f87171;--c-blu:#60a5fa;--c-grn:#34d399;color-scheme:dark}
+html{height:100dvh;overflow:hidden;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font:15px/1.5 var(--font);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.wrap{display:flex;flex-direction:column;height:100%;width:100%;max-width:none;margin:0;padding:clamp(10px,1.8vmin,24px) clamp(12px,2vw,32px);overflow:hidden}
+.wrap>*{flex-shrink:0}.wrap>.tcard{flex:1 1 auto;min-height:0}
+.app-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem;padding-bottom:.7rem;margin-bottom:.8rem;border-bottom:1px solid var(--bd)}
+.hl{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+h1{display:flex;align-items:center;gap:.7rem;margin:0 .6rem 0 0;font-size:1.55rem;font-weight:800;letter-spacing:-.03em;line-height:1.2}
+h1 i{display:inline-flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:.7rem;font-size:1.15rem;color:#fff;background:linear-gradient(135deg,var(--ac),var(--ac2));box-shadow:0 6px 14px -6px rgba(37,99,235,.55)}
+.ht{text-align:right;font-weight:700;font-size:1.02rem;line-height:1.3;letter-spacing:-.015em}.ht span{display:block;font-weight:500;font-size:.85rem;color:var(--mut);letter-spacing:0}
+h3{margin:0;font-size:1.1rem;font-weight:800;letter-spacing:-.03em}
+h4{margin:20px 0 8px;font-size:.95rem;font-weight:800;letter-spacing:-.02em}
+h4::before{content:"";display:inline-block;width:4px;height:.9em;border-radius:3px;background:linear-gradient(var(--ac),var(--ac2));margin-right:.5rem;vertical-align:-.1em}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:24px;padding:14px;margin-bottom:1.1rem;box-shadow:var(--sh)}
+.card.flt{margin-bottom:.8rem}
+.note{display:flex;gap:.6rem;align-items:center;background:var(--ib);color:var(--if);border-radius:16px;padding:10px 16px;font-size:.84rem;font-weight:500;margin-bottom:.8rem}.note i{font-size:1.1rem}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+/* botones: pastilla blanca que se rellena con --c al pasar el puntero; el primario va relleno */
+.btn{--c:var(--ac);display:inline-flex;align-items:center;justify-content:center;gap:.45rem;min-height:44px;padding:6px 18px;border-radius:999px;font:600 .86rem/1 var(--font);letter-spacing:-.005em;color:#fff;background:linear-gradient(135deg,var(--ac),var(--ac2));border:1px solid transparent;cursor:pointer;white-space:nowrap;box-shadow:0 8px 18px -10px var(--ac);transition:background-color .2s,border-color .2s,color .2s,box-shadow .2s,transform .2s}
+.btn:hover{box-shadow:0 12px 22px -10px var(--ac);transform:translateY(-1px)}.btn i{font-size:1.1rem}
+.btn.s,.btn.d{color:var(--ink);background:var(--card);border-color:var(--bd);box-shadow:none;transform:none}.btn.s i{color:var(--c);transition:color .2s}
+.btn.s:hover,.btn.d:hover{background:var(--c);border-color:var(--c);color:#fff;box-shadow:0 8px 18px -10px var(--c)}.btn.s:hover i{color:#fff}
+.btn.d{--c:#dc2626;color:var(--rf);background:var(--rb);border-color:transparent}.btn.rsp{--c:#dc2626}
+.btn.sm{min-height:36px;padding:4px 14px;font-size:.8rem}
+.btn:focus-visible,.pb:focus-visible,.tabs button:focus-visible{outline:2px solid var(--ac);outline-offset:3px}
+/* tarjetas de resumen: borde fino con un arco de luz que orbita */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:clamp(.6rem,1.4vmin,1.1rem);margin-bottom:.8rem}
+.stat{--accent:var(--c-ind);--a1:#06b6d4;--a2:#818cf8;--a3:#4338ca;--tint:color-mix(in srgb,var(--accent) 10%,var(--card));--lc:color-mix(in srgb,var(--accent) 14%,var(--bd));--glow:color-mix(in srgb,var(--accent) 32%,transparent);--ring:6px;--ang:0deg;--arc:70deg;display:flex;align-items:center;gap:1rem;padding:1.15rem 1.3rem;border-radius:24px;border:1.5px solid transparent;background:linear-gradient(var(--card),var(--card)) padding-box,conic-gradient(from var(--ang),transparent 0deg,transparent calc(360deg - var(--arc)),var(--a1) calc(360deg - var(--arc)*.65),var(--a2) calc(360deg - var(--arc)*.3),var(--a3) calc(360deg - 4deg),transparent 360deg) border-box,linear-gradient(var(--lc),var(--lc)) border-box;box-shadow:0 1px 2px rgba(15,23,42,.04),0 12px 28px -16px rgba(15,23,42,.14);animation:orbit 9s linear infinite;transition:transform .35s var(--ease),box-shadow .35s,--arc .5s}
+@keyframes orbit{to{--ang:360deg}}
+.stat:nth-child(2){animation-delay:-2.25s}.stat:nth-child(3){animation-delay:-4.5s}.stat:nth-child(4){animation-delay:-6.75s}
+.s2{--accent:var(--c-red);--a1:#f87171;--a2:#ef4444;--a3:#991b1b}.s3{--accent:var(--c-blu);--a1:#3b82f6;--a2:#2563eb;--a3:#1e3a8a}.s4{--accent:var(--c-grn);--a1:#06b6d4;--a2:#10b981;--a3:#065f46}
+.stat:hover{--arc:150deg;transform:translateY(-4px);box-shadow:0 1px 2px rgba(15,23,42,.05),0 26px 46px -20px var(--glow)}
+.stat i{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:18px;font-size:1.65rem;color:var(--accent);background:linear-gradient(135deg,var(--a2),var(--a3)) center/0% 0% no-repeat,var(--tint);box-shadow:0 0 0 var(--ring) color-mix(in srgb,var(--accent) 9%,transparent);flex-shrink:0;transition:background-size .4s var(--ease),color .3s,box-shadow .35s,transform .35s var(--ease)}
+.stat:hover i{background-size:100% 100%,auto;color:#fff;transform:rotate(-4deg) scale(1.05);box-shadow:0 0 0 calc(var(--ring) + 3px) color-mix(in srgb,var(--accent) 14%,transparent)}
+.stat b{display:block;font-size:2rem;font-weight:800;line-height:1;letter-spacing:-.04em}.stat span{display:block;margin-top:.35rem;font-size:.82rem;font-weight:600;color:var(--mut)}
+input,select,textarea{width:100%;padding:11px 14px;border:1px solid var(--bd);border-radius:14px;background:var(--stage);color:var(--ink);font:inherit;transition:border-color .2s,box-shadow .2s,background-color .2s}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--ac);background:var(--card);box-shadow:0 0 0 4px color-mix(in srgb,var(--ac) 14%,transparent)}textarea{resize:vertical}
+.flt{display:grid;grid-template-columns:2fr 1fr auto;gap:10px;align-items:center}
+.sr{position:relative;display:block}.sr i{position:absolute;left:14px;top:50%;translate:0 -50%;color:var(--mut);pointer-events:none}.sr input{padding-left:40px}
+.tcard{display:flex;flex-direction:column;padding:0;overflow:hidden;margin-bottom:0}.tw{flex:1 1 auto;min-height:0;overflow:auto}.tcard .pg{flex-shrink:0;border-top:1px solid var(--bd)}table{width:100%;border-collapse:collapse}
+th{position:sticky;top:0;z-index:1;text-align:left;font-size:.76rem;font-weight:700;color:var(--mut);padding:14px 12px;border-bottom:1px solid var(--bd);white-space:nowrap;background:var(--stage)}
+td{padding:13px 12px;border-bottom:1px solid var(--bd);vertical-align:top}th:first-child,td:first-child{padding-left:18px}
+tr.r{cursor:pointer}tr.r td{transition:background-color .2s}tr.r:hover td{background:var(--stage)}
+.num{font-weight:800;color:var(--ac);width:52px;letter-spacing:-.02em}.mut{color:var(--mut);font-size:.84rem}
+.tag{display:inline-block;padding:.18rem .65rem;border-radius:999px;font-size:.76rem;font-weight:700;background:var(--ib);color:var(--if);margin:1px}.tag.r,.al.r{background:var(--rb);color:var(--rf)}.tag.y,.al.y{background:var(--yb);color:var(--yf)}
+.pg{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:12px 16px}
+.pb{min-width:36px;height:36px;border:1px solid var(--bd);background:var(--card);color:var(--ink);border-radius:999px;cursor:pointer;font:600 .8rem var(--font);transition:background-color .2s,color .2s,border-color .2s,box-shadow .2s}
+.pb:hover:not(:disabled){background:var(--ac);border-color:var(--ac);color:#fff;box-shadow:0 8px 18px -10px var(--ac)}
+.pb.on{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent}.pb:disabled{opacity:.4;cursor:default}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.wide{grid-column:1/-1}
+label>span{display:block;font-size:.78rem;font-weight:600;color:var(--mut);margin-bottom:5px}
+.ck{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border:1px solid var(--bd);border-radius:14px;cursor:pointer;transition:background-color .2s,border-color .2s}.ck:hover{background:var(--stage)}.ck:has(:checked){background:var(--ib);border-color:color-mix(in srgb,var(--ac) 35%,var(--bd))}.ck input{width:auto;margin-top:3px;flex-shrink:0;accent-color:var(--ac)}
+.grp{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:8px;margin-top:8px}
+.al{padding:10px 14px;border-radius:14px;margin-bottom:8px;font-size:.85rem;font-weight:500;background:var(--ib);color:var(--if);box-shadow:inset 3px 0 0 currentColor}
+.big{font-size:2rem;font-weight:800;margin:0 0 10px;letter-spacing:-.04em}
+.act{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd)}
+/* capas: fondo desenfocado + aparición suave */
+.bd{position:fixed;inset:0;background:rgba(11,31,58,.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .25s;z-index:20}.bd.on{opacity:1;pointer-events:auto}
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(580px,100%);background:var(--card);z-index:30;transform:translateX(102%);transition:transform .4s var(--ease);display:flex;flex-direction:column;box-shadow:0 30px 70px -20px rgba(0,0,0,.5);padding-top:env(safe-area-inset-top,0px);border-radius:28px 0 0 28px}.dr.on{transform:none}
+.dh{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--bd)}
+.dbody{overflow:auto;padding:6px 20px 24px;flex:1}
+dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px 16px;margin:0}dt{font-size:.72rem;font-weight:600;color:var(--mut)}dd{margin:0;font-weight:600;word-break:break-word}
+.md{position:fixed;left:50%;top:50%;translate:-50% -50%;width:min(1180px,96vw);height:min(94dvh,960px);background:var(--card);border-radius:24px;box-shadow:0 30px 70px -20px rgba(0,0,0,.5);z-index:40;display:none;flex-direction:column;overflow:hidden}.md.on{display:flex;animation:fadeInUp .3s ease}.md.sm{height:auto;width:min(640px,96vw)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px) scale(.95)}to{opacity:1;transform:none}}
+.mh,.mf{display:flex;gap:8px;align-items:center;padding:14px 20px}.mh{justify-content:space-between;border-bottom:1px solid var(--bd)}.mf{border-top:1px solid var(--bd);flex-wrap:wrap;background:var(--stage)}
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:12px 16px;border-bottom:1px solid var(--bd)}
+.tabs button{display:flex;align-items:center;justify-content:center;min-height:44px;min-width:0;border:1px solid var(--bd);border-radius:14px;background:var(--card);color:var(--ink);font:700 .8rem/1.25 var(--font);padding:8px 10px;text-align:center;overflow-wrap:anywhere;cursor:pointer;transition:background-color .2s,color .2s,border-color .2s,box-shadow .2s}
+.tabs button:hover{background:var(--ib);border-color:transparent}.tabs button.on{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent;box-shadow:0 8px 18px -10px var(--ac)}
+.mb{overflow:auto;padding:22px;flex:1}
+#ts{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translate(-50%,14px);background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:999px;z-index:60;opacity:0;pointer-events:none;transition:opacity .25s,transform .35s var(--ease);font-size:.85rem;font-weight:600;box-shadow:0 16px 36px -12px rgba(15,23,42,.35)}#ts.on{opacity:1;transform:translate(-50%,0)}
+.law{position:absolute;right:16px;bottom:84px;width:min(360px,calc(100% - 32px));max-height:55%;overflow:auto;background:var(--card);color:var(--ink);border:1px solid var(--ac);border-radius:18px;box-shadow:0 16px 36px -12px rgba(15,23,42,.28);padding:14px 16px;z-index:5;animation:pop .25s var(--ease)}.lh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;color:var(--ac)}.law p{margin:0 0 8px;font-size:.82rem;line-height:1.45}.lf{font-size:.72rem;color:var(--mut);border-top:1px solid var(--bd);padding-top:6px}@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(max-width:900px){th:nth-child(5),td:nth-child(5){display:none}}
+@media(max-width:820px){.flt{grid-template-columns:minmax(0,1fr) auto}.flt .sr{grid-column:1/-1}.flt .bar{flex-wrap:nowrap}}
+@media(max-width:640px){th:nth-child(4),td:nth-child(4){display:none}}
+@media(max-height:760px){.note{display:none}.stat{padding:.7rem 1rem}.stat i{width:44px;height:44px;font-size:1.3rem}.stat b{font-size:1.5rem}h1{font-size:1.3rem}}
+@media(max-height:560px){.stats{display:none}}
+@media(max-width:640px){.wrap{padding:14px 12px}h1{font-size:1.2rem;margin-right:0}h1 i{width:1.9rem;height:1.9rem;font-size:1rem}.ht{width:100%;font-size:.9rem}.stats{grid-template-columns:1fr 1fr;gap:.7rem}.stat{padding:.9rem;gap:.7rem;border-radius:20px}.stat i{width:44px;height:44px;font-size:1.3rem;border-radius:14px;--ring:4px}.stat b{font-size:1.5rem}.stat span{font-size:.74rem}.md{inset:0;translate:none;width:100%;height:100%;border-radius:0}.md.sm{height:auto;inset:auto 0 0 0;width:100%;border-radius:24px 24px 0 0}.dr{border-radius:0}.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){
+.ht,.note{display:none}
+.app-header{padding-bottom:.5rem;margin-bottom:.6rem}
+h1{font-size:1.02rem;gap:.5rem;flex:1 1 100%}h1 i{width:1.7rem;height:1.7rem;font-size:.9rem}
+.hl{gap:.5rem}.hl .btn{min-height:38px;padding:4px 14px;font-size:.8rem;flex:1 1 auto}
+.stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:.4rem;margin-bottom:.6rem}
+.stat{flex-direction:column;justify-content:center;text-align:center;gap:.1rem;padding:.5rem .3rem;border-radius:16px}
+.stat i{display:none}.stat b{font-size:1.25rem}.stat span{font-size:.62rem;margin-top:.15rem;line-height:1.15}
+.card.flt{grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:8px;margin-bottom:.6rem;border-radius:18px}
+.flt .sr{grid-column:1/-1}.flt .bar{flex-wrap:nowrap}.flt .bt{display:none}.flt .btn{padding:4px 12px;min-height:40px}
+.flt input,.flt select{padding:9px 12px}
+th:nth-child(7),td:nth-child(7){display:none}
+table{table-layout:fixed}th:nth-child(1){width:46px}th:nth-child(3){width:28%}th:nth-child(6){width:38%}td{overflow-wrap:anywhere}.tag{display:block;width:fit-content;max-width:100%}
+th,td{padding:9px 8px}th:first-child,td:first-child{padding-left:12px}
+.pg{padding:8px 10px}.pb{min-width:32px;height:32px}
+}
+@media(max-height:640px){.stats{display:none}}
+@media(max-height:560px){
+.hl{flex-wrap:nowrap}h1{flex:1 1 auto;min-width:0;font-size:1.05rem;margin-right:0}.hl .btn{flex:0 0 auto}
+.ht{display:none}.app-header{padding-bottom:.4rem;margin-bottom:.5rem}.hl .btn{min-height:36px}
+.card.flt{padding:8px;margin-bottom:.5rem}.flt .btn{min-height:36px}.flt input,.flt select{padding:8px 12px}
+th,td{padding:8px 10px}.pg{padding:6px 12px}
+}
+@media(max-height:560px) and (min-width:641px){.card.flt{grid-template-columns:2fr 1fr auto}.flt .sr{grid-column:auto}}
+@media(prefers-reduced-motion:reduce){.stat{animation:none;background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(135deg,var(--a1),var(--a3)) border-box;transition:box-shadow .2s}.stat:hover,.btn:hover{transform:none}.stat i,.stat:hover i{transition:none;transform:none}.md.on,.law{animation:none}.dr,#ts{transition:opacity .2s}}
+#pa{display:none}
+@media print{body>*:not(#pa){display:none!important}body{background:#fff}#pa{display:block!important}#pa,#pa *{color:#000!important;background:#fff!important;box-shadow:none!important}#pa h2{margin:0 0 4px;font-size:15pt}#pa table{width:100%;min-width:0;font-size:8.5pt}#pa th,#pa td{border:1px solid #888;padding:3px 5px;text-align:left;font-size:8.5pt;text-transform:none;letter-spacing:0}#pa dl{grid-template-columns:repeat(2,1fr)}#pa h4{border-bottom:1px solid #000;padding-bottom:2px}}
+</style></head>
+<body><div class="wrap">
+<header class="app-header"><div class="hl"><h1><i class="bi bi-journal-text"></i> Expedientes · Régimen Penal Juvenil</h1><button class="btn" onclick="edit()"><i class="bi bi-plus-lg"></i> Nuevo expediente</button><button class="btn s rsp" onclick="bkp()"><i class="bi bi-database"></i> Respaldo</button></div><div class="ht">Ley 27.801<span>Defensoría Oficial</span></div></header>
+<div class="note"><i class="bi bi-shield-lock"></i><div>Reserva (art. 5 i): los datos se guardan solo en este navegador. Use iniciales y evite nombres completos. Haga respaldos periódicos.</div></div>
+<div class="stats" id="stats"><div class="stat"><i class="bi bi-folder2-open"></i><div><b id="n0">0</b><span>Expedientes</span></div></div><div class="stat s2"><i class="bi bi-exclamation-triangle"></i><div><b id="n1">0</b><span>Con alertas críticas</span></div></div><div class="stat s3"><i class="bi bi-lock"></i><div><b id="n2">0</b><span>Privados de libertad</span></div></div><div class="stat s4"><i class="bi bi-calendar-event"></i><div><b id="n3">0</b><span>Audiencias en 7 días</span></div></div></div>
+<div class="card flt"><label class="sr"><i class="bi bi-search"></i><input id="q" placeholder="Buscar por N.º, carátula, iniciales, delito, órgano o responsable" oninput="filt=this.value;page=0;list()"></label><select id="fe" onchange="est=this.value;page=0;list()"></select><div class="bar"><button class="btn s" title="Imprimir filtrado" aria-label="Imprimir filtrado" onclick="printTable(0)"><i class="bi bi-printer"></i> <span class="bt">Imprimir filtrado</span></button><button class="btn s" title="Imprimir completo" aria-label="Imprimir completo" onclick="printTable(1)"><i class="bi bi-printer-fill"></i> <span class="bt">Imprimir completo</span></button></div></div>
+<div class="card tcard"><div class="tw"><table><thead><tr><th>N.º</th><th>Expediente</th><th>Adolescente</th><th>Delito / órgano</th><th>Responsable</th><th>Estado</th><th></th></tr></thead><tbody id="rows"></tbody></table></div><div class="pg" id="pg"></div></div>
+</div>
+<div id="bd" class="bd" onclick="bdc()"></div>
+<aside id="dr" class="dr"><div class="dh"><h3 id="dt"></h3><div class="bar"><button class="btn sm" onclick="edit(db.find(x=>x.id===vid))"><i class="bi bi-pencil"></i> Editar</button><button class="btn s sm" onclick="printRec()"><i class="bi bi-printer"></i> Imprimir</button><button class="btn s sm" onclick="closeAll()" aria-label="Cerrar"><i class="bi bi-x-lg"></i></button></div></div><div class="dbody" id="dbody"></div></aside>
+<div id="md" class="md" role="dialog" aria-modal="true"><div class="mh"><h3 id="et"></h3><button class="btn s sm" onclick="closeAll()" aria-label="Cerrar"><i class="bi bi-x-lg"></i></button></div><nav class="tabs" id="tabs"></nav><div class="mb" id="form"></div><div id="law" class="law" hidden role="note"><div class="lh"><b id="lt"></b><button class="btn s sm" onclick="$('#law').hidden=true" aria-label="Cerrar"><i class="bi bi-x-lg"></i></button></div><div id="lb"></div><div class="lf">Ley 27.801 (B.O. 09/03/2026) · resumen orientativo, consulte el texto de la norma.</div></div><div class="mf"><button class="btn d" id="del" onclick="del()">Eliminar</button><span style="flex:1"></span><button class="btn" onclick="saveRec()"><i class="bi bi-check2"></i> Guardar</button></div></div>
+<div id="bk" class="md sm" role="dialog"><div class="mh"><h3>Respaldo</h3><button class="btn s sm" onclick="closeAll()" aria-label="Cerrar"><i class="bi bi-x-lg"></i></button></div><div class="mb"><p class="mut" style="margin-top:0">Los datos se guardan en este navegador. Exporte todos los expedientes a un archivo JSON y vuelva a cargarlos con Importar cuando lo necesite (se unen por identificador).</p><div class="bar"><button class="btn" onclick="expJSON()">Exportar JSON</button><button class="btn s" onclick="$('#fi').click()">Importar JSON</button></div><input type="file" id="fi" accept=".json,application/json" hidden onchange="impFile(this)"><p id="bm" class="mut"></p></div></div>
+<datalist id="dl"></datalist><div id="ts"></div><div id="pa"></div>
+<script>
+const KEY="penalJuvenil.v1",ESTADOS=["En trámite","Instituto alternativo en curso","Con condena / en ejecución","Extinguido","Archivado","Inimputable"];
+const OPC={m8:["a) Supervisión de equipo interdisciplinario","b) Programas educativos","c) Formación ciudadana","d) Capacitación laboral","e) Deportivo, recreativo o cultural","f) Servicios de salud","g) Tratamiento médico o psicológico","h) Trabajo (con constancias)","i) Concurrir al tribunal","j) Prohibición de estupefacientes y alcohol"],
+p12:["a) Amonestación","b) Prohibición de contacto","c) Prohibición de conducir","d) Prohibición de concurrir a lugares","e) Prohibición de salir del país o lugar","f) Servicios a la comunidad","g) Monitoreo electrónico","h) Reparación integral del daño","i) Pena privativa de libertad"]};
+const S=[
+{t:"1. Identificación",f:[["nro","N.º de expediente","text"],["caratula","Carátula","text"],["organo","Juzgado / Tribunal","text"],["fiscalia","Fiscalía interviniente","text"],["resp","Responsable actual en la Defensoría","text"],["inicio","Fecha de inicio","date"],["estado","Estado","sel",ESTADOS],["iniciales","Iniciales del adolescente (art. 5 i)","text"],["dni","DNI","text"],["nac","Fecha de nacimiento","date"],["hecho","Fecha del hecho","date"],["edadprueba","Edad acreditada con DNI o partida (art. 2)","chk"],["dom","Localidad de residencia","text"]]},
+{t:"2. Hecho imputado",f:[["delito","Delito / tipificación","text"],["pmin","Pena mínima (años)","num"],["pmax","Pena máxima (años)","num"],["culposo","Delito culposo","chk"],["grave","Muerte de la víctima o grave violencia física/psíquica (en culposos: lesiones gravísimas o daño psíquico grave)","chk"],["antec","Condenas u otros procesos con procesamiento firme","chk"],["victima","Víctima / querella (iniciales)","text"],["relato","Descripción del hecho","area"]]},
+{t:"3. Garantías y partes",f:[["defensa","Asistencia legal desde el inicio (art. 5 c)","chk"],["derechos","Informado de la imputación y del derecho a guardar silencio","chk"],["padres","Comunicación a padres o responsables (art. 5 l)","chk"],["resp","Padres / responsables (nombre y contacto)","text"],["tutelar","Intervención de la asesoría tutelar (art. 5, último párrafo)","chk"],["oido","Adolescente oído (art. 9)","chk"],["vinf","Víctima informada y oída","chk"],["prot","Organismo de protección de la niñez interviniente","text"],["salud","Uso problemático de drogas o alcohol: intervención del equipo interdisciplinario (art. 35)","chk"],["saludobs","Medidas de salud / internación (art. 36)","text"]]},
+{t:"4. Coerción y privación de libertad",f:[["coer","Medida de coerción","sel",["Ninguna","Restricción sin privación de libertad","Detención","Prisión preventiva"]],["cfecha","Fecha de inicio de la medida","date"],["automot","Auto motivado con riesgos procesales constatados (art. 5 j)","chk"],["riesgo","Riesgo procesal (art. 39)","sel",["—","Peligro de fuga","Obstaculización de la investigación"]],["lugar","Lugar de alojamiento","text"],["sinmay","Sin contacto con personas adultas (arts. 5 k y 30)","chk"],["itrim","Último informe trimestral del instituto (art. 34)","date"]]},
+{t:"5. Resolución y cumplimiento",f:[["salida","Vía de resolución","sel",["Sin definir","Criterio de oportunidad (art. 41)","Mediación (art. 42)","Suspensión del proceso a prueba (art. 43)","Condena","Sobreseimiento / absolución","Inimputabilidad (arts. 24-25)"]],["sfecha","Fecha de la resolución","date"],["sfin","Vencimiento de suspensión / cumplimiento","date"],["priv","Pena privativa (art. 17)","sel",["No aplica","Domicilio","Instituto abierto","Instituto especializado"]],["panios","Monto de pena privativa (años)","num"],["m8","Medidas complementarias (art. 8)","multi","m8"],["p12","Penas (art. 12)","multi","p12"]]},
+{t:"6. Supervisión y agenda",f:[["sup","Supervisor designado (art. 23)","text"],["sinf","Último informe mensual del supervisor","date"],["sent","Última entrevista semanal","date"],["aud","Próxima audiencia","date"],["audt","Tipo de audiencia","text"],["notas","Notas","area"]]}];
+
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const D=s=>s?new Date(s+"T00:00"):null,hoy=()=>new Date(new Date().toDateString()),dias=(a,b)=>Math.round((b-a)/864e5),has=v=>v!==""&&v!=null&&!isNaN(+v);
+const ago=s=>s?dias(D(s),hoy()):null,prox=s=>s?dias(hoy(),D(s)):null;
+let db=[],cur=null,filt="",est="";
+try{db=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){db=[]}
+function save(){if(!db.includes(cur))db.unshift(cur);try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}}
+function edad(c){const n=D(c.nac),h=D(c.hecho);if(!n||!h)return null;let e=h.getFullYear()-n.getFullYear();if(h<new Date(h.getFullYear(),n.getMonth(),n.getDate()))e--;return e}
+function priva(c){return /Detención|Prisión/.test(c.coer||"")||(c.priv&&c.priv!=="No aplica")}
+function alertas(c){const a=[],e=edad(c),p=c.p12||[],m=c.m8||[];
+if(e!=null){if(e<14)a.push(["r","Edad al hecho: "+e+". Menor de 14, fuera del régimen (arts. 1 y 24)."]);else if(e>=18)a.push(["r","Edad al hecho: "+e+". Mayor de 18, fuera del régimen (art. 1)."])}
+if(e!=null&&!c.edadprueba)a.push(["y","Edad sin acreditar fehacientemente: ante la duda se presume la minoría (art. 2)."]);
+if(!c.defensa)a.push(["r","Falta constancia de asistencia legal desde el inicio (art. 5 c)."]);
+if(!c.derechos)a.push(["y","Falta registrar que se informó la imputación y el derecho a guardar silencio."]);
+if(!c.padres)a.push(["y","Falta comunicar la imputación a padres o responsables (art. 5 l)."]);
+if(!c.tutelar)a.push(["y","Falta intervención de la asesoría tutelar."]);
+if(/Detención|Prisión/.test(c.coer||"")){
+if(!c.automot)a.push(["r","Privación de libertad sin auto motivado (art. 5 j)."]);
+if(!c.riesgo||c.riesgo==="—")a.push(["y","Sin riesgo procesal consignado: solo fuga u obstaculización (art. 39)."]);
+if(!c.sinmay)a.push(["r","Verificar alojamiento separado de adultos (arts. 5 k y 30)."]);
+if(c.cfecha)a.push(["i","Medida de coerción vigente hace "+ago(c.cfecha)+" días. Controle el tope de la Ley 24.390 (art. 39)."]);
+const t=ago(c.itrim);if(t==null||t>90)a.push(["y","Informe trimestral del instituto vencido o sin registrar (art. 34)."])}
+if((c.salida&&!/Sin definir|Sobreseimiento|Inimput/.test(c.salida)||p.length||m.length)&&!c.sup)a.push(["y","Designar supervisor especializado (art. 23)."]);
+if(c.sup){const s=ago(c.sinf);if(s==null||s>30)a.push(["y","Informe mensual del supervisor vencido (art. 23 b)."]);const w=ago(c.sent);if(w==null||w>7)a.push(["y","Entrevista semanal del supervisor sin registrar (art. 23 a)."])}
+if(c.sfin){const d=prox(c.sfin);if(d<0)a.push(["r","Plazo de suspensión o cumplimiento vencido hace "+(-d)+" días (arts. 45 y 21)."]);else if(d<=30)a.push(["y","Plazo de suspensión o cumplimiento vence en "+d+" días."])}
+if(c.aud){const d=prox(c.aud);if(d>=0&&d<=7)a.push(["i","Audiencia en "+d+" día(s)"+(c.audt?": "+c.audt:"")+"."])}
+if(p.some(x=>x[0]==="a")&&p.length===1)a.push(["y","La amonestación debe imponerse junto con al menos otra pena (art. 13)."]);
+if(has(c.panios)&&+c.panios>15)a.push(["r","Excede el máximo de 15 años y no admite perpetuas (art. 19)."]);
+return a}
+function inst(c){const x=[];if(!has(c.pmax)&&!has(c.pmin))return x;const mx=+c.pmax,mn=+c.pmin,ok=!c.grave&&!c.antec;
+if(has(c.pmax)&&mx<=6&&ok)x.push(["Criterio de oportunidad y mediación (arts. 41-42)","Máximo hasta 6 años, sin muerte ni grave violencia, sin condenas ni procesos con procesamiento firme. La víctima debe consentir la mediación; la oposición del fiscal es vinculante."]);
+if(has(c.pmin)&&mn<=3)x.push(["Suspensión del proceso a prueba (art. 43)","Mínimo hasta 3 años, si no es posible la mediación; a pedido del adolescente, con conformidad del MPF, audiencia oral y plazo de 1 a 3 años."]);
+if(has(c.pmax)&&mx<=3)x.push(["Reemplazo de la prisión (art. 11, 1.er párr.)","Pena prevista hasta 3 años: se reemplaza por penas del art. 12 si se cumplen las condiciones del Título III del Libro I del Código Penal."]);
+else if(has(c.pmax)&&mx<=10&&ok)x.push(["Posible reemplazo de la prisión (art. 11, 2.º párr.)","Entre 3 y 10 años: requiere dictamen pericial, conformidad del MPF y escuchar a la víctima."]);
+if(has(c.pmax)&&mx>6)x.push(["Sin oportunidad ni mediación","La pena máxima supera 6 años (arts. 41-42)."]);return x}
+
+function field(f){const[k,l,t,o]=f,v=cur[k];
+if(t==="chk")return`<label class="ck wide"><input type="checkbox" data-k="${k}" ${v?"checked":""}> ${l}</label>`;
+if(t==="multi")return`<div class="wide"><b>${l}</b><div class="grp">${OPC[o].map(x=>`<label class="ck"><input type="checkbox" data-m="${k}" value="${x}" ${(v||[]).includes(x)?"checked":""}> ${x}</label>`).join("")}</div></div>`;
+let i;if(t==="sel")i=`<select data-k="${k}">${o.map(x=>`<option ${x===v?"selected":""}>${esc(x)}</option>`).join("")}</select>`;
+else if(t==="area")i=`<textarea data-k="${k}" rows="3">${esc(v)}</textarea>`;
+else i=`<input data-k="${k}" type="${t==="num"?"number":t}" ${t==="num"?'step="0.5" min="0"':""} value="${esc(v)}">`;
+return`<label class="${t==="area"?"wide":""}"><span>${l}</span>${i}</label>`}
+let PS=10;let page=0,ti=0,vid=null,isNew=false;
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){toast("No se pudo guardar en este navegador")}};
+const fd=v=>v?v.split("-").reverse().join("/"):"—";
+function toast(m){const t=$("#ts");t.textContent=m;t.classList.add("on");setTimeout(()=>t.classList.remove("on"),2400)}
+function opn(id){$("#bd").classList.add("on");$(id).classList.add("on")}
+function closeAll(){["#dr","#md","#bk","#bd"].forEach(s=>$(s).classList.remove("on"));$("#law").hidden=true}
+function bdc(){closeAll()}
+onkeydown=e=>{if(e.key==="Escape")bdc()};
+function rows(){const q=filt.toLowerCase();return db.filter(c=>(!est||c.estado===est)&&(!q||[c.nro,c.caratula,c.iniciales,c.delito,c.organo,c.resp].join(" ").toLowerCase().includes(q)))}
+function val(f,c){const v=c[f[0]],t=f[2];if(t==="chk")return v?"Sí":"No";if(t==="multi")return v&&v.length?v.map(esc).join("; "):"—";if(v==null||v==="")return "—";return t==="date"?fd(v):esc(v)}
+function recHTML(c){const e=edad(c),a=(c.act||[]).slice().sort((p,q)=>(q.f||"").localeCompare(p.f||""));
+return `<dl><div><dt>Edad al momento del hecho</dt><dd>${e==null?"—":e+" años"}</dd></div></dl>`+S.map(s=>`<h4>${s.t}</h4><dl>${s.f.map(f=>`<div style="${f[2]==="multi"||f[2]==="area"?"grid-column:1/-1":""}"><dt>${f[1]}</dt><dd>${val(f,c)}</dd></div>`).join("")}</dl>`).join("")+"<h4>7. Actuaciones</h4>"+(a.length?a.map(x=>`<p style="margin:2px 0"><b>${fd(x.f)}</b> · ${esc(x.t)}</p>`).join(""):'<p class="mut">Sin actuaciones.</p>')}
+function row(c,n){const A=alertas(c),r=A.filter(a=>a[0]==="r").length,y=A.filter(a=>a[0]==="y").length,e=edad(c);
+return `<tr class="r" onclick="view('${c.id}')"><td class="num">${n}</td><td><b>${esc(c.nro||"s/n")}</b><div class="mut">${esc(c.caratula||"")}</div></td><td>${esc(c.iniciales||"—")}${e==null?"":" (<b>"+e+" años</b>)"}</td><td>${esc(c.delito||"")}<div class="mut">${esc(c.organo||"")}</div></td><td>${esc(c.resp||"—")}</td><td><span class="tag">${esc(c.estado)}</span>${r?`<span class="tag r">${r} crítica(s)</span>`:""}${y?`<span class="tag y">${y} aviso(s)</span>`:""}</td><td><button class="btn s sm">Ver</button></td></tr>`}
+function go(i){page=i;list()}
+/* ajusta la cantidad de filas por página al alto disponible, para que la tabla nunca haga scroll */
+function fit(){const tw=document.querySelector(".tw");if(!tw)return;let guard=0;
+const want=()=>{const r=rows();return r.length};
+const ok=()=>tw.scrollHeight<=tw.clientHeight+1;
+if(want()===0)return;
+let changed=false;
+while(!ok()&&PS>1&&guard++<60){PS--;changed=true;list(true)}
+guard=0;
+while(ok()&&PS<50&&PS<want()&&guard++<60){PS++;list(true);if(!ok()){PS--;list(true);break}changed=true}
+if(changed)list(true)}
+let rz;addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{list()},120)});
+function list(nf){const r=rows(),np=Math.max(1,Math.ceil(r.length/PS));if(page>=np)page=np-1;const a=page*PS;
+const aud=db.filter(c=>{const d=prox(c.aud);return d!=null&&d>=0&&d<=7}).length;
+[db.length,db.filter(c=>alertas(c).some(x=>x[0]==="r")).length,db.filter(priva).length,aud].forEach((n,i)=>$("#n"+i).textContent=n);
+$("#rows").innerHTML=r.length?r.slice(a,a+PS).map((c,i)=>row(c,r.length-a-i)).join(""):'<tr><td colspan="7" class="mut" style="padding:20px">Sin expedientes. Use “Nuevo expediente” para comenzar.</td></tr>';
+let b="";for(let i=0;i<np;i++){if(i===0||i===np-1||Math.abs(i-page)<=2)b+=`<button class="pb ${i===page?"on":""}" onclick="go(${i})">${i+1}</button>`;else if(Math.abs(i-page)===3)b+='<span class="mut">…</span>'}
+$("#pg").innerHTML=`<span class="mut">${r.length?a+1:0}–${Math.min(a+PS,r.length)} de ${r.length}</span><span class="bar"><button class="pb" ${page?"":"disabled"} onclick="go(${page-1})">‹</button>${b}<button class="pb" ${page<np-1?"":"disabled"} onclick="go(${page+1})">›</button></span>`;
+if(!nf)fit()}
+function view(id){const c=db.find(x=>x.id===id);if(!c)return;vid=id;$("#dt").textContent=(c.nro||"Expediente")+(c.iniciales?" · "+c.iniciales:"");const A=alertas(c);
+$("#dbody").innerHTML=(A.length?"<h4>Alertas</h4>"+A.map(a=>`<div class="al ${a[0]}">${a[1]}</div>`).join(""):"")+recHTML(c);$("#dr").classList.add("on");$("#bd").classList.add("on")}
+const LEY=[
+{t:'Identificación y edad',i:[['Art. 1.','Rige para adolescentes desde los 14 años hasta las 0 horas del día en que cumplen 18, imputados de un delito del Código Penal o de leyes penales especiales.'],['Art. 2.','La edad se toma al momento del hecho y se acredita con DNI, partidas u otro documento. Si no se puede comprobar, se recaba prueba, informes o peritajes; si no son concluyentes, se presume la minoría de edad.'],['Art. 5 i.','El proceso es reservado. Se prohíbe publicar el nombre u otros datos que permitan identificar al adolescente (por eso se cargan iniciales).'],['Art. 38.','Jueces, fiscales, defensores y órganos intervinientes deben tener capacitación especializada en jóvenes en conflicto con la ley penal.']]},
+{t:'Hecho imputado',i:[['Art. 1.','El hecho debe estar tipificado como delito en el Código Penal o en leyes penales especiales.'],['Arts. 41 y 42.','Criterio de oportunidad y mediación: pena máxima de hasta 6 años; sin muerte ni grave violencia física o psíquica (en culposos, sin lesiones gravísimas, muerte ni daño psíquico grave); sin condenas ni procesos con procesamiento firme.'],['Art. 43.','Suspensión del proceso a prueba: el mínimo de la pena no debe exceder 3 años.'],['Art. 11.','Si la pena prevista llega a 3 años, la prisión se reemplaza por penas del art. 12 con las condiciones del Título III del Libro I del Código Penal. Entre 3 y 10 años puede reemplazarse si no hubo muerte ni grave violencia y no hay antecedentes.']]},
+{t:'Garantías y partes',i:[['Art. 5 c.','Asistencia legal eficaz desde el inicio; comunicar la imputación de modo claro e informar todos sus derechos, incluido guardar silencio.'],['Art. 5 l.','Comunicar la imputación y los actos procesales a los padres o responsables, informándoles el hecho atribuido.'],['Art. 5, últ. párr.','En todo proceso con una persona menor de 18 años, imputada o víctima, interviene la asesoría tutelar.'],['Art. 9.','Se oye y se tiene en cuenta la opinión del adolescente, su defensor, el fiscal y la víctima. Si no tiene grupo familiar o este es perjudicial, puede disponerse su permanencia en ámbitos alternativos o bajo organismos de protección de la niñez.'],['Arts. 35 y 36.','Ante uso problemático de drogas o alcohol se recaba la opinión del equipo interdisciplinario; si hay internación, se remite copia del legajo al juez civil.'],['Arts. 6, 7 y 40.','Derechos de las víctimas: asistencia especializada, patrocinio jurídico gratuito y participación en la mediación.']]},
+{t:'Coerción y privación de libertad',i:[['Art. 5 j.','La restricción de la libertad durante el proceso se decreta en auto motivado, con riesgos procesales debidamente constatados.'],['Art. 39.','Las medidas de coerción solo pueden fundarse en peligro real de fuga u obstaculización de la investigación. La prisión preventiva no puede superar el plazo del art. 1 de la ley 24.390 (mod. ley 25.430).'],['Arts. 5 k y 30.','Alojamiento en lugares especialmente acondicionados y sin contacto con personas adultas; se ubica a los adolescentes según personalidad, edad, identidad cultural y carácter cautelar o punitivo.'],['Art. 34.','El director del instituto envía a la autoridad judicial un informe trimestral sobre la situación y evolución del adolescente.'],['Arts. 5 h y 37.','Se prioriza a quienes están detenidos con prisión preventiva; la dilación injustificada es falta grave del juez y del fiscal.']]},
+{t:'Resolución y cumplimiento',i:[['Art. 41.','Criterio de oportunidad: el fiscal puede prescindir total o parcialmente de la acción penal con los requisitos del art. 41; se informa a la víctima, que puede oponerse.'],['Art. 42.','Mediación penal juvenil: delitos de hasta 6 años de pena máxima; es confidencial y voluntaria. Requiere el consentimiento de la víctima, bajo nulidad; la oposición del fiscal es vinculante.'],['Arts. 43 a 45.','Suspensión del proceso a prueba por 1 a 3 años, a pedido del adolescente y con conformidad del MPF, en audiencia oral con la víctima. Si cumple, se extingue la acción penal; si incumple, el proceso continúa.'],['Art. 8.','Medidas complementarias (a a j): equipo interdisciplinario, educación, formación ciudadana, capacitación laboral, deporte y cultura, salud, tratamiento, trabajo, concurrir al tribunal y no consumir estupefacientes ni alcohol.'],['Arts. 12 a 15.','Penas: amonestación, prohibiciones (contacto, conducir, concurrir a lugares, salir del país o lugar), servicios a la comunidad, monitoreo electrónico, reparación integral y penas privativas. La amonestación va junto con otra pena; salvo a), h) e i), no pueden exceder 3 años.'],['Arts. 17 y 19.','Privación de libertad: en domicilio, instituto abierto o instituto especializado. Máximo de 15 años y sin penas perpetuas.'],['Arts. 24 y 25.','Inimputables: no se aplican sanciones, pero la investigación continúa. Antes de declararlo se ordena peritaje psicológico y psiquiátrico e informe ambiental.']]},
+{t:'Supervisión y agenda',i:[['Art. 23.','Fijadas las medidas del art. 8 o las penas del art. 12, el juez designa un supervisor especializado (educación, pedagogía infantojuvenil, psicología, adicciones o trabajo social).'],['Art. 23 a y b.','El supervisor mantiene entrevistas semanales con el adolescente y elabora informes mensuales sobre su educación, formación y actitud, que se incorporan al legajo personal.'],['Arts. 23 y 46.','Cada provincia regula el nombramiento, remoción y sanción de supervisores; en la competencia nacional se los designa de una lista de profesionales del Ministerio de Justicia.'],['Arts. 10, 16 y 21.','El cumplimiento está bajo control judicial periódico. Si se incumple sin justificación, la pena se sustituye por otra más severa o se revoca y se dispone una pena privativa de libertad.']]},
+{t:'Actuaciones',i:[['Art. 5 h.','Plazo razonable, brevedad y celeridad: el proceso tramita sin dilaciones indebidas; la dilación injustificada desde la intimación del hecho es falta grave del magistrado.'],['Art. 22.','La prescripción de la acción penal se suspende por cuestiones previas o prejudiciales, por los procedimientos de mediación y por la intervención del profesional de la Ley de Salud Mental 26.657.'],['Art. 47.','Rigen los principios y garantías del sistema acusatorio del Código Procesal Penal Federal (ley 27.063), según el régimen de implementación de la ley 27.150.'],['Art. 5 i.','El proceso es reservado salvo para las partes, la defensa, la víctima y los padres o responsables.']]},
+{t:'Control y vigencia',i:[['Qué controla.','Edad (arts. 1 y 2), garantías (art. 5), coerción (arts. 5 j y 39), supervisión (art. 23), amonestación (art. 13) y tope de 15 años (art. 19).'],['Art. 52.','La ley entra en vigencia a los 180 días de su publicación en el Boletín Oficial (09/03/2026).'],['Art. 49.','Se invita a las provincias y a la Ciudad de Buenos Aires a adecuar su legislación procesal penal a los principios de la ley.'],['Art. 48.','Deroga la ley 22.278 y sus modificatorias.']]}
+];
+function law(i){const L=LEY[i];$("#lt").textContent="Ley 27.801 · "+L.t;$("#lb").innerHTML=L.i.map(x=>`<p><b>${x[0]}</b> ${x[1]}</p>`).join("");$("#law").hidden=false;$("#law").scrollTop=0}
+function tab(i,s){ti=Math.max(0,Math.min(7,i));document.querySelectorAll(".pane").forEach(p=>p.hidden=+p.dataset.p!==ti);document.querySelectorAll("#tabs button").forEach((b,j)=>b.classList.toggle("on",j===ti));if(ti===7)panel();$("#form").scrollTop=0;if(s)law(ti);else $("#law").hidden=true}
+function edit(c){isNew=!c;cur=c?JSON.parse(JSON.stringify(c)):{id:Date.now().toString(36),estado:ESTADOS[0],coer:"Ninguna",salida:"Sin definir",priv:"No aplica",riesgo:"—",act:[],m8:[],p12:[]};
+$("#form").innerHTML=S.map((s,i)=>`<div class="pane" data-p="${i}"><div class="g">${s.f.map(f=>field(f)).join("")}</div></div>`).join("")+`<div class="pane" data-p="6"><div class="g"><label><span>Fecha</span><input type="date" id="af"></label><label><span>Actuación</span><input id="at"></label></div><div class="bar" style="margin:10px 0"><button class="btn s" onclick="addAct()">Agregar actuación</button></div><div id="acts"></div></div><div class="pane" data-p="7"><div id="side"></div></div>`;
+$("#tabs").innerHTML=[...S.map(s=>s.t),"7. Actuaciones","8. Control"].map((t,i)=>`<button onclick="tab(${i},1)">${t}</button>`).join("");
+$("#dl").innerHTML=[...new Set(db.map(x=>x.resp).filter(Boolean))].map(x=>`<option value="${esc(x)}">`).join("");$('[data-k="resp"]').setAttribute("list","dl");
+$("#et").textContent=isNew?"Nuevo expediente":"Editar · "+(c.nro||"expediente");const d=$("#del");d.hidden=isNew;d.dataset.s="";d.textContent="Eliminar";
+$("#dr").classList.remove("on");acts();tab(0);opn("#md")}
+$("#form").addEventListener("input",e=>{const t=e.target;
+if(t.dataset.k)cur[t.dataset.k]=t.type==="checkbox"?t.checked:t.value;
+else if(t.dataset.m){const a=cur[t.dataset.m]=cur[t.dataset.m]||[];if(t.checked){if(!a.includes(t.value))a.push(t.value)}else{const i=a.indexOf(t.value);if(i>-1)a.splice(i,1)}}});
+function saveRec(){if(!(cur.nro||"").trim()){tab(0);toast("Indique el N.º de expediente");return}
+const i=db.findIndex(x=>x.id===cur.id);i>-1?db[i]=cur:db.unshift(cur);persist();closeAll();list();view(cur.id);toast("Expediente guardado")}
+function del(){const b=$("#del");if(b.dataset.s!=="1"){b.dataset.s="1";b.textContent="¿Confirmar?";return}
+db=db.filter(x=>x.id!==cur.id);persist();closeAll();list();toast("Expediente eliminado")}
+function panel(){const e=edad(cur),A=alertas(cur),I=inst(cur);
+$("#side").innerHTML=`<p class="mut">Edad al momento del hecho</p><p class="big">${e==null?"—":e+" años"}</p><h4>Alertas</h4>${A.length?A.map(a=>`<div class="al ${a[0]}">${a[1]}</div>`).join(""):'<p class="mut">Sin alertas.</p>'}<h4>Institutos posibles (a verificar)</h4>${I.length?I.map(x=>`<div class="al"><b>${x[0]}</b><br>${x[1]}</div>`).join(""):'<p class="mut">Cargue pena mínima y máxima del delito.</p>'}<p class="mut">Orientación automática sobre el texto de la ley: verifique cada caso y la normativa procesal de Misiones (art. 49).</p>`}
+function addAct(){const f=$("#af").value,t=$("#at").value.trim();if(!t)return;(cur.act=cur.act||[]).push({f,t});$("#at").value="";acts()}
+function acts(){const a=(cur.act||[]).map((x,i)=>({...x,i})).sort((p,q)=>(q.f||"").localeCompare(p.f||""));$("#acts").innerHTML=a.length?a.map(x=>`<div class="act"><span><b>${fd(x.f)}</b> · ${esc(x.t)}</span><button class="btn s sm" onclick="rmAct(${x.i})">Quitar</button></div>`).join(""):'<p class="mut">Sin actuaciones registradas.</p>'}
+function rmAct(i){cur.act.splice(i,1);acts()}
+function doPrint(h,land){$("#pa").innerHTML=h;$("#pgs").textContent="@page{size:A4 "+(land?"landscape":"portrait")+";margin:12mm}";try{window.print()}catch(e){toast("La impresión no está disponible en este entorno")}}
+const hoyS=()=>new Date().toLocaleDateString("es-AR");
+function printRec(){const c=db.find(x=>x.id===vid);if(!c)return;doPrint(`<h2>Expediente ${esc(c.nro)} · Régimen Penal Juvenil (Ley 27.801)</h2><p>Impreso el ${hoyS()} · Proceso reservado (art. 5 i)</p>`+recHTML(c),false)}
+const prow=(c,n)=>`<tr><td>${n}</td><td>${esc(c.nro)}</td><td>${esc(c.caratula)}</td><td>${esc(c.iniciales)}${edad(c)==null?"":" (<b>"+edad(c)+" años</b>)"}</td><td>${esc(c.delito)}</td><td>${esc(c.organo)}</td><td>${esc(c.resp)}</td><td>${esc(c.estado)}</td><td>${esc(c.coer)}</td><td>${c.aud?fd(c.aud):""}</td></tr>`;
+function printTable(all){const r=all?db:rows(),f=!all&&(filt||est)?" · Filtro: "+esc([filt,est].filter(Boolean).join(" / ")):"";
+doPrint(`<h2>Expedientes · Régimen Penal Juvenil (Ley 27.801)</h2><p>${all?"Listado completo":"Listado filtrado"} · ${r.length} registro(s) · ${hoyS()}${f}</p><table><thead><tr><th>N.º</th><th>Expediente</th><th>Carátula</th><th>Adolescente</th><th>Delito</th><th>Órgano</th><th>Responsable</th><th>Estado</th><th>Coerción</th><th>Próx. audiencia</th></tr></thead><tbody>${r.map((c,i)=>prow(c,r.length-i)).join("")}</tbody></table>`,true)}
+const bmsg=t=>{$("#bm").textContent=t};
+function bkp(){bmsg("");opn("#bk")}
+async function expJSON(){const data=JSON.stringify({app:"expedientes-penal-juvenil",version:1,exportado:new Date().toISOString(),expedientes:db},null,1),fn="expedientes-penal-juvenil-"+new Date().toISOString().slice(0,10)+".json";let dl=null;
+try{dl=window.claude?await claude.use("downloads"):null}catch(e){}
+if(dl){try{await dl.save({filename:fn,data});bmsg("Exportados "+db.length+" expediente(s).")}catch(e){bmsg(e&&e.code==="declined"?"Exportación cancelada.":"No se pudo exportar ("+(e&&e.code||"error")+").")}return}
+try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type:"application/json"}));a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);bmsg("Exportados "+db.length+" expediente(s).")}catch(e){bmsg("No se pudo exportar en este entorno.")}}
+function impFile(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();
+r.onerror=()=>bmsg("No se pudo leer el archivo.");
+r.onload=()=>{try{let a=JSON.parse(r.result);if(a&&!Array.isArray(a))a=a.expedientes;if(!Array.isArray(a))throw 0;let n=0;a.forEach(x=>{if(!x||typeof x!=="object")return;n++;if(!x.id)x.id=Date.now().toString(36)+n;const i=db.findIndex(y=>y.id===x.id);i>-1?db[i]=x:db.push(x)});persist();list();bmsg("Importados "+n+" expediente(s).");toast("Importación completa")}catch(e){bmsg("El archivo no es un respaldo JSON válido.")}inp.value=""};
+r.readAsText(f)}
+$("#fe").innerHTML='<option value="">Todos los estados</option>'+ESTADOS.map(x=>`<option>${x}</option>`).join("");
+list();
+const SND=matchMedia("(hover:hover) and (pointer:fine)");let ac=null,lastT=0;
+["pointerdown","keydown"].forEach(v=>addEventListener(v,()=>{if(!ac){const A=window.AudioContext||window.webkitAudioContext;if(!A)return;ac=new A()}if(ac.state==="suspended")ac.resume()},{passive:true}));
+function tick(){if(!SND.matches||!ac||ac.state!=="running")return;const n=performance.now();if(n-lastT<60)return;lastT=n;const t=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();o.type="triangle";o.frequency.setValueAtTime(1900,t);o.frequency.exponentialRampToValueAtTime(700,t+.03);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.07,t+.002);g.gain.exponentialRampToValueAtTime(.0001,t+.045);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+.05)}
+document.addEventListener("mouseover",e=>{const t=e.target.closest&&e.target.closest(".btn,.pb,.tabs button,.stat,tr.r");if(t&&!t.contains(e.relatedTarget))tick()});
+</script></body></html>
